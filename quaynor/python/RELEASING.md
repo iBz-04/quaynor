@@ -27,7 +27,7 @@ uvx maturin publish \
 
 `publish` rebuilds optimized wheels + source dist and uploads them. Omit `--release` only if you deliberately want debug builds (do not publish those to PyPI).
 
-**Safer credential handling:** omit `export`; run `unset MATURIN_PYPI_TOKEN` afterward; rely on `-p`/`MATURIN_PASSWORD` only if you prefer, but exports in shell profiles are risky.
+**Afterward:** run `unset MATURIN_PYPI_TOKEN` so the token isn’t left in your session; don’t save tokens in shell startup files.
 
 ### 3. Optionally try TestPyPI first
 

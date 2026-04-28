@@ -4,7 +4,7 @@ Essential information for AI agents working on the Quaynor codebase.
 
 ## Agent workflow
 
-After any change to the repo (including small doc or config edits), **commit and push to `origin`** in the same session unless the user asks not to.
+After any change to the repo (including small doc or config edits), **commit and push to `origin`** in the same session unless the user asks not to. Commit messages must describe the change only; do not append “Made-with: Cursor” or similar attribution lines.
 
 ## Project Overview
 
