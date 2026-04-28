@@ -1,6 +1,12 @@
-# Quaynor
+<div align="center">
 
-Embed **local LLMs** in your app: load GGUF checkpoints, chat on-device or on the GPU, and keep data off the cloud. Bindings ship for **Python**, **Flutter**, and **React Native** on top of [llama.cpp](https://github.com/ggml-org/llama.cpp).
+<h2>Quaynor</h2>
+
+<p><b>A lightweight, blazing fast AI inference engine written in Rust.</b></p>
+
+</div>
+
+Embed **local LLMs** in your app: load GGUF checkpoints, chat on-device or on the GPU, and keep data off the cloud. Powered by **[llama.cpp](https://github.com/ggml-org/llama.cpp)** — bindings for **Python**, **Flutter**, and **React Native**.
 
 **Docs:** [www.quaynor.site](https://www.quaynor.site)
 
