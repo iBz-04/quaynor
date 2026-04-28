@@ -1,10 +1,25 @@
 # Quaynor
 
-Run LLMs locally with offline inference. Bindings for **Python**, **Flutter**, and **React Native**. Uses [llama.cpp](https://github.com/ggml-org/llama.cpp) and GGUF models.
-
-**Features:** streaming chat, tool calling (grammar derived from your functions), GPU inference (Vulkan / Metal), vision and audio inputs, optional model download from Hugging Face or URLs.
+Embed **local LLMs** in your app: load GGUF checkpoints, chat on-device or on the GPU, and keep data off the cloud. Bindings ship for **Python**, **Flutter**, and **React Native** on top of [llama.cpp](https://github.com/ggml-org/llama.cpp).
 
 **Docs:** [www.quaynor.site](https://www.quaynor.site)
+
+---
+
+## Why use it
+
+- **Offline inference** — No inference API keys; models stay on disk or load from URLs / Hugging Face paths you choose.
+- **One chat-style API across bindings** — `Chat`/`ask` patterns align so you can move ideas between Python, Flutter, and React Native without relearning primitives.
+- **Production-oriented features** — Streaming replies, bounded context sizing, embeddings and cross-encoder reranking where supported, grammar-based tool calling wired from native functions (Python) or equivalents in mobile bindings.
+
+**Rough capability map:**
+
+| Area | Notes |
+|------|--------|
+| Chat & streaming | Token streaming and full-string completion helpers (e.g. `.completed()`). |
+| Tool calling | Grammar-constrained tool use; decorate Python functions or declare tools in RN/Flutter per docs. |
+| Hardware | Vulkan (desktop/Android where applicable), Metal (Apple). |
+| Modalities | Vision and audio pipelines where the model supports them; see docs for model quirks. |
 
 ---
 
@@ -85,13 +100,14 @@ chat = Chat("./path/to/model.gguf", tools=[circle_area])
 
 ## Platforms
 
-Desktop (Windows, Linux, macOS) is supported for all listed bindings. Android and iOS are supported for Flutter and React Native.
+Desktop (Windows, Linux, macOS): all bindings. **Android** and **iOS**: Flutter and React Native bindings (Metal on Apple, Vulkan where enabled on Android).
 
 ---
 
 ## Contributing
 
-Star the repo, report issues, or open PRs.
+Issues, discussions, and PRs are welcome. See the repo labels and **[www.quaynor.site](https://www.quaynor.site)** for setup and binding-specific guides.
+
 ---
 
 ## License
