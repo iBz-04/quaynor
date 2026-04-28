@@ -2,6 +2,10 @@
 
 Essential information for AI agents working on the Quaynor codebase.
 
+## Agent workflow
+
+After any change to the repo (including small doc or config edits), **commit and push to `origin`** in the same session unless the user asks not to.
+
 ## Project Overview
 
 Quaynor is a  lightweight local AI inference library for running LLMs offline. Core features include streaming responses, tool calling, and context management. 
