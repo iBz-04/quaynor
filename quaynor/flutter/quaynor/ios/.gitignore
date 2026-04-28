@@ -1,0 +1,8 @@
+Flutter/
+Runner/
+Runner.xcodeproj/
+Runner.xcworkspace/
+RunnerTests/
+Frameworks/*
+!Frameworks/.gitkeep
+quaynor_flutter.xcframework/

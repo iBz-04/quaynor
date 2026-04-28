@@ -1,0 +1,56 @@
+{
+  "name": "react-native-quaynor",
+  "version": "1.0.1",
+  "description": "Run LLMs locally with offline inference — React Native bindings",
+  "main": "src/wrapper.ts",
+  "types": "src/wrapper.ts",
+  "exports": {
+    ".": "./src/wrapper.ts"
+  },
+  "license": "MIT",
+  "homepage": "https://quaynor.ooo",
+  "bugs": "https://github.com/quaynor-ooo/quaynor/issues",
+  "keywords": [
+    "react-native",
+    "ai",
+    "llm",
+    "local-ai",
+    "inference",
+    "gguf",
+    "on-device",
+    "offline"
+  ],
+  "files": [
+    "src/",
+    "generated/",
+    "cpp/",
+    "ios/",
+    "android/",
+    "Quaynor.podspec",
+    "ubrn.config.yaml",
+    "!android/build",
+    "!android/.cxx",
+    "!android/src/main/jniLibs"
+  ],
+  "codegenConfig": {
+    "name": "QuaynorSpec",
+    "type": "modules",
+    "jsSrcsDir": "src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/quaynor-ooo/quaynor.git"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "dependencies": {
+    "uniffi-bindgen-react-native": "0.30.0-1"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "jest": "^30.3.0",
+    "ts-jest": "^29.4.9"
+  }
+}

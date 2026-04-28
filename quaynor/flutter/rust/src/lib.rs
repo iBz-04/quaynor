@@ -1,0 +1,1041 @@
+use flutter_rust_bridge::{DartFnFuture, Rust2DartSendError};
+use quaynor::chat::Asset;
+use std::collections::HashMap;
+use std::sync::Arc;
+// ^ in general I've only done fully-qualified imports, but these things need to be imported to
+// satisfy some frb macros
+
+mod frb_generated;
+mod parse;
+
+pub use quaynor::chat::{Message, Role};
+pub use quaynor::tool_calling::ToolCall;
+
+/// A part of a multimodal prompt. Use [`PromptPart::Text`] for text,
+/// [`PromptPart::Image`] for images, and [`PromptPart::Audio`] for audio clips.
+pub enum PromptPart {
+    Text { content: String },
+    Image { path: String },
+    Audio { path: String },
+}
+
+#[flutter_rust_bridge::frb(mirror(ToolCall))]
+pub struct _ToolCall {
+    pub name: String,
+    pub arguments: serde_json::Value, // Flexible structure for arbitrary arguments
+}
+
+/// Helper function to convert ToolCall arguments to a JSON string.
+/// This is needed because serde_json::Value becomes an opaque type in Dart.
+#[flutter_rust_bridge::frb(sync)]
+pub fn tool_call_arguments_json(tool_call: &ToolCall) -> Result<String, String> {
+    serde_json::to_string(&tool_call.arguments).map_err(|e| e.to_string())
+}
+#[flutter_rust_bridge::frb(mirror(Role))]
+pub enum _Role {
+    User,
+    Assistant,
+    System,
+    Tool,
+}
+
+#[flutter_rust_bridge::frb(mirror(Message))]
+pub enum _Message {
+    Message {
+        role: Role,
+        content: String,
+        #[frb(default = "const []")]
+        assets: Vec<Asset>,
+    },
+    ToolCalls {
+        role: Role,
+        content: String,
+        tool_calls: Vec<ToolCall>,
+    },
+    ToolResp {
+        role: Role,
+        name: String,
+        content: String,
+    },
+}
+
+#[flutter_rust_bridge::frb(opaque)]
+pub struct Model {
+    model: Arc<quaynor::llm::Model>,
+}
+
+impl Model {
+    #[flutter_rust_bridge::frb]
+    pub fn load(
+        model_path: &str,
+        #[frb(default = true)] use_gpu: bool,
+        #[frb(default = "null")] projection_model_path: Option<String>,
+    ) -> Result<Self, String> {
+        let model =
+            quaynor::llm::get_model(model_path, use_gpu, projection_model_path.as_deref())
+                .map_err(|e| e.to_string())?;
+        Ok(Self {
+            model: Arc::new(model),
+        })
+    }
+}
+
+#[flutter_rust_bridge::frb(opaque)]
+pub struct RustChat {
+    chat: quaynor::chat::ChatHandleAsync,
+}
+
+impl RustChat {
+    /// Create chat from existing model.
+    ///
+    /// For vision/multimodal models, load the model with image ingestion enabled first:
+    /// ```dart
+    /// final model = Model.load("model.gguf", projectionModelPath: "mmproj.gguf");
+    /// final chat = Chat(model: model);
+    /// ```
+    ///
+    /// Args:
+    ///     model: A Model instance (may include a projection model for vision)
+    ///     system_prompt: System message to guide the model's behavior
+    ///     context_size: Context size (maximum conversation length in tokens)
+    ///     tools: List of Tool instances the model can call
+    ///     sampler: SamplerConfig for token selection. Pass null to use default sampler.
+    #[flutter_rust_bridge::frb(sync)]
+    pub fn new(
+        model: &Model,
+        #[frb(default = "null")] system_prompt: Option<String>,
+        #[frb(default = 4096)] context_size: u32,
+        #[frb(default = "null")] allow_thinking: Option<bool>,
+        #[frb(default = "const {}")] template_variables: HashMap<String, bool>,
+        #[frb(default = "const []")] tools: Vec<RustTool>,
+        #[frb(default = "null")] sampler: Option<SamplerConfig>,
+    ) -> Self {
+        let sampler_config = sampler.map(|s| s.sampler_config).unwrap_or_default();
+
+        // Handle deprecated allow_thinking parameter
+        let mut template_vars = template_variables;
+        if let Some(allow) = allow_thinking {
+            tracing::warn!(
+                "allow_thinking parameter is deprecated. Use template_variables={{\"enable_thinking\": {}}} instead.",
+                allow
+            );
+            template_vars.insert("enable_thinking".to_string(), allow);
+        }
+
+        let chat = quaynor::chat::ChatBuilder::new(Arc::clone(&model.model))
+            .with_context_size(context_size)
+            .with_template_variables(template_vars)
+            .with_tools(tools.into_iter().map(|t| t.tool).collect())
+            .with_system_prompt(system_prompt)
+            .with_sampler(sampler_config)
+            .build_async();
+
+        Self { chat }
+    }
+
+    /// Create chat directly from a model path. This is async as it loads a model
+    ///
+    /// Args:
+    ///     model_path: Path to GGUF model file
+    ///     projection_model_path: Path to a .mmproj file for vision/multimodal models
+    ///     system_prompt: System message to guide the model's behavior
+    ///     context_size: Context size (maximum conversation length in tokens)
+    ///     tools: List of Tool instances the model can call
+    ///     sampler: SamplerConfig for token selection. Pass null to use default sampler.
+    ///     use_gpu: Whether to use GPU acceleration. Defaults to true.
+    #[flutter_rust_bridge::frb]
+    #[allow(clippy::too_many_arguments)]
+    pub fn from_path(
+        model_path: &str,
+        #[frb(default = "null")] projection_model_path: Option<String>,
+        #[frb(default = "null")] system_prompt: Option<String>,
+        #[frb(default = 4096)] context_size: u32,
+        #[frb(default = "null")] allow_thinking: Option<bool>,
+        #[frb(default = "const {}")] template_variables: HashMap<String, bool>,
+        #[frb(default = "const []")] tools: Vec<RustTool>,
+        #[frb(default = "null")] sampler: Option<SamplerConfig>,
+        #[frb(default = true)] use_gpu: bool,
+    ) -> Result<Self, String> {
+        let model =
+            quaynor::llm::get_model(model_path, use_gpu, projection_model_path.as_deref())
+                .map_err(|e| e.to_string())?;
+        let sampler_config = sampler.map(|s| s.sampler_config).unwrap_or_default();
+
+        // Handle deprecated allow_thinking parameter
+        let mut template_vars = template_variables;
+        if let Some(allow) = allow_thinking {
+            tracing::warn!(
+                "allow_thinking parameter is deprecated. Use template_variables={{\"enable_thinking\": {}}} instead.",
+                allow
+            );
+            template_vars.insert("enable_thinking".to_string(), allow);
+        }
+
+        let chat = quaynor::chat::ChatBuilder::new(Arc::new(model))
+            .with_context_size(context_size)
+            .with_template_variables(template_vars)
+            .with_tools(tools.into_iter().map(|t| t.tool).collect())
+            .with_system_prompt(system_prompt)
+            .with_sampler(sampler_config)
+            .build_async();
+        Ok(Self { chat })
+    }
+
+    #[flutter_rust_bridge::frb(sync, positional)]
+    pub fn ask(&self, message: String) -> RustTokenStream {
+        RustTokenStream {
+            stream: self.chat.ask(message),
+        }
+    }
+
+    /// Send a multimodal prompt (text + images) and get a stream of response tokens.
+    ///
+    /// Args:
+    ///     parts: List of PromptPart (text or image) making up the prompt
+    #[flutter_rust_bridge::frb(sync)]
+    pub fn ask_with_prompt(&self, parts: Vec<PromptPart>) -> RustTokenStream {
+        let mut prompt = quaynor::tokenizer::Prompt::new();
+        for part in parts {
+            match part {
+                PromptPart::Text { content } => prompt.push_text(content),
+                PromptPart::Image { path } => prompt.push_image(path.as_ref()),
+                PromptPart::Audio { path } => prompt.push_audio(path.as_ref()),
+            }
+        }
+
+        RustTokenStream {
+            stream: self.chat.ask(prompt),
+        }
+    }
+
+    pub async fn get_chat_history(&self) -> Result<Vec<Message>, quaynor::errors::GetterError> {
+        self.chat.get_chat_history().await
+    }
+
+    pub async fn set_chat_history(
+        &self,
+        messages: Vec<Message>,
+    ) -> Result<(), quaynor::errors::SetterError> {
+        self.chat.set_chat_history(messages).await
+    }
+
+    pub async fn set_sampler_config(
+        &self,
+        sampler_config: SamplerConfig,
+    ) -> Result<(), quaynor::errors::SetterError> {
+        self.chat
+            .set_sampler_config(sampler_config.sampler_config)
+            .await
+    }
+
+    pub async fn get_sampler_config(
+        &self,
+    ) -> Result<SamplerConfig, quaynor::errors::GetterError> {
+        self.chat
+            .get_sampler_config()
+            .await
+            .map(|sampler_config| SamplerConfig { sampler_config })
+    }
+
+    pub async fn reset_context(
+        &self,
+        system_prompt: Option<String>,
+        tools: Vec<RustTool>,
+    ) -> Result<(), quaynor::errors::SetterError> {
+        self.chat
+            .reset_chat(system_prompt, tools.into_iter().map(|t| t.tool).collect())
+            .await
+    }
+
+    pub async fn reset_history(&self) -> Result<(), quaynor::errors::SetterError> {
+        self.chat.reset_history().await
+    }
+
+    #[deprecated(note = "Use setTemplateVariable(\"enable_thinking\", value) instead")]
+    pub async fn set_allow_thinking(
+        &self,
+        allow_thinking: bool,
+    ) -> Result<(), quaynor::errors::SetterError> {
+        self.chat
+            .set_template_variable("enable_thinking".to_string(), allow_thinking)
+            .await
+    }
+
+    pub async fn set_system_prompt(
+        &self,
+        system_prompt: Option<String>,
+    ) -> Result<(), quaynor::errors::SetterError> {
+        self.chat.set_system_prompt(system_prompt).await
+    }
+
+    pub async fn get_system_prompt(
+        &self,
+    ) -> Result<Option<String>, quaynor::errors::GetterError> {
+        self.chat.get_system_prompt().await
+    }
+
+    pub async fn set_tools(
+        &self,
+        tools: Vec<RustTool>,
+    ) -> Result<(), quaynor::errors::SetterError> {
+        self.chat
+            .set_tools(tools.into_iter().map(|t| t.tool).collect())
+            .await
+    }
+
+    pub async fn set_template_variable(
+        &self,
+        name: String,
+        value: bool,
+    ) -> Result<(), quaynor::errors::SetterError> {
+        self.chat.set_template_variable(name, value).await
+    }
+
+    pub async fn set_template_variables(
+        &self,
+        variables: HashMap<String, bool>,
+    ) -> Result<(), quaynor::errors::SetterError> {
+        self.chat.set_template_variables(variables).await
+    }
+
+    pub async fn get_template_variables(
+        &self,
+    ) -> Result<HashMap<String, bool>, quaynor::errors::GetterError> {
+        self.chat.get_template_variables().await
+    }
+
+    #[flutter_rust_bridge::frb(sync)]
+    pub fn stop_generation(&self) {
+        self.chat.stop_generation()
+    }
+}
+
+#[flutter_rust_bridge::frb(opaque)]
+pub struct RustTokenStream {
+    stream: quaynor::chat::TokenStreamAsync,
+}
+
+impl RustTokenStream {
+    pub async fn iter(
+        &mut self,
+        sink: crate::frb_generated::StreamSink<String>,
+    ) -> Result<(), Rust2DartSendError> {
+        while let Some(token) = self.stream.next_token().await {
+            sink.add(token)?;
+        }
+        Ok(())
+    }
+
+    pub async fn next_token(&mut self) -> Option<String> {
+        self.stream.next_token().await
+    }
+
+    pub async fn completed(&mut self) -> Result<String, quaynor::errors::CompletionError> {
+        self.stream.completed().await
+    }
+}
+
+#[flutter_rust_bridge::frb(opaque)]
+pub struct Encoder {
+    handle: quaynor::encoder::EncoderAsync,
+}
+
+impl Encoder {
+    #[flutter_rust_bridge::frb(sync)]
+    pub fn new(model: &Model, #[frb(default = 4096)] n_ctx: u32) -> Self {
+        let handle = quaynor::encoder::EncoderAsync::new(Arc::clone(&model.model), n_ctx);
+        Self { handle }
+    }
+
+    #[flutter_rust_bridge::frb]
+    pub fn from_path(
+        model_path: &str,
+        #[frb(default = 4096)] n_ctx: u32,
+        #[frb(default = true)] use_gpu: bool,
+    ) -> Result<Self, String> {
+        let model =
+            quaynor::llm::get_model(model_path, use_gpu, None).map_err(|e| e.to_string())?;
+        let handle = quaynor::encoder::EncoderAsync::new(Arc::new(model), n_ctx);
+
+        Ok(Self { handle })
+    }
+
+    pub async fn encode(
+        &self,
+        text: String,
+    ) -> Result<Vec<f32>, quaynor::errors::EncoderWorkerError> {
+        self.handle.encode(text).await
+    }
+}
+
+#[flutter_rust_bridge::frb(opaque)]
+pub struct CrossEncoder {
+    handle: quaynor::crossencoder::CrossEncoderAsync,
+}
+
+impl CrossEncoder {
+    #[flutter_rust_bridge::frb(sync)]
+    pub fn new(model: &Model, #[frb(default = 4096)] n_ctx: u32) -> Self {
+        let handle =
+            quaynor::crossencoder::CrossEncoderAsync::new(Arc::clone(&model.model), n_ctx);
+        Self { handle }
+    }
+
+    #[flutter_rust_bridge::frb]
+    pub fn from_path(
+        model_path: &str,
+        #[frb(default = 4096)] n_ctx: u32,
+        #[frb(default = true)] use_gpu: bool,
+    ) -> Result<Self, String> {
+        let model =
+            quaynor::llm::get_model(model_path, use_gpu, None).map_err(|e| e.to_string())?;
+        let handle = quaynor::crossencoder::CrossEncoderAsync::new(Arc::new(model), n_ctx);
+        Ok(Self { handle })
+    }
+    pub async fn rank(
+        &self,
+        query: String,
+        documents: Vec<String>,
+    ) -> Result<Vec<f32>, quaynor::errors::CrossEncoderWorkerError> {
+        self.handle.rank(query, documents).await
+    }
+
+    pub async fn rank_and_sort(
+        &self,
+        query: String,
+        documents: Vec<String>,
+    ) -> Result<Vec<(String, f32)>, quaynor::errors::CrossEncoderWorkerError> {
+        self.handle.rank_and_sort(query, documents).await
+    }
+}
+
+#[flutter_rust_bridge::frb(sync)]
+pub fn cosine_similarity(a: Vec<f32>, b: Vec<f32>) -> f32 {
+    quaynor::encoder::cosine_similarity(&a, &b)
+}
+
+#[flutter_rust_bridge::frb(opaque)]
+pub struct RustTool {
+    tool: quaynor::tool_calling::Tool,
+    schema: serde_json::Value,
+}
+
+impl RustTool {
+    /// Get the JSON schema for this tool's parameters as a string
+    #[flutter_rust_bridge::frb(sync)]
+    pub fn get_schema_json(&self) -> String {
+        self.schema.to_string()
+    }
+}
+
+#[flutter_rust_bridge::frb(sync)]
+pub fn new_tool_impl(
+    function: impl Fn(String) -> DartFnFuture<String> + Send + Sync + 'static,
+    name: String,
+    description: String,
+    runtime_type: String,
+    parameter_descriptions: &std::collections::HashMap<String, String>,
+) -> Result<RustTool, String> {
+    let json_schema = dart_function_type_to_json_schema(&runtime_type, parameter_descriptions)?;
+
+    // TODO: this seems to silently block forever if we get a type error on the dart side.
+    //       it'd be *much* better to fail hard and throw a dart exception if that happens
+    //       we might have to fix it on the dart side...
+    let sync_callback = move |json: serde_json::Value| {
+        futures::executor::block_on(async { function(json.to_string()).await })
+    };
+
+    let tool = quaynor::tool_calling::Tool::new(
+        name,
+        description,
+        json_schema.clone(),
+        std::sync::Arc::new(sync_callback),
+    );
+
+    Ok(RustTool {
+        tool,
+        schema: json_schema,
+    })
+}
+
+#[flutter_rust_bridge::frb(sync)]
+pub fn new_bash_tool(max_commands: Option<usize>) -> RustTool {
+    let tool = quaynor::tool_calling::Tool::bash(max_commands);
+    let schema = tool.json_schema.clone();
+    RustTool { tool, schema }
+}
+
+#[flutter_rust_bridge::frb(sync)]
+pub fn new_python_tool(
+    max_duration_secs: Option<u64>,
+    max_memory_bytes: Option<usize>,
+    max_recursion_depth: Option<usize>,
+) -> RustTool {
+    let tool = quaynor::tool_calling::Tool::python(
+        max_duration_secs.map(std::time::Duration::from_secs),
+        max_memory_bytes,
+        max_recursion_depth,
+    );
+    let schema = tool.json_schema.clone();
+    RustTool { tool, schema }
+}
+
+/// Converts a Dart function runtimeType string directly to a JSON schema
+/// Example input: "({String a, int b}) => String" or "() => String"
+/// Returns a JSON schema for the function parameters
+/// XXX: this whole function is vibe-coded, and hence the implementation is pretty messy...
+#[tracing::instrument(ret, level = "debug")]
+fn dart_function_type_to_json_schema(
+    runtime_type: &str,
+    parameter_descriptions: &std::collections::HashMap<String, String>,
+) -> Result<serde_json::Value, String> {
+    tracing::debug!(
+        "Hello!\n\n{:?}\n\n",
+        parse::runtime_type_parser("({required Set<int> testSet}) => String")
+    );
+
+    let (parsed_parameters, return_type) = match parse::runtime_type_parser(runtime_type) {
+        Ok((_, (pp, rt))) => (pp, rt),
+        // This should only happen if runtime_type contains a type which we do not support!!
+        Err(nom::Err::Error(e)) => {
+            return Err(format!(
+                "Tool function contains an unsupported type. Parsing failed at: {} ",
+                e.input
+            ));
+        }
+        Err(nom::Err::Failure(e)) => {
+            return Err(format!(
+                "Error while parsing runtime_type. Input:{}",
+                e.input
+            ))
+        }
+        Err(_) => return Err("Something has gone horribly wrong while parsing!".into()),
+    };
+
+    if parse::return_type_parser(return_type).is_err() {
+        tracing::warn!("Return type of this tool should be `String or Future<String>`. Anything else will be cast to string, which might lead to unexpected results.")
+    }
+
+    let mut properties = serde_json::Map::new();
+    let mut required = Vec::new();
+
+    for (parameter_name, mut parameter_type) in parsed_parameters {
+        required.push(parameter_name);
+
+        if let Some(description) = parameter_descriptions.get(parameter_name) {
+            if let Some(obj) = parameter_type.as_object_mut() {
+                obj.insert(
+                    "description".to_string(),
+                    serde_json::Value::String(description.to_string()),
+                );
+            }
+        }
+        properties.insert(parameter_name.into(), parameter_type);
+    }
+
+    tracing::debug!(
+        "\n\n{}\n\n",
+        serde_json::json!({
+            "type": "object",
+            "properties": properties,
+            "required": required,
+            "additionalProperties": false
+        })
+    );
+
+    Ok(serde_json::json!({
+        "type": "object",
+        "properties": properties,
+        "required": required,
+        "additionalProperties": false
+    }))
+}
+
+// TODO:
+// - blocking ask
+// - embeddings
+// - cross encoder
+
+/// `SamplerConfig` contains the configuration for a token sampler. The mechanism by which
+/// Quaynor will sample a token from the probability distribution, to include in the
+/// generation result.
+/// A `SamplerConfig` can be constructed either using a preset function from the `SamplerPresets`
+/// class, or by manually constructing a sampler chain using the `SamplerBuilder` class.
+/// `SamplerConfig` supports serialization to/from JSON via `toJson()` and `fromJson()`.
+#[flutter_rust_bridge::frb(
+    opaque,
+    dart_code = "
+  @override
+  String toString() => toJson();
+"
+)]
+#[derive(Clone, Default)]
+pub struct SamplerConfig {
+    sampler_config: quaynor::sampler_config::SamplerConfig,
+}
+
+impl SamplerConfig {
+    /// Serialize the sampler configuration to a JSON string.
+    #[flutter_rust_bridge::frb(sync)]
+    pub fn to_json(&self) -> Result<String, String> {
+        serde_json::to_string(&self.sampler_config).map_err(|e| e.to_string())
+    }
+
+    /// Deserialize a sampler configuration from a JSON string.
+    #[flutter_rust_bridge::frb(sync)]
+    pub fn from_json(json_str: &str) -> Result<Self, String> {
+        let sampler_config: quaynor::sampler_config::SamplerConfig =
+            serde_json::from_str(json_str).map_err(|e| e.to_string())?;
+        Ok(Self { sampler_config })
+    }
+}
+
+fn shift_step(
+    builder: SamplerBuilder,
+    step: quaynor::sampler_config::ShiftStep,
+) -> SamplerBuilder {
+    SamplerBuilder {
+        sampler_config: builder.sampler_config.shift(step),
+    }
+}
+
+fn sample_step(
+    builder: SamplerBuilder,
+    step: quaynor::sampler_config::SampleStep,
+) -> SamplerConfig {
+    SamplerConfig {
+        sampler_config: builder.sampler_config.sample(step),
+    }
+}
+
+/// `SamplerBuilder` is used to manually construct a sampler chain.
+/// A sampler chain consists of any number of probability-shifting steps, and a single sampling step.
+/// Probability-shifting steps are operations that transform the probability distribution of next
+/// tokens, as generated by the model. E.g. the top_k step will zero the probability of all tokens
+/// that aren't among the top K most probable (where K is some integer).
+/// A sampling step is a final step that selects a single token from the probability distribution
+/// that results from applying all of the probability-shifting steps in order.
+/// E.g. the `dist` sampling step selects a token with weighted randomness, and the
+/// `greedy` sampling step always selects the most probable.
+#[flutter_rust_bridge::frb(opaque)]
+#[derive(Clone)]
+pub struct SamplerBuilder {
+    sampler_config: quaynor::sampler_config::SamplerConfig,
+}
+
+impl SamplerBuilder {
+    /// Create a new SamplerBuilder to construct a custom sampler chain.
+    #[flutter_rust_bridge::frb(sync)]
+    pub fn new() -> Self {
+        Self {
+            sampler_config: quaynor::sampler_config::SamplerConfig::default(),
+        }
+    }
+
+    /// Keep only the top K most probable tokens. Typical values: 40-50.
+    ///
+    /// Args:
+    ///     top_k: Number of top tokens to keep
+    #[flutter_rust_bridge::frb(sync)]
+    pub fn top_k(&self, top_k: i32) -> Self {
+        shift_step(
+            self.clone(),
+            quaynor::sampler_config::ShiftStep::TopK { top_k },
+        )
+    }
+
+    /// Keep tokens whose cumulative probability is below top_p. Typical values: 0.9-0.95.
+    ///
+    /// Args:
+    ///     top_p: Cumulative probability threshold (0.0 to 1.0)
+    ///     min_keep: Minimum number of tokens to always keep
+    #[flutter_rust_bridge::frb(sync)]
+    pub fn top_p(&self, top_p: f32, min_keep: u32) -> Self {
+        shift_step(
+            self.clone(),
+            quaynor::sampler_config::ShiftStep::TopP { top_p, min_keep },
+        )
+    }
+
+    /// Keep tokens with probability above min_p * (probability of most likely token).
+    ///
+    /// Args:
+    ///     min_p: Minimum relative probability threshold (0.0 to 1.0). Typical: 0.05-0.1.
+    ///     min_keep: Minimum number of tokens to always keep
+    #[flutter_rust_bridge::frb(sync)]
+    pub fn min_p(&self, min_p: f32, min_keep: u32) -> Self {
+        shift_step(
+            self.clone(),
+            quaynor::sampler_config::ShiftStep::MinP { min_p, min_keep },
+        )
+    }
+
+    /// XTC (eXclude Top Choices) sampler that probabilistically excludes high-probability tokens.
+    /// This can increase output diversity by sometimes forcing the model to pick less obvious tokens.
+    ///
+    /// Args:
+    ///     xtc_probability: Probability of applying XTC on each token (0.0 to 1.0)
+    ///     xtc_threshold: Tokens with probability above this threshold may be excluded (0.0 to 1.0)
+    ///     min_keep: Minimum number of tokens to always keep (prevents excluding all tokens)
+    #[flutter_rust_bridge::frb(sync)]
+    pub fn xtc(&self, xtc_probability: f32, xtc_threshold: f32, min_keep: u32) -> Self {
+        shift_step(
+            self.clone(),
+            quaynor::sampler_config::ShiftStep::XTC {
+                xtc_probability,
+                xtc_threshold,
+                min_keep,
+            },
+        )
+    }
+
+    /// Typical sampling: keeps tokens close to expected information content.
+    ///
+    /// Args:
+    ///     typ_p: Typical probability mass (0.0 to 1.0). Typical: 0.9.
+    ///     min_keep: Minimum number of tokens to always keep
+    #[flutter_rust_bridge::frb(sync)]
+    pub fn typical_p(&self, typ_p: f32, min_keep: u32) -> Self {
+        shift_step(
+            self.clone(),
+            quaynor::sampler_config::ShiftStep::TypicalP { typ_p, min_keep },
+        )
+    }
+
+    /// Apply temperature scaling to the probability distribution.
+    ///
+    /// Args:
+    ///     temperature: Temperature value (0.0 = deterministic, 1.0 = unchanged, >1.0 = more random)
+    #[flutter_rust_bridge::frb(sync)]
+    pub fn temperature(&self, temperature: f32) -> Self {
+        shift_step(
+            self.clone(),
+            quaynor::sampler_config::ShiftStep::Temperature { temperature },
+        )
+    }
+
+    /// Apply a grammar constraint to enforce structured output.
+    ///
+    /// Args:
+    ///     grammar: Grammar specification in GBNF format (GGML BNF, a variant of BNF used by llama.cpp)
+    ///     trigger_on: Optional string that, when generated, activates the grammar constraint.
+    ///                 Useful for letting the model generate free-form text until a specific marker.
+    ///     root: Name of the root grammar rule to start parsing from
+    #[flutter_rust_bridge::frb(sync)]
+    pub fn grammar(&self, grammar: String, trigger_on: Option<String>, root: String) -> Self {
+        shift_step(
+            self.clone(),
+            quaynor::sampler_config::ShiftStep::Grammar {
+                grammar,
+                trigger_on,
+                root,
+            },
+        )
+    }
+
+    /// DRY (Don't Repeat Yourself) sampler to reduce repetition.
+    ///
+    /// Args:
+    ///     multiplier: Penalty strength multiplier
+    ///     base: Base penalty value
+    ///     allowed_length: Maximum allowed repetition length
+    ///     penalty_last_n: Number of recent tokens to consider
+    ///     seq_breakers: List of strings that break repetition sequences
+    #[flutter_rust_bridge::frb(sync)]
+    pub fn dry(
+        &self,
+        multiplier: f32,
+        base: f32,
+        allowed_length: i32,
+        penalty_last_n: i32,
+        seq_breakers: Vec<String>,
+    ) -> Self {
+        shift_step(
+            self.clone(),
+            quaynor::sampler_config::ShiftStep::DRY {
+                multiplier,
+                base,
+                allowed_length,
+                penalty_last_n,
+                seq_breakers,
+            },
+        )
+    }
+
+    /// Apply repetition penalties to discourage repeated tokens.
+    ///
+    /// Args:
+    ///     penalty_last_n: Number of recent tokens to penalize (0 = disable)
+    ///     penalty_repeat: Base repetition penalty (1.0 = no penalty, >1.0 = penalize)
+    ///     penalty_freq: Frequency penalty based on token occurrence count
+    ///     penalty_present: Presence penalty for any token that appeared before
+    #[flutter_rust_bridge::frb(sync)]
+    pub fn penalties(
+        &self,
+        penalty_last_n: i32,
+        penalty_repeat: f32,
+        penalty_freq: f32,
+        penalty_present: f32,
+    ) -> Self {
+        shift_step(
+            self.clone(),
+            quaynor::sampler_config::ShiftStep::Penalties {
+                penalty_last_n,
+                penalty_repeat,
+                penalty_freq,
+                penalty_present,
+            },
+        )
+    }
+
+    /// Sample from the probability distribution (weighted random selection).
+    ///
+    /// Returns:
+    ///     A complete SamplerConfig ready to use
+    #[flutter_rust_bridge::frb(sync)]
+    pub fn dist(&self) -> SamplerConfig {
+        sample_step(self.clone(), quaynor::sampler_config::SampleStep::Dist)
+    }
+
+    /// Always select the most probable token (deterministic).
+    ///
+    /// Returns:
+    ///     A complete SamplerConfig ready to use
+    #[flutter_rust_bridge::frb(sync)]
+    pub fn greedy(&self) -> SamplerConfig {
+        sample_step(self.clone(), quaynor::sampler_config::SampleStep::Greedy)
+    }
+
+    /// Use Mirostat v1 algorithm for perplexity-controlled sampling.
+    /// Mirostat dynamically adjusts sampling to maintain a target "surprise" level,
+    /// producing more coherent output than fixed temperature. Good for long-form generation.
+    ///
+    /// Args:
+    ///     tau: Target perplexity/surprise value (typically 3.0-5.0; lower = more focused)
+    ///     eta: Learning rate for perplexity adjustment (typically 0.1)
+    ///     m: Number of candidates to consider (typically 100)
+    ///
+    /// Returns:
+    ///     A complete SamplerConfig ready to use
+    #[flutter_rust_bridge::frb(sync)]
+    pub fn mirostat_v1(&self, tau: f32, eta: f32, m: i32) -> SamplerConfig {
+        sample_step(
+            self.clone(),
+            quaynor::sampler_config::SampleStep::MirostatV1 { tau, eta, m },
+        )
+    }
+
+    /// Use Mirostat v2 algorithm for perplexity-controlled sampling.
+    /// Mirostat v2 is a simplified version of Mirostat that's often preferred.
+    /// It dynamically adjusts sampling to maintain a target "surprise" level.
+    ///
+    /// Args:
+    ///     tau: Target perplexity/surprise value (typically 3.0-5.0; lower = more focused)
+    ///     eta: Learning rate for perplexity adjustment (typically 0.1)
+    ///
+    /// Returns:
+    ///     A complete SamplerConfig ready to use
+    #[flutter_rust_bridge::frb(sync)]
+    pub fn mirostat_v2(&self, tau: f32, eta: f32) -> SamplerConfig {
+        sample_step(
+            self.clone(),
+            quaynor::sampler_config::SampleStep::MirostatV2 { tau, eta },
+        )
+    }
+}
+
+/// `SamplerPresets` is a static class which contains a bunch of functions to easily create a
+/// `SamplerConfig` from some pre-defined sampler chain.
+/// E.g. `SamplerPresets.temperature(0.8)` will return a `SamplerConfig` with temperature=0.8.
+#[flutter_rust_bridge::frb(opaque)]
+pub struct SamplerPresets {
+    _private: (),
+}
+
+impl SamplerPresets {
+    /// Get the default sampler configuration.
+    #[flutter_rust_bridge::frb(sync)]
+    pub fn default_sampler() -> SamplerConfig {
+        SamplerConfig {
+            sampler_config: quaynor::sampler_config::SamplerConfig::default(),
+        }
+    }
+
+    /// Create a sampler with top-k filtering only.
+    ///
+    /// Args:
+    ///     top_k: Number of top tokens to keep
+    #[flutter_rust_bridge::frb(sync)]
+    pub fn top_k(top_k: i32) -> SamplerConfig {
+        SamplerConfig {
+            sampler_config: quaynor::sampler_config::SamplerPresets::top_k(top_k),
+        }
+    }
+
+    /// Create a sampler with nucleus (top-p) sampling.
+    ///
+    /// Args:
+    ///     top_p: Cumulative probability threshold (0.0 to 1.0)
+    #[flutter_rust_bridge::frb(sync)]
+    pub fn top_p(top_p: f32) -> SamplerConfig {
+        SamplerConfig {
+            sampler_config: quaynor::sampler_config::SamplerPresets::top_p(top_p),
+        }
+    }
+
+    /// Create a greedy sampler (always picks most probable token).
+    #[flutter_rust_bridge::frb(sync)]
+    pub fn greedy() -> SamplerConfig {
+        SamplerConfig {
+            sampler_config: quaynor::sampler_config::SamplerPresets::greedy(),
+        }
+    }
+
+    /// Create a sampler with temperature scaling.
+    ///
+    /// Args:
+    ///     temperature: Temperature value (lower = more focused, higher = more random)
+    #[flutter_rust_bridge::frb(sync)]
+    pub fn temperature(temperature: f32) -> SamplerConfig {
+        SamplerConfig {
+            sampler_config: quaynor::sampler_config::SamplerPresets::temperature(temperature),
+        }
+    }
+
+    /// Create a DRY sampler preset to reduce repetition.
+    #[flutter_rust_bridge::frb(sync)]
+    pub fn dry() -> SamplerConfig {
+        SamplerConfig {
+            sampler_config: quaynor::sampler_config::SamplerPresets::dry(),
+        }
+    }
+
+    /// Create a sampler configured for JSON output generation.
+    /// Uses a grammar constraint to ensure the model outputs only valid JSON.
+    #[flutter_rust_bridge::frb(sync)]
+    pub fn json() -> SamplerConfig {
+        SamplerConfig {
+            sampler_config: quaynor::sampler_config::SamplerPresets::json(),
+        }
+    }
+
+    /// Create a sampler with a custom grammar constraint.
+    ///
+    /// Args:
+    ///     grammar: Grammar specification in GBNF format (GGML BNF, a variant of BNF used by llama.cpp)
+    #[flutter_rust_bridge::frb(sync)]
+    pub fn grammar(grammar: String) -> SamplerConfig {
+        SamplerConfig {
+            sampler_config: quaynor::sampler_config::SamplerPresets::grammar(grammar),
+        }
+    }
+}
+
+#[flutter_rust_bridge::frb(init)]
+pub fn init_app() {
+    // send llamacpp logs into tracing
+    quaynor::send_llamacpp_logs_to_tracing();
+
+    // send logs to the appropriate places for android, ios and wasm
+    flutter_rust_bridge::setup_default_user_utils();
+
+    let log_level = if cfg!(debug_assertions) {
+        tracing::Level::DEBUG
+    } else {
+        tracing::Level::INFO
+    };
+
+    tracing_subscriber::fmt()
+        .with_max_level(log_level)
+        .with_timer(tracing_subscriber::fmt::time::uptime())
+        .with_span_events(tracing_subscriber::fmt::format::FmtSpan::CLOSE)
+        .try_init()
+        .ok();
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_dart_function_to_schema() {
+        let schema = dart_function_type_to_json_schema(
+            "({String name, int age, List<String> tags}) => String",
+            &std::collections::HashMap::new(),
+        )
+        .unwrap();
+        let expected = serde_json::json!({
+            "type": "object",
+            "properties": {
+                "name": { "type": "string" },
+                "age": { "type": "integer" },
+                "tags": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                }
+            },
+            "required": ["name", "age", "tags"],
+            "additionalProperties": false
+        });
+        assert_eq!(schema, expected);
+    }
+
+    #[test]
+    fn test_empty_params() {
+        let schema =
+            dart_function_type_to_json_schema("({}) => String", &std::collections::HashMap::new())
+                .unwrap();
+        let expected = serde_json::json!({
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+        });
+        assert_eq!(schema, expected);
+    }
+
+    #[test]
+    fn test_single_string_parameter() {
+        let dart_type = "({required String text}) => Future<String>";
+        let json_schema =
+            dart_function_type_to_json_schema(dart_type, &std::collections::HashMap::new())
+                .unwrap();
+        let expected = serde_json::json!({
+            "type": "object",
+            "properties": { "text": { "type": "string" } },
+            "required": [ "text" ],
+            "additionalProperties": false,
+        });
+        assert_eq!(json_schema, expected);
+    }
+
+    #[test]
+    fn test_no_parameters() {
+        let dart_type = "() => String";
+        let json_schema =
+            dart_function_type_to_json_schema(dart_type, &std::collections::HashMap::new())
+                .unwrap();
+        let expected = serde_json::json!({
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+        });
+        assert_eq!(json_schema, expected);
+    }
+
+    #[test]
+    fn test_no_parameters_async() {
+        let dart_type = "() => Future<String>";
+        let json_schema =
+            dart_function_type_to_json_schema(dart_type, &std::collections::HashMap::new())
+                .unwrap();
+        let expected = serde_json::json!({
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+        });
+        assert_eq!(json_schema, expected);
+    }
+}

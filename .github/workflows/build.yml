@@ -1,0 +1,445 @@
+name: "Build"
+on:
+  workflow_call:
+    inputs:
+      full_ci:
+        description: "Run full build matrix (all platforms, all targets, all profiles)."
+        type: boolean
+        default: false
+
+jobs:
+  cargo-build-linux:
+    if: inputs.full_ci
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - "x86_64-unknown-linux-gnu"
+          - "aarch64-unknown-linux-gnu"
+        profile:
+          - "debug"
+          - "release"
+        integration:
+          - "flutter"
+        include:
+          - target: x86_64-unknown-linux-gnu
+            runner: ubuntu-24.04
+          - target: aarch64-unknown-linux-gnu
+            runner: ubuntu-24.04-arm
+
+    runs-on: ${{ matrix.runner }}
+    env:
+      RUSTFLAGS: ${{ matrix.runner == 'ubuntu-24.04' && '-C target-cpu=x86-64-v3' || '' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "Cache Cargo Home"
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo
+            quaynor/target
+          key: ${{ runner.os }}-cargo-home-${{ matrix.integration }}-${{ matrix.target }}-${{ matrix.profile }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-home-${{ matrix.integration }}-${{ matrix.target }}-${{ matrix.profile }}-
+      - name: "Setup rust toolchain"
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+          . "$HOME/.cargo/env"
+          rustup update stable
+          rustup default stable
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: "Install Vulkan dependencies for Linux builds"
+        if: matrix.target == 'x86_64-unknown-linux-gnu' || matrix.target == 'aarch64-unknown-linux-gnu'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libclang-dev cmake
+          sudo apt-get install libshaderc-dev libvulkan-dev glslc
+
+      - name: "Setup Flutter SDK (manual for ARM64)"
+        if: matrix.integration == 'flutter' && matrix.target == 'aarch64-unknown-linux-gnu'
+        run: |
+          git clone https://github.com/flutter/flutter.git -b 3.35.5 --depth 1
+          echo "$PWD/flutter/bin" >> $GITHUB_PATH
+          ./flutter/bin/flutter doctor
+
+      - name: "Setup Flutter SDK (action for x64)"
+        if: matrix.integration == 'flutter' && matrix.target == 'x86_64-unknown-linux-gnu'
+        uses: flutter-actions/setup-flutter@v4
+        with:
+          channel: stable
+          version: 3.35.5
+
+      - name: "Compile for linux"
+        run: cargo build -p quaynor-${{ matrix.integration }} --verbose --target ${{ matrix.target }} ${{ matrix.profile == 'release' && '--release' || '' }} --locked
+        working-directory: ./quaynor
+
+      - name: "Rename built file"
+        run: |
+          cp ./quaynor/target/${{ matrix.target }}/${{ matrix.profile }}/libquaynor_${{ matrix.integration }}.so ./libquaynor-${{ matrix.integration }}-${{ matrix.target }}-${{ matrix.profile }}.so
+
+      - name: "Upload build artifact"
+        uses: actions/upload-artifact@v4
+        with:
+          name: quaynor-${{ matrix.integration }}-${{ matrix.target }}-${{ matrix.profile }}
+          path: ./libquaynor-${{ matrix.integration }}-${{ matrix.target }}-${{ matrix.profile }}.so
+
+  cargo-build-windows:
+    if: inputs.full_ci
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - "x86_64-pc-windows-msvc"
+        profile:
+          - "debug"
+          - "release"
+        integration:
+          - "flutter"
+    env:
+      RUSTFLAGS: >-
+        -l Advapi32
+        -C target-cpu=x86-64-v3
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: "Cache Cargo Home"
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo
+            quaynor/target
+          key: ${{ runner.os }}-cargo-home-${{ matrix.integration }}-${{ matrix.target }}-${{ matrix.profile }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-home-${{ matrix.integration }}-${{ matrix.target }}-${{ matrix.profile }}-
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: ${{ matrix.target }}
+
+      - name: Install Vulkan SDK
+        uses: jakoch/install-vulkan-sdk-action@v1.2.5
+        with:
+          vulkan_version: 1.3.296.0
+          cache: true
+          install_runtime: true
+          stripdown: true
+
+      - name: Install Ninja
+        run: choco install ninja
+
+      - name: Setup Flutter SDK
+        if: matrix.integration == 'flutter'
+        uses: flutter-actions/setup-flutter@v4
+        with:
+          channel: stable
+          version: 3.35.5
+
+      - name: Build with Cargo
+        # move things into a shortly-named dir in the root, because windows is made by fuckwits who think limiting paths to 260 chars is ok
+        run: |
+          mv ./quaynor/* C:/
+          cd C:/
+          # Use an even shorter target directory to avoid path length issues with git dependencies
+          cargo build -p quaynor-${{ matrix.integration }} --target ${{ matrix.target }} --verbose ${{ matrix.profile == 'release' && '--release' || '' }} --locked --target-dir C:/t
+        env:
+          QUAYNOR_SKIP_CODEGEN: "1"
+          RUSTFLAGS: >-
+            -l Advapi32
+            -C debuginfo=0
+          # Use Ninja generator instead of Visual Studio generator.
+          # This fixes a CMake ExternalProject issue where vulkan-shaders-gen's
+          # install step fails to find cmake_install.cmake with the VS generator.
+          # Ninja's simpler build structure avoids this problem entirely.
+          CMAKE_GENERATOR: "Ninja"
+
+      - name: "Rename built files"
+        run: |
+          cp C:/t/${{ matrix.target }}/${{ matrix.profile }}/quaynor_${{ matrix.integration }}.dll ./libquaynor-${{ matrix.integration }}-${{ matrix.target }}-${{ matrix.profile }}.dll
+          cp C:/t/${{ matrix.target }}/${{ matrix.profile }}/quaynor_${{ matrix.integration }}.pdb ./libquaynor-${{ matrix.integration }}-${{ matrix.target }}-${{ matrix.profile }}.pdb
+
+      - name: "Upload build artifacts"
+        uses: actions/upload-artifact@v4
+        with:
+          name: quaynor-${{ matrix.integration }}-${{ matrix.target }}-${{ matrix.profile }}
+          path: |
+            ./libquaynor-${{ matrix.integration }}-${{ matrix.target }}-${{ matrix.profile }}.dll
+            ./libquaynor-${{ matrix.integration }}-${{ matrix.target }}-${{ matrix.profile }}.pdb
+
+  cargo-build-macos:
+    if: inputs.full_ci
+    runs-on: macos-15
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - "x86_64-apple-darwin"
+          - "aarch64-apple-darwin"
+          - "aarch64-apple-ios"
+          - "aarch64-apple-ios-sim"
+        profile:
+          - "debug"
+          - "release"
+        integration:
+          - "flutter"
+          - "uniffi"
+        exclude:
+          # uniffi (React Native) only needs iOS targets, not macOS desktop
+          - integration: "uniffi"
+            target: "x86_64-apple-darwin"
+          - integration: "uniffi"
+            target: "aarch64-apple-darwin"
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+          . "$HOME/.cargo/env"
+          rustup update stable
+          rustup default stable
+          rustup target add ${{ matrix.target }}
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Setup Flutter SDK
+        if: matrix.integration == 'flutter'
+        uses: flutter-actions/setup-flutter@v4
+        with:
+          channel: stable
+          version: 3.35.5
+
+      # name: SSHX for debugging
+      # if: matrix.target == 'aarch64-apple-ios'
+      # run: "curl -sSf https://sshx.io/get | sh -s run"
+
+      - run: cargo build -p quaynor-${{ matrix.integration }} --verbose --target ${{ matrix.target }} ${{ matrix.profile == 'release' && '--release' || '' }} --locked
+        working-directory: ./quaynor
+        env:
+          IPHONEOS_DEPLOYMENT_TARGET: "18.5"
+
+      - name: "Rename built file"
+        run: |
+          if [ "${{ matrix.integration }}" = "uniffi" ]; then
+            # React Native needs static libraries (.a)
+            cp ./quaynor/target/${{ matrix.target }}/${{ matrix.profile }}/libquaynor_${{ matrix.integration }}.a \
+              ./libquaynor-${{ matrix.integration }}-${{ matrix.target }}-${{ matrix.profile }}.a
+          else
+            cp ./quaynor/target/${{ matrix.target }}/${{ matrix.profile }}/libquaynor_${{ matrix.integration }}.dylib \
+              ./libquaynor-${{ matrix.integration }}-${{ matrix.target }}-${{ matrix.profile }}.dylib
+          fi
+
+      - name: "Upload build artifact"
+        uses: actions/upload-artifact@v4
+        with:
+          name: quaynor-${{ matrix.integration }}-${{ matrix.target }}-${{ matrix.profile }}
+          # wildcard path to match both .dylib and .a
+          path: ./libquaynor-${{ matrix.integration }}-${{ matrix.target }}-${{ matrix.profile }}.*
+
+  # builds an "xcframework"
+  # which is an apple thing that contains binaries for multiple systems
+  build-flutter-xcframework:
+    if: inputs.full_ci
+    runs-on: macos-15
+    needs: [cargo-build-macos]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "Download all build artifacts"
+        uses: actions/download-artifact@v4
+        with:
+          pattern: quaynor-flutter-*-apple-*
+          merge-multiple: true
+
+      - name: Build XCFramework
+        run: |
+          # Create Info.plist template (will be copied to each framework)
+          cat > Info.plist << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+            "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>CFBundleExecutable</key>
+              <string>quaynor_flutter</string>
+              <key>CFBundleIdentifier</key>
+              <string>ooo.quaynor.flutter</string>
+              <key>CFBundleInfoDictionaryVersion</key>
+              <string>6.0</string>
+              <key>CFBundleName</key>
+              <string>quaynor_flutter</string>
+              <key>CFBundlePackageType</key>
+              <string>FMWK</string>
+              <key>CFBundleVersion</key>
+              <string>1</string>
+          </dict>
+          </plist>
+          EOF
+
+          # iOS simulator (aarch64 only, no lipo needed in CI)
+          mkdir -p ios-sim/quaynor_flutter.framework
+          cp libquaynor-flutter-aarch64-apple-ios-sim-release.dylib ios-sim/quaynor_flutter.framework/quaynor_flutter
+          install_name_tool -id @rpath/quaynor_flutter.framework/quaynor_flutter ios-sim/quaynor_flutter.framework/quaynor_flutter
+          cp Info.plist ios-sim/quaynor_flutter.framework/
+
+          # macOS universal binary (versioned framework structure required for macOS deep bundles)
+          lipo -create -output macos-universal.dylib \
+            libquaynor-flutter-aarch64-apple-darwin-release.dylib \
+            libquaynor-flutter-x86_64-apple-darwin-release.dylib
+          mkdir -p macos/quaynor_flutter.framework/Versions/A/Resources
+          cp macos-universal.dylib macos/quaynor_flutter.framework/Versions/A/quaynor_flutter
+          install_name_tool -id @rpath/quaynor_flutter.framework/quaynor_flutter macos/quaynor_flutter.framework/Versions/A/quaynor_flutter
+          cp Info.plist macos/quaynor_flutter.framework/Versions/A/Resources/
+          ln -sf A macos/quaynor_flutter.framework/Versions/Current
+          ln -sf Versions/Current/quaynor_flutter macos/quaynor_flutter.framework/quaynor_flutter
+          ln -sf Versions/Current/Resources macos/quaynor_flutter.framework/Resources
+
+          # iOS device (arm64)
+          mkdir -p ios-device/quaynor_flutter.framework
+          cp libquaynor-flutter-aarch64-apple-ios-release.dylib ios-device/quaynor_flutter.framework/quaynor_flutter
+          install_name_tool -id @rpath/quaynor_flutter.framework/quaynor_flutter ios-device/quaynor_flutter.framework/quaynor_flutter
+          cp Info.plist ios-device/quaynor_flutter.framework/
+
+          # Create xcframework with dynamic frameworks
+          xcodebuild -create-xcframework \
+                  -framework ios-sim/quaynor_flutter.framework \
+                  -framework macos/quaynor_flutter.framework \
+                  -framework ios-device/quaynor_flutter.framework \
+                  -output quaynor_flutter.xcframework
+
+      - name: "Zip XCFramework"
+        run: zip -y -r quaynor_flutter.xcframework.zip quaynor_flutter.xcframework
+
+      - name: "Upload build artifact"
+        uses: actions/upload-artifact@v4
+        with:
+          name: quaynor-flutter-xcframework
+          path: ./quaynor_flutter.xcframework.zip
+
+  # builds an xcframework containing static libraries for React Native iOS
+  build-react-native-xcframework:
+    if: inputs.full_ci
+    runs-on: macos-15
+    needs: [cargo-build-macos]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "Download uniffi iOS artifacts"
+        uses: actions/download-artifact@v4
+        with:
+          pattern: quaynor-uniffi-*-apple-ios*-release
+          merge-multiple: true
+
+      - name: "List downloaded artifacts"
+        run: ls -la libquaynor-uniffi-*
+
+      - name: "Build XCFramework from static libraries"
+        run: |
+          mkdir -p device sim
+          cp libquaynor-uniffi-aarch64-apple-ios-release.a device/libquaynor_uniffi.a
+          cp libquaynor-uniffi-aarch64-apple-ios-sim-release.a sim/libquaynor_uniffi.a
+          xcodebuild -create-xcframework \
+            -library device/libquaynor_uniffi.a \
+            -library sim/libquaynor_uniffi.a \
+            -output QuaynorFramework.xcframework
+
+      - name: "Zip XCFramework"
+        run: zip -y -r QuaynorFramework.xcframework.zip QuaynorFramework.xcframework
+
+      - name: "Upload build artifact"
+        uses: actions/upload-artifact@v4
+        with:
+          name: quaynor-react-native-xcframework
+          path: ./QuaynorFramework.xcframework.zip
+
+  cargo-build-android:
+    if: inputs.full_ci
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - "aarch64-linux-android"
+          - "x86_64-linux-android"
+        profile:
+          - "debug"
+          - "release"
+        integration:
+          - "flutter"
+          - "uniffi"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "Cache Cargo Home"
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo
+            quaynor/target
+          key: ${{ runner.os }}-cargo-home-${{ matrix.integration }}-${{ matrix.target }}-${{ matrix.profile }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-home-${{ matrix.integration }}-${{ matrix.target }}-${{ matrix.profile }}-
+      - name: "Setup rust toolchain"
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+          . "$HOME/.cargo/env"
+          rustup update stable
+          rustup default stable
+          rustup target add ${{ matrix.target }}
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+      - name: "Install distro dependencies"
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libclang-dev cmake libshaderc-dev libvulkan-dev glslc gcc-multilib
+
+      - name: "Install Android NDK"
+        uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r28
+          add-to-path: false
+
+      - name: Setup Flutter SDK
+        if: matrix.integration == 'flutter'
+        uses: flutter-actions/setup-flutter@v4
+        with:
+          channel: stable
+          version: 3.35.5
+
+      - name: "Compile for android"
+        run: cargo build -p quaynor-${{ matrix.integration }} --verbose --target ${{ matrix.target }} ${{ matrix.profile == 'release' && '--release' || '' }} --locked
+        working-directory: ./quaynor
+        env:
+          ANDROID_NDK: "${{ steps.setup-ndk.outputs.ndk-path }}"
+          # aarch64 (arm64-v8a)
+          CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER: "${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang"
+          CARGO_TARGET_AARCH64_LINUX_ANDROID_AR: "${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
+          CC_aarch64_linux_android: "${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android31-clang"
+          CXX_aarch64_linux_android: "${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android31-clang++"
+          AR_aarch64_linux_android: "${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
+          # x86_64
+          CARGO_TARGET_X86_64_LINUX_ANDROID_LINKER: "${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android34-clang"
+          CARGO_TARGET_X86_64_LINUX_ANDROID_AR: "${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
+          CC_x86_64_linux_android: "${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android31-clang"
+          CXX_x86_64_linux_android: "${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android31-clang++"
+          AR_x86_64_linux_android: "${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
+
+      - name: "Rename built file"
+        run: |
+          if [ "${{ matrix.integration }}" = "uniffi" ]; then
+            # uniffi produces both static (.a) for React Native/Swift and shared (.so) for Kotlin/JNA
+            cp ./quaynor/target/${{ matrix.target }}/${{ matrix.profile }}/libquaynor_${{ matrix.integration }}.a \
+              ./libquaynor-${{ matrix.integration }}-${{ matrix.target }}-${{ matrix.profile }}.a
+            cp ./quaynor/target/${{ matrix.target }}/${{ matrix.profile }}/libquaynor_${{ matrix.integration }}.so \
+              ./libquaynor-${{ matrix.integration }}-${{ matrix.target }}-${{ matrix.profile }}.so
+          else
+            cp ./quaynor/target/${{ matrix.target }}/${{ matrix.profile }}/libquaynor_${{ matrix.integration }}.so \
+              ./libquaynor-${{ matrix.integration }}-${{ matrix.target }}-${{ matrix.profile }}.so
+          fi
+
+      - name: "Upload build artifact"
+        uses: actions/upload-artifact@v4
+        with:
+          name: quaynor-${{ matrix.integration }}-${{ matrix.target }}-${{ matrix.profile }}
+          path: ./libquaynor-${{ matrix.integration }}-${{ matrix.target }}-${{ matrix.profile }}.*

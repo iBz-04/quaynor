@@ -1,0 +1,374 @@
+import os
+
+import quaynor
+import pytest
+
+import logging
+
+logging.addLevelName(5, "TRACE")
+
+
+@pytest.fixture(scope="module")
+def model():
+    model_path = os.environ.get("TEST_MODEL")
+    if not model_path:
+        raise ValueError("TEST_MODEL environment variable is not set")
+
+    return quaynor.Model(model_path)
+
+
+@pytest.fixture
+def chat(model):
+    return quaynor.Chat(
+        model, system_prompt="You are a helpful assistant", template_variables={"enable_thinking" : False}
+    )
+
+
+@pytest.fixture
+def chat_async(model):
+    return quaynor.ChatAsync(
+        model, system_prompt="You are a helpful assistant", template_variables={"enable_thinking" : False}
+    )
+
+
+@pytest.mark.asyncio
+async def test_async_model_loading():
+    """Test async model loading"""
+    model_path = os.environ.get("TEST_MODEL")
+    if not model_path:
+        raise ValueError("TEST_MODEL environment variable is not set")
+    _model = await quaynor.Model.load_model_async(model_path)
+    assert isinstance(_model, quaynor.Model)
+
+
+@pytest.mark.asyncio
+async def test_async_streaming(chat_async):
+    """Test async streaming from demo_async.py"""
+    prompt: str = "What is the capital of Denmark?"
+    token_stream: quaynor.TokenStreamAsync = chat_async.ask(prompt)
+
+    tokens = []
+    while token := await token_stream.next_token():
+        tokens.append(token)
+
+    response = "".join(tokens)
+    assert len(response) > 0
+    assert "copenhagen" in response.lower()
+
+
+@pytest.mark.asyncio
+async def test_async_completed(chat_async):
+    """Test async complete from demo_async.py"""
+    response_stream: quaynor.TokenStreamAsync = chat_async.ask(
+        "What is the capital of Denmark?"
+    )
+    response: str = await response_stream.completed()
+
+    assert len(response) > 0
+    assert "copenhagen" in response.lower()
+
+
+@pytest.mark.asyncio
+async def test_async_iterator(chat_async):
+    """Test async complete from demo_async.py"""
+    response_stream: quaynor.TokenStreamAsync = chat_async.ask(
+        "What is the capital of Denmark?"
+    )
+    assert isinstance(response_stream, quaynor.TokenStreamAsync)
+    response = ""
+    async for token in response_stream:
+        assert isinstance(token, str)
+        response += token
+    assert "copenhagen" in response.lower()
+
+
+def test_blocking_completed(chat):
+    response_stream = chat.ask("What is the capital of Denmark?")
+    response: str = response_stream.completed()
+    assert "copenhagen" in response.lower()
+
+
+@pytest.mark.asyncio
+async def test_multiple_prompts(chat_async):
+    """Test multiple sequential prompts like the demo loop"""
+    prompts = ["Hello", "What is 2+2?", "Goodbye"]
+
+    for prompt in prompts:
+        response_stream: quaynor.TokenStreamAsync = chat_async.ask(prompt)
+        response = await response_stream.completed()
+        assert len(response) > 0
+
+
+def test_sync_iterator(chat):
+    response_stream = chat.ask("What is the capital of Denmark?")
+    response_str: str = ""
+    for token in response_stream:
+        response_str += token
+        assert isinstance(token, str)
+        assert len(token) > 0
+    assert "copenhagen" in response_str.lower()
+
+
+# Encoder tests
+@pytest.fixture(scope="module")
+def encoder_model():
+    model_path = os.environ.get("TEST_EMBEDDINGS_MODEL")
+    if not model_path:
+        raise ValueError("TEST_EMBEDDINGS_MODEL environment variable is not set")
+
+    return quaynor.Model(model_path, use_gpu_if_available=False)
+
+
+@pytest.fixture
+def encoder(encoder_model):
+    if not encoder_model:
+        raise ValueError("Embeddings model is not set")
+    return quaynor.Encoder(encoder_model, n_ctx=1024)
+
+
+def test_encoder_sync(encoder):
+    """Test that encoder can generate embeddings using sync API"""
+    embedding = encoder.encode("Test text for embedding.")
+
+    assert isinstance(embedding, list), "Embedding should be a list"
+    assert len(embedding) > 0, "Embedding should not be empty"
+    assert all(isinstance(x, float) for x in embedding), (
+        "All embedding values should be floats"
+    )
+
+
+@pytest.mark.asyncio
+async def test_encoder_async(encoder_model):
+    """Test that encoder can generate embeddings using async API"""
+    encoder_async = quaynor.EncoderAsync(encoder_model, n_ctx=1024)
+
+    embedding = await encoder_async.encode("Test text for embedding.")
+
+    assert isinstance(embedding, list), "Embedding should be a list"
+    assert len(embedding) > 0, "Embedding should not be empty"
+    assert all(isinstance(x, float) for x in embedding), (
+        "All embedding values should be floats"
+    )
+
+
+def test_cosine_similarity():
+    """Test that cosine similarity function works"""
+    vec1 = [1.0, 2.0, 3.0]
+    vec2 = [4.0, 5.0, 6.0]
+
+    similarity = quaynor.cosine_similarity(vec1, vec2)
+    assert isinstance(similarity, float), "Cosine similarity should return a float"
+
+    # Test self-similarity
+    self_sim = quaynor.cosine_similarity(vec1, vec1)
+    assert abs(self_sim - 1.0) < 0.001, "Self-similarity should be close to 1.0"
+
+
+def test_cosine_similarity_error():
+    """Test cosine similarity with mismatched vector lengths"""
+    vec1 = [1.0, 2.0]
+    vec2 = [1.0, 2.0, 3.0]
+
+    with pytest.raises(ValueError):
+        quaynor.cosine_similarity(vec1, vec2)
+
+
+# CrossEncoder tests
+@pytest.fixture(scope="module")
+def crossencoder_model():
+    model_path = os.environ.get("TEST_CROSSENCODER_MODEL")
+    if not model_path:
+        raise ValueError("TEST_CROSSENCODER_MODEL environment variable is not set")
+
+    return quaynor.Model(model_path, use_gpu_if_available=False)
+
+
+@pytest.fixture
+def crossencoder(crossencoder_model):
+    return quaynor.CrossEncoder(crossencoder_model, n_ctx=4096)
+
+
+def test_crossencoder_rank_sync(crossencoder):
+    """Test that cross-encoder ranking works with sync API"""
+    query = "What is the capital of France?"
+    documents = [
+        "Paris is the capital of France.",
+        "Berlin is the capital of Germany.",
+        "The weather is nice today.",
+    ]
+
+    scores = crossencoder.rank(query, documents)
+
+    assert isinstance(scores, list), "Scores should be a list"
+    assert len(scores) == len(documents), "Should return one score per document"
+    assert all(isinstance(x, float) for x in scores), "All scores should be floats"
+
+
+@pytest.mark.asyncio
+async def test_crossencoder_rank_async(crossencoder_model):
+    crossencoder_async = quaynor.CrossEncoderAsync(crossencoder_model, n_ctx=4096)
+
+    query = "What is the capital of France?"
+    documents = ["Paris is the capital of France.", "Berlin is the capital of Germany."]
+
+    scores = await crossencoder_async.rank(query, documents)
+
+    assert isinstance(scores, list), "Scores should be a list"
+    assert len(scores) == len(documents), "Should return one score per document"
+    assert all(isinstance(x, float) for x in scores), "All scores should be floats"
+
+
+def test_crossencoder_rank_and_sort_sync(crossencoder):
+    """Test that cross-encoder rank and sort works with sync API"""
+    query = "What is the capital of France?"
+    documents = [
+        "Paris is the capital of France.",
+        "Berlin is the capital of Germany.",
+        "The weather is nice today.",
+    ]
+
+    ranked_docs = crossencoder.rank_and_sort(query, documents)
+
+    assert isinstance(ranked_docs, list), "Ranked docs should be a list"
+    assert len(ranked_docs) == len(documents), "Should return all documents"
+
+    for doc, score in ranked_docs:
+        assert isinstance(doc, str), "Document should be a string"
+        assert isinstance(score, float), "Score should be a float"
+        assert doc in documents, "Document should be from original list"
+
+
+@pytest.mark.asyncio
+async def test_crossencoder_rank_and_sort_async(crossencoder_model):
+    """Test that cross-encoder rank and sort works with async API"""
+    crossencoder_async = quaynor.CrossEncoderAsync(crossencoder_model, n_ctx=4096)
+
+    query = "What is the capital of France?"
+    documents = ["Paris is the capital of France.", "Berlin is the capital of Germany."]
+
+    ranked_docs = await crossencoder_async.rank_and_sort(query, documents)
+
+    assert isinstance(ranked_docs, list), "Ranked docs should be a list"
+    assert len(ranked_docs) == len(documents), "Should return all documents"
+
+    for doc, score in ranked_docs:
+        assert isinstance(doc, str), "Document should be a string"
+        assert isinstance(score, float), "Score should be a float"
+        assert doc in documents, "Document should be from original list"
+
+
+def test_load_chat_from_path():
+    model_path = os.environ.get("TEST_MODEL")
+    assert isinstance(model_path, str)
+
+    new_chat = quaynor.Chat(model_path, template_variables={"enable_thinking" : False})
+    assert isinstance(new_chat, quaynor.Chat)
+
+    new_async_chat = quaynor.ChatAsync(model_path, template_variables={"enable_thinking" : False})
+    assert isinstance(new_async_chat, quaynor.ChatAsync)
+
+
+def test_load_encoder_from_path():
+    model_path = os.environ.get("TEST_EMBEDDINGS_MODEL")
+    assert isinstance(model_path, str)
+
+    new_encoder = quaynor.Encoder(model_path)
+    assert isinstance(new_encoder, quaynor.Encoder)
+
+    new_encoder_async = quaynor.EncoderAsync(model_path)
+    assert isinstance(new_encoder_async, quaynor.EncoderAsync)
+
+
+def test_load_crossencoder_from_path():
+    model_path = os.environ.get("TEST_CROSSENCODER_MODEL")
+    assert isinstance(model_path, str)
+
+    new_encoder = quaynor.CrossEncoder(model_path)
+    assert isinstance(new_encoder, quaynor.CrossEncoder)
+
+    new_encoder_async = quaynor.CrossEncoderAsync(model_path)
+    assert isinstance(new_encoder_async, quaynor.CrossEncoderAsync)
+
+
+def test_set_and_get_chat_history(chat):
+    chat_history = [
+        {"role": "user", "content": "What's 2 + 2?"},
+        {"role": "assistant", "content": "2 + 2 = 4"},
+    ]
+    chat.set_chat_history(chat_history)
+    assert chat.get_chat_history() == chat_history
+
+
+@pytest.mark.asyncio
+async def test_async_set_and_get_chat_history(chat_async):
+    chat_history = [
+        {"role": "user", "content": "What's 2 + 2?"},
+        {"role": "assistant", "content": "2 + 2 = 4"},
+    ]
+    await chat_async.set_chat_history(chat_history)
+    assert (await chat_async.get_chat_history()) == chat_history
+
+
+def test_chat_from_pathlib():
+    from pathlib import Path
+
+    model_path_str = os.environ.get("TEST_MODEL")
+    assert isinstance(model_path_str, str)
+    model_path = Path(model_path_str)
+
+    chat = quaynor.Chat(model_path)
+    assert isinstance(chat, quaynor.Chat)
+
+
+def test_reset_chat_history(chat):
+    resp = chat.ask("My name is Bob.").completed()
+    assert isinstance(resp, str)
+    chat.set_chat_history([])
+    resp = chat.ask("What did I just tell you?").completed()
+    assert isinstance(resp, str)
+    assert "bob" not in resp.lower()
+
+
+def test_set_system_prompt(model):
+    """Test that set_system_prompt changes behavior and persists after reset_history"""
+    chat = quaynor.Chat(
+        model, system_prompt="You are a helpful assistant.", template_variables={"enable_thinking" : False}
+    )
+
+    # Have a conversation
+    resp1 = chat.ask("My name is Alice.").completed()
+    assert isinstance(resp1, str)
+
+    # Change system prompt
+    chat.set_system_prompt("You must respond only with the word 'BEEP' repeated.")
+
+    # Clear history but keep new system prompt
+    chat.reset_history()
+
+    # Ask a question - should get BEEP response (new system prompt persists)
+    resp2 = chat.ask("Hello, how are you?").completed()
+    assert isinstance(resp2, str)
+    assert "BEEP" in resp2.upper()
+
+
+def test_stop_generation(chat):
+    """Test that stop_generation halts token generation mid-stream"""
+    # Start a generation that would produce many tokens
+    stream = chat.ask("Count from 1 to 100 slowly, one number per line.")
+
+    # Collect a few tokens
+    tokens = []
+    for i, token in enumerate(stream):
+        tokens.append(token)
+        if i >= 5:  # After collecting ~6 tokens
+            chat.stop_generation()
+            break
+
+    # Try to get more tokens - should stop quickly
+    remaining_tokens = []
+    for token in stream:
+        remaining_tokens.append(token)
+
+    # The generation should have stopped, so we shouldn't get many more tokens
+    full_response = "".join(tokens + remaining_tokens)
+    assert len(full_response) < 200, "Generation should have been stopped early"

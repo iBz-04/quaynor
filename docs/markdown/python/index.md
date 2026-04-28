@@ -1,0 +1,38 @@
+---
+title: Getting started
+description:  How to setup Quaynor in Python
+sidebar_title: Getting started
+order: 0
+---
+
+
+
+## How do I get started?
+
+First, install `quaynor`.
+```bash
+pip install quaynor
+```
+
+Next, pick a model. Quaynor can download GGUF models directly from Hugging Face — just pass a `huggingface:` path. See [model selection](../model-selection.md) for recommendations.
+
+Then make a `Chat` object and call `.ask()`!
+
+```python
+from quaynor import Chat
+
+chat = Chat('huggingface:bartowski/Qwen_Qwen3-0.6B-GGUF/Qwen_Qwen3-0.6B-Q4_K_M.gguf')
+response = chat.ask('Is water wet?')
+
+# print each token as it is generated
+for token in response:
+    print(token, end="", flush=True)
+
+# ...or get the entire response as a single string
+full_response = response.completed()
+print(full_response)
+```
+
+This is a super simple example, but we believe that examples which do simple things, should be simple!
+
+To get a full overview of the functionality provided by Quaynor, simply keep reading.

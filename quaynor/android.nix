@@ -1,0 +1,46 @@
+{
+  pkgs,
+  android-nixpkgs,
+  stdenv,
+}:
+let
+  androidEnv = android-nixpkgs.sdk.${stdenv.system} (
+    sdkPkgs: with sdkPkgs; [
+      cmdline-tools-latest
+      build-tools-35-0-0 # needed by our version of flutter
+      platform-tools
+      # platforms-android-33 # needed by our version of flutter
+      # platforms-android-34 # needed by our version of flutter
+      platforms-android-36 # needed by our version of flutter
+      ndk-28-2-13676358 # needed by our version of flutter
+      cmake-3-22-1 # needed for native builds
+    ]
+  );
+
+  ndkVersion = "28.2.13676358"; # must be kept in sync with the ndk version mentioned above
+  coreShell = pkgs.callPackage (import ./shell.nix) { };
+in
+pkgs.mkShell {
+  name = "quaynor android shell";
+  inputsFrom = [ coreShell ];
+  env = rec {
+    LIBCLANG_PATH = "${coreShell.LIBCLANG_PATH}";
+    ANDROID_NDK = "${androidEnv}/share/android-sdk/ndk/${ndkVersion}";
+    CC_aarch64_linux_android = "${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android31-clang";
+    CXX_aarch64_linux_android = "${CC_aarch64_linux_android}++";
+    AR_aarch64_linux_android = "${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar";
+    CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER = "${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android31-clang";
+    CARGO_TARGET_AARCH64_LINUX_ANDROID_AR = "${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar";
+    CC_x86_64_linux_android = "${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android31-clang";
+    CXX_x86_64_linux_android = "${CC_x86_64_linux_android}++";
+    AR_x86_64_linux_android = "${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar";
+    CARGO_TARGET_X86_64_LINUX_ANDROID_LINKER = "${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android31-clang";
+    CARGO_TARGET_X86_64_LINUX_ANDROID_AR = "${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar";
+    ANDROID_HOME = "${androidEnv}/share/android-sdk";
+    ANDROID_SDK_ROOT = "${androidEnv}/share/android-sdk";
+    JAVA_HOME = "${pkgs.jdk17}";
+  };
+  buildInputs = [
+    androidEnv
+  ];
+}

@@ -1,0 +1,14 @@
+*.gguf
+*.vscode
+.cursor*
+.envrc
+.direnv/
+.DS_Store
+.claude
+python_dev_envs/
+checkpoints/
+docs/site/
+docs/__pycache__
+result
+target/
+.env
