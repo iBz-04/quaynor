@@ -5,19 +5,36 @@ build-backend = "maturin"
 [project]
 name = "quaynor"
 version = "1.1.0"
-description = "Python bindings for quaynor"
+description = "Local GGUF inference, tool calling, and streaming chat for Python (Quaynor bindings)."
 readme = "PYPI_DESCRIPTION.md"
 requires-python = ">=3.10"
+authors = [{ name = "Quaynor" }]
 urls = {Homepage = "https://quaynor.ooo/", Documentation = "https://docs.quaynor.ooo/", Repository = "https://github.com/iBz-04/quaynor"}
 license = { text = "MIT" }
 keywords = ["AI", "LLM", "Large Language Models", "Inference", "Tool calling", "Local LLM", "Local Inference", 
 "On-device AI", "SLM", "Edge AI","Realtime LLM", "Sustainable AI", "Inference engine", "Inference library", "Local AI"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Rust",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
 
 
 [tool.maturin]
 # "extension-module" tells pyo3 we want to build an extension module (skips linking against libpython.so)
 features = ["pyo3/extension-module"]
 module-name = "quaynor"
+# `LICENSE` is a symlink to the repo root so maturin can bundle it without `..` paths in the manifest.
 
 [dependency-groups]
 dev = [

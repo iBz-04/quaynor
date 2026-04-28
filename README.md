@@ -1,10 +1,8 @@
 # Quaynor
 
-Run LLMs locally with offline inference. Bindings for **Python**, **Flutter**, and **React Native**. Uses [llama.cpp](https://github.com/ggml-org/llama.cpp) and GGUF models.
+Run LLMs locally for offline inference. Bindings for **Python**, **Flutter**, and **React Native**. Uses GGUF models.
 
 **Features:** streaming chat, tool calling (grammar derived from your functions), GPU inference (Vulkan / Metal), vision and audio inputs, optional model download from Hugging Face or URLs.
-
-**Docs:** [docs.quaynor.ooo](https://docs.quaynor.ooo)
 
 ---
 
@@ -91,8 +89,7 @@ Desktop (Windows, Linux, macOS) is supported for all listed bindings. Android an
 
 ## Contributing
 
-Star the repo, report issues, or open PRs. Community: [Discord](https://discord.gg/qhaMc2qCYB) · [Matrix](https://matrix.to/#/#quaynor:matrix.org). See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup.
-
+Star the repo, report issues, or open PRs. 
 ---
 
 ## License

@@ -2,7 +2,7 @@
 
 **Run LLMs locally and efficiently on any device**
 
-Quaynor is a lightweight, open-source inference engine that makes it simple to run open-weights language models directly inside your Python applications. No API keys, no cloud infrastructure, no complexity—just fast, easy local AI.
+Quaynor is a lightweight, fast inference engine that makes it simple to run open-source LLMs directly inside your Python applications. 
 
 ## Key Features
 
@@ -10,7 +10,7 @@ Quaynor is a lightweight, open-source inference engine that makes it simple to r
 - **Fast, simple tool calling** - Just pass normal Python functions
 - **Reliable tool execution** - Automatically derives grammar from function signatures
 - **Infinite conversations** - Conversation-aware preemptive context shifting prevents mid-conversation crashes
-- **GPU accelerated** - Vulkan-powered inference for maximum performance
+- **GPU accelerated** — Vulkan (Linux/Windows) and Metal (macOS/iOS), where supported
 - **Thousands of compatible models** - Works with any LLM in GGUF format
 - **Powered by llama.cpp** - Built on the proven [llama.cpp](https://github.com/ggml-org/llama.cpp) engine
 
