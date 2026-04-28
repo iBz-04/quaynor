@@ -98,7 +98,7 @@ If you don't want to change the already set defaults (`system_prompt`, `tools`),
 
 There are scenarios where you would like to keep separate chat contexts (e.g. for every user of your app), but have only one model loaded. With plain `Chat` this is not possible.
 
-For this use case, instead of the path to the `.gguf` model, you can pass in `Model` object, which can be shared between multiple `Chat` instances.
+For this use case, pass a `Model` instance instead of a filesystem path — the same instance can power multiple `Chat` objects.
 
 ```python
 from quaynor import Chat, Model
@@ -130,12 +130,13 @@ asyncio.run(main())
 ```
 
 ## GPU
-Instantiating `Model` is also useful, when enabling GPU acceleration. This can be done as:
+
+Set `use_gpu_if_available=True` on `Model` to enable acceleration when Vulkan (or another supported backend) is available:
+
 ```python
-Model('./model.gguf', use_gpu_if_available=True)
+Model("./model.gguf", use_gpu_if_available=True)
 ```
-So far, Quaynor relies purely on [Vulkan](https://www.vulkan.org), however support
-of more architectures is planned (for details check out our [issues](https://github.com/iBz-04/quaynor/issues) or join us on [Discord](https://discord.gg/qhaMc2qCYB)).
+GPU acceleration uses [Vulkan](https://www.vulkan.org) where the platform supports it. Additional backends may land over time — watch the [issue tracker](https://github.com/iBz-04/quaynor/issues) for progress and design notes.
 
 ## Template Variables
 

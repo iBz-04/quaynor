@@ -2,10 +2,9 @@
 
 Quaynor is a Flutter library for running large language models locally and offline on iOS, Android, macOS, Linux, and Windows.
 
-Free to use under the MIT license — no API key required. Support text, vision, embeddings, RAG & function calling.
+Free to use under the MIT license — no API key required. Supports text, vision, embeddings, RAG, and tool calling.
 
 - [Documentation](https://www.quaynor.site) — Flutter & other frameworks documentation
-- [Discord](https://discord.gg/qhaMc2qCYB) — Get help, share ideas, and connect with other developers
 - [GitHub Issues](https://github.com/iBz-04/quaynor/issues) — Report bugs
 - [GitHub Discussions](https://github.com/iBz-04/quaynor/discussions) — Ask questions and request features
 - [Starter example app](https://github.com/quaynor-ooo/flutter-starter-example) — Test this library in 2 minutes

@@ -76,8 +76,6 @@ extra_javascript:
 #   social:
 #     - icon: fontawesome/brands/github
 #       link: https://github.com/iBz-04/quaynor
-#     - icon: fontawesome/brands/discord
-#       link: https://discord.gg/qhaMc2qCYB
 #
 # markdown_extensions:
 #   # enable content tabs

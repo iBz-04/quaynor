@@ -6,8 +6,7 @@ order: 1
 ---
 
 As you may have noticed in the [welcome guide](./index.md), every interaction with your LLM starts by instantiating a `Chat` object.
-In the following sections, we talk about which configuration options it has, and when to use them.w
-
+In the following sections, we cover configuration options and when to use each one.
 
 ## Creating a Chat 
 
@@ -17,12 +16,13 @@ The simplest way is using `Chat.fromPath` like so:
 ```dart 
 final chat = await quaynor.Chat.fromPath(modelPath: "./model.gguf");
 ```
-This function is async since loading a model can take a bit of time, but this should not block the any of your UI.
-Another way to achieve the same thing is to load the model seperately and then use the `Chat` constructor:
+Loading is asynchronous so UI code can stay responsive while weights are read from disk.
+
+You can also load the `Model` first, then attach it to `Chat`:
 
 ```dart
 final model = await quaynor.Model.load(modelPath: "./model.gguf");
-final chat = quaynor.Chat(model : model);
+final chat = quaynor.Chat(model: model);
 ```
 
 This allows for sharing the model between several `Chat` instances.
@@ -32,7 +32,7 @@ This allows for sharing the model between several `Chat` instances.
 The `Chat.ask()` function is central to Quaynor. This function sends your message to the LLM, which then starts generating a response.
 
 ```dart
-import "dart:io"
+import "dart:io";
 final chat = await quaynor.Chat.fromPath(modelPath: "./model.gguf");
 final response = chat.ask("Is water wet?");
 ```
@@ -117,10 +117,7 @@ If you don't want to change the already set defaults (`systemPrompt`, `tools`), 
 
 ## Sharing model between contexts
 
-There are scenarios where you would like to keep separate chat contexts (e.g. for every user of your app), but have only one model loaded. In this case you must load the model 
-seperately from creating the `Chat` instance.
-
-For this use case, instead of the path to the `.gguf` model, you can pass in `Model` object, which can be shared between multiple `Chat` instances.
+For this use case, load the `Model` separately, then construct each `Chat` with that shared instance:
 
 ```dart
 import 'package:quaynor/quaynor.dart' as quaynor;
@@ -134,17 +131,17 @@ final chat2 = quaynor.Chat(model: model);
 Quaynor will then take care of the separation, such that your chat histories won't collide or interfere with each other, while having only one model loaded.
 
 ## GPU
-When instantiating `Model` or using `Chat.fromPath` you have the option to disable/enable GPU acceleration. This can be done as:
+
+Control GPU use with **`useGpu`** on **`Model.load`** or **`Chat.fromPath`**. Defaults to `true`:
+
 ```dart
 final model = await quaynor.Model.load(modelPath: './model.gguf', useGpu: true);
 ```
-or 
 ```dart
-final chat = await quaynor.Chat.fromPath(modelPath: './model.gguf', useGpu : false);
+final chat = await quaynor.Chat.fromPath(modelPath: './model.gguf', useGpu: false);
 ```
-By defualt `useGpu` is set to true.
-So far, Quaynor relies purely on [Vulkan](https://www.vulkan.org), however support
-of more architectures is planned (for details check out our [issues](https://github.com/iBz-04/quaynor/issues) or join us on [Discord](https://discord.gg/qhaMc2qCYB)).
+
+GPU acceleration uses [Vulkan](https://www.vulkan.org) where the platform supports it. Additional backends may land over time — watch the [issue tracker](https://github.com/iBz-04/quaynor/issues) for progress and design notes.
 
 ## Template Variables
 
