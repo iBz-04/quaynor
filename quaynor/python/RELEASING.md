@@ -1,6 +1,49 @@
 # Publishing `quaynor` on PyPI
 
-## Before you publish
+## Manual publish (your machine only)
+
+You do **not** need CI. From **`quaynor/python`** everything can be driven with `maturin` and a **PyPI API token**.
+
+### 1. Create a PyPI API token
+
+- **Production:** https://pypi.org/manage/account/token/ → create a token (project-scoped token for `quaynor` is fine).
+- Starts with **`pypi-`** (keep it secret; never commit it).
+
+(Optional **dry run** on TestPyPI — separate account at https://test.pypi.org/ and a token from there.)
+
+### 2. Build and upload
+
+```bash
+cd quaynor/python
+
+uv run pytest                                   # optional but recommended
+
+export MATURIN_PYPI_TOKEN='pypi-xxxxxREPLACE'   # or paste once interactively instead of exporting
+
+uvx maturin publish \
+  --non-interactive \
+  --release
+```
+
+`publish` rebuilds optimized wheels + source dist and uploads them. Omit `--release` only if you deliberately want debug builds (do not publish those to PyPI).
+
+**Safer credential handling:** omit `export`; run `unset MATURIN_PYPI_TOKEN` afterward; rely on `-p`/`MATURIN_PASSWORD` only if you prefer, but exports in shell profiles are risky.
+
+### 3. Optionally try TestPyPI first
+
+Same command, plus:
+
+```bash
+export MATURIN_REPOSITORY=testpypi
+export MATURIN_PYPI_TOKEN='pypi-xxxx-from-testpypi'
+uvx maturin publish --non-interactive --release
+```
+
+Unset `MATURIN_REPOSITORY` when publishing to production.
+
+---
+
+## Before you publish (checklist reference)
 
 1. **Version** — Bump the **same version** in both:
 
@@ -26,28 +69,25 @@
    uvx twine check path/to/quaynor-*.whl path/to/quaynor-*.tar.gz
    ```
 
-## Publish
+## Publish (alternate: username/password)
 
-1. **[PyPI](https://pypi.org)** — Create or use an API token with upload scope (`pypi.org` legacy token or Trusted Publisher).
+If you prefer not to use `MATURIN_PYPI_TOKEN`:
 
-2. **Upload**:
+```bash
+uvx maturin publish \
+  --non-interactive \
+  --username __token__ \
+  --password "pypi-xxxxxREPLACE"
+```
 
-   ```bash
-   uvx maturin publish \
-     --username __token__ \
-     --password "pypi-YOURTOKEN"
-   ```
+## Tag after release (recommended)
 
-   Prefer **Trusted Publishing** from CI (OIDC to PyPI) for routine releases instead of embedding tokens locally.
+```bash
+git tag -a python-v1.2.3 -m "quaynor PyPI v1.2.3"
+git push origin python-v1.2.3
+```
 
-3. **Tag the repo** (optional but recommended):
-
-   ```bash
-   git tag -a python-v1.2.3 -m "quaynor PyPI v1.2.3"
-   git push origin python-v1.2.3
-   ```
-
-   Use whatever tag naming matches your repo’s convention (`v…` vs `python-v…`).
+Use whatever tag naming matches your repo’s convention (`v…` vs `python-v…`).
 
 ## Wheels note
 
