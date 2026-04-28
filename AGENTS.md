@@ -4,7 +4,7 @@ Essential information for AI agents working on the Quaynor codebase.
 
 ## Agent workflow
 
-After any change to the repo (including small doc or config edits), **commit and push to `origin`** in the same session unless the user asks not to. Commit messages must describe the change only; do not append “Made-with: Cursor” or similar attribution lines.
+After any change to the repo (including small doc or config edits), **commit and push to `origin`** in the same session unless the user asks not to. Commit messages must describe the change only; do not append “Made-with: Cursor” or similar attribution lines. If the shell’s `git` command auto-appends such a footer, use your system `git` binary (e.g. `/usr/bin/git` on macOS) so the commit message stays clean.
 
 ## Project Overview
 
