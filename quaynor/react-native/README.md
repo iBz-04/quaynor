@@ -7,8 +7,8 @@ Free to use under the MIT license — no API key required. Supports text, vision
 - [Documentation](https://docs.quaynor.ooo) — React Native & other frameworks documentation
 - [Starter example app](https://github.com/quaynor-ooo/react-native-starter-example) — Test this library in 5 minutes
 - [Discord](https://discord.gg/qhaMc2qCYB) — Get help, share ideas, and connect with other developers
-- [GitHub Issues](https://github.com/quaynor-ooo/quaynor/issues) — Report bugs
-- [GitHub Discussions](https://github.com/quaynor-ooo/quaynor/discussions) — Ask questions and request features
+- [GitHub Issues](https://github.com/iBz-04/quaynor/issues) — Report bugs
+- [GitHub Discussions](https://github.com/iBz-04/quaynor/discussions) — Ask questions and request features
 
 ## Quick Start
 

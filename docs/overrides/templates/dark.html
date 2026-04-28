@@ -1,0 +1,6 @@
+<script>
+    /* Light-only: no dark class, no system-pref listener (mkdocs-shadcn default toggles dark). */
+    document.documentElement.classList.remove("dark");
+    localStorage.setItem("theme", "light");
+    document.documentElement.classList.add(localStorage.getItem("html-layout") || "layout-fixed");
+</script>

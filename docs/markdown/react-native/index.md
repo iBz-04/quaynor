@@ -45,5 +45,5 @@ No specific NDK version is required — Quaynor ships prebuilt shared libraries,
 
 We welcome your feedback and ideas!
 
-- Bug Reports & Improvements: If you encounter a bug or have suggestions, please open an issue on our [Issues](https://github.com/quaynor-ooo/quaynor/issues) page.
-- Feature Requests & Questions: For new feature requests or general questions, join the discussion on our [Discussions](https://github.com/quaynor-ooo/quaynor/discussions) page.
+- Bug Reports & Improvements: If you encounter a bug or have suggestions, please open an issue on our [Issues](https://github.com/iBz-04/quaynor/issues) page.
+- Feature Requests & Questions: For new feature requests or general questions, join the discussion on our [Discussions](https://github.com/iBz-04/quaynor/discussions) page.

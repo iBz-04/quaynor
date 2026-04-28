@@ -32,17 +32,15 @@ nav:
       - Embeddings & RAG: flutter/embeddings-and-rag.md
 
 # github link in the top right
-repo_url: https://github.com/quaynor-ooo/quaynor
-repo_name: quaynor-ooo/quaynor
+repo_url: https://github.com/iBz-04/quaynor
+repo_name: iBz-04/quaynor
 theme:
   name: shadcn
-  show_title: true # show the title in the top bar
-  show_stargazers: true # show the stargazers in the top bar
-  pygments_style: # default styles
-    light: shadcn-light
-    dark: github-dark
-  icon: ./assets/icon.svg # use the shadcn svg if not defined
-  topbar_sections: false # NEW!
+  custom_dir: overrides
+  show_title: true
+  show_stargazers: false
+  pygments_style: shadcn-light
+  topbar_sections: false
   show_datetime: false
 
 markdown_extensions:
@@ -77,7 +75,7 @@ extra_javascript:
 #   generator: false
 #   social:
 #     - icon: fontawesome/brands/github
-#       link: https://github.com/quaynor-ooo/quaynor
+#       link: https://github.com/iBz-04/quaynor
 #     - icon: fontawesome/brands/discord
 #       link: https://discord.gg/qhaMc2qCYB
 #

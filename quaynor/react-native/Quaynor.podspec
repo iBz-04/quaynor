@@ -10,7 +10,7 @@ framework_name = "QuaynorFramework.xcframework"
 framework_dir = File.join(__dir__, framework_name)
 zip_name = "#{framework_name}.zip"
 zip_path = File.join(__dir__, zip_name)
-url = "https://github.com/quaynor-ooo/quaynor/releases/download/quaynor-react-native-#{version}/#{zip_name}"
+url = "https://github.com/iBz-04/quaynor/releases/download/quaynor-react-native-#{version}/#{zip_name}"
 
 # Always download a fresh xcframework to ensure it matches the package version.
 FileUtils.rm_rf(framework_dir) if File.exist?(framework_dir)
@@ -20,7 +20,7 @@ puts "[Quaynor] Downloading xcframework from #{url}"
 system("curl", "-L", "-f", "-o", zip_path, url) or
   raise "Failed to download Quaynor xcframework.\n" \
         "URL: #{url}\n" \
-        "Check that the release exists: https://github.com/quaynor-ooo/quaynor/releases/tag/quaynor-react-native-#{version}\n" \
+        "Check that the release exists: https://github.com/iBz-04/quaynor/releases/tag/quaynor-react-native-#{version}\n" \
         "For local development, manually place the xcframework at: #{framework_dir}"
 
 puts "[Quaynor] Extracting xcframework..."
@@ -44,7 +44,7 @@ Pod::Spec.new do |s|
   s.authors      = package["author"] || { "Quaynor" => "https://quaynor.ooo" }
 
   s.platforms    = { :ios => min_ios_version_supported }
-  s.source       = { :git => "https://github.com/quaynor-ooo/quaynor.git", :tag => "#{s.version}" }
+  s.source       = { :git => "https://github.com/iBz-04/quaynor.git", :tag => "#{s.version}" }
 
   s.source_files = "ios/**/*.{h,m,mm,swift}", "ios/generated/**/*.{h,m,mm}", "cpp/**/*.{hpp,cpp,c,h}", "generated/cpp/**/*.{hpp,cpp,c,h}"
   s.vendored_frameworks = framework_name

@@ -135,7 +135,7 @@ Instantiating `Model` is also useful, when enabling GPU acceleration. This can b
 Model('./model.gguf', use_gpu_if_available=True)
 ```
 So far, Quaynor relies purely on [Vulkan](https://www.vulkan.org), however support
-of more architectures is planned (for details check out our [issues](https://github.com/quaynor-ooo/quaynor/issues) or join us on [Discord](https://discord.gg/qhaMc2qCYB)).
+of more architectures is planned (for details check out our [issues](https://github.com/iBz-04/quaynor/issues) or join us on [Discord](https://discord.gg/qhaMc2qCYB)).
 
 ## Template Variables
 

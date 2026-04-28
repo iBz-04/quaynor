@@ -68,10 +68,7 @@ This can make the model faster and smaller, with a relatively small loss in resp
 Generally speaking, you can used models quantized down the Q4 or Q5 levels (4 or 5 bits per weight respectively),
 while loosing barely any accuracy.
 
-Look at the plot below to get a feel for how quantization levels differ.
-It shows the models' ability to predict text on the y-axis versus the number of bits per weight on the x-axis.
-
-![Perplexity/Quantization curve](./assets/quantcurve.png)
+Lower bit widths (for example Q4 vs Q8) reduce size and speed up inference with modest quality loss; the right trade-off depends on your task.
 
 In general, it's preferable to use a model with more parameters and fewer bits per parameter, as compared to a model with fewer parameters and more bits per parameter.
 Your results may vary.

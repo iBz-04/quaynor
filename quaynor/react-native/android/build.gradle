@@ -82,7 +82,7 @@ task resolveNativeLibraries {
       abiDir.mkdirs()
 
       def fileName = "libquaynor-uniffi-${triple}-release.so"
-      def downloadUrl = "https://github.com/quaynor-ooo/quaynor/releases/download/quaynor-react-native-${quaynorVersion}/${fileName}"
+      def downloadUrl = "https://github.com/iBz-04/quaynor/releases/download/quaynor-react-native-${quaynorVersion}/${fileName}"
 
       logger.lifecycle("[Quaynor] ${abi}: Downloading from ${downloadUrl}")
 
@@ -110,7 +110,7 @@ task resolveNativeLibraries {
             throw new GradleException(
               "Failed to download Quaynor library for ${abi}: HTTP ${code}\n" +
               "URL: ${downloadUrl}\n" +
-              "Check that the release exists: https://github.com/quaynor-ooo/quaynor/releases/tag/quaynor-react-native-${quaynorVersion}"
+              "Check that the release exists: https://github.com/iBz-04/quaynor/releases/tag/quaynor-react-native-${quaynorVersion}"
             )
           }
         }

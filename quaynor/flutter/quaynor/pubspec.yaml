@@ -1,8 +1,8 @@
 name: quaynor
 description: "On-device AI for mobile & desktop — text, vision, embeddings, RAG & function calling. Run GGUF models with Metal/Vulkan acceleration. Free for commercial use."
 version: 1.1.0
-repository: https://github.com/quaynor-ooo/quaynor
-issue_tracker: https://github.com/quaynor-ooo/quaynor/issues
+repository: https://github.com/iBz-04/quaynor
+issue_tracker: https://github.com/iBz-04/quaynor/issues
 documentation: https://docs.quaynor.ooo/
 homepage: https://docs.quaynor.ooo/
 

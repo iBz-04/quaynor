@@ -85,4 +85,4 @@ Moreover, audio ingestion seems to be also reliant a lot on the data type of the
 ingesting audio works the best on BF16, while other types reportedly struggle. We thus recommend sticking at least trying out different
 projection model files, if the one you picked does not work.
 
-As always with more niche models you can find bugs. If you stumble upon some of them, please be sure to [report them](https://github.com/quaynor-ooo/quaynor/issues), so we can fix the functionality.
+As always with more niche models you can find bugs. If you stumble upon some of them, please be sure to [report them](https://github.com/iBz-04/quaynor/issues), so we can fix the functionality.

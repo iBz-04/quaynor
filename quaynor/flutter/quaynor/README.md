@@ -6,8 +6,8 @@ Free to use under the MIT license — no API key required. Support text, vision,
 
 - [Documentation](https://docs.quaynor.ooo) — Flutter & other frameworks documentation
 - [Discord](https://discord.gg/qhaMc2qCYB) — Get help, share ideas, and connect with other developers
-- [GitHub Issues](https://github.com/quaynor-ooo/quaynor/issues) — Report bugs
-- [GitHub Discussions](https://github.com/quaynor-ooo/quaynor/discussions) — Ask questions and request features
+- [GitHub Issues](https://github.com/iBz-04/quaynor/issues) — Report bugs
+- [GitHub Discussions](https://github.com/iBz-04/quaynor/discussions) — Ask questions and request features
 - [Starter example app](https://github.com/quaynor-ooo/flutter-starter-example) — Test this library in 2 minutes
 
 ## Quick Start

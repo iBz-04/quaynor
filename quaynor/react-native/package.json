@@ -9,7 +9,7 @@
   },
   "license": "MIT",
   "homepage": "https://quaynor.ooo",
-  "bugs": "https://github.com/quaynor-ooo/quaynor/issues",
+  "bugs": "https://github.com/iBz-04/quaynor/issues",
   "keywords": [
     "react-native",
     "ai",
@@ -39,7 +39,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/quaynor-ooo/quaynor.git"
+    "url": "git+https://github.com/iBz-04/quaynor.git"
   },
   "peerDependencies": {
     "react": "*",

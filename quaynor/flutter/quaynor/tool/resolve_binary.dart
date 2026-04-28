@@ -298,7 +298,7 @@ Future<String> downloadLibrary(Config config, String version) async {
   // Construct download URL
   // All artifacts have "lib" prefix for consistency
   final fileName = 'libquaynor-flutter-$triple-${config.buildType}.${libName.split('.').last}';
-  final url = 'https://github.com/quaynor-ooo/quaynor/releases/download/quaynor-flutter-v$version/$fileName';
+  final url = 'https://github.com/iBz-04/quaynor/releases/download/quaynor-flutter-v$version/$fileName';
 
   // Prepare cache directory
   final cacheDir = '${config.cacheDir}/quaynor/$version/${config.platform}-${config.arch}';
@@ -319,7 +319,7 @@ Future<String> downloadLibrary(Config config, String version) async {
       throw Exception(
         'Failed to download library: HTTP ${response.statusCode}\n'
         'URL: $url\n'
-        'This version may not be available in releases. Check: https://github.com/quaynor-ooo/quaynor/releases/tag/quaynor-flutter-v$version'
+        'This version may not be available in releases. Check: https://github.com/iBz-04/quaynor/releases/tag/quaynor-flutter-v$version'
       );
     }
 
@@ -342,7 +342,7 @@ Future<String> downloadLibrary(Config config, String version) async {
 Future<String> downloadXCFramework(Config config, String version) async {
   // Download URL for xcframework
   final fileName = 'quaynor_flutter.xcframework.zip';
-  final url = 'https://github.com/quaynor-ooo/quaynor/releases/download/quaynor-flutter-v$version/$fileName';
+  final url = 'https://github.com/iBz-04/quaynor/releases/download/quaynor-flutter-v$version/$fileName';
 
   // Prepare cache directory
   final cacheDir = '${config.cacheDir}/quaynor/$version/xcframework';
@@ -364,7 +364,7 @@ Future<String> downloadXCFramework(Config config, String version) async {
       throw Exception(
         'Failed to download xcframework: HTTP ${response.statusCode}\n'
         'URL: $url\n'
-        'This version may not be available in releases. Check: https://github.com/quaynor-ooo/quaynor/releases/tag/quaynor-flutter-v$version'
+        'This version may not be available in releases. Check: https://github.com/iBz-04/quaynor/releases/tag/quaynor-flutter-v$version'
       );
     }
 

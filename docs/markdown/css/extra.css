@@ -1,3 +1,48 @@
+/* Pearl / paper palette, light only */
+html {
+    color-scheme: light;
+}
+
+:root {
+    --background: oklch(98.2% 0.006 85);
+    --foreground: oklch(24% 0.022 75);
+    --card: oklch(98.6% 0.004 85);
+    --card-foreground: oklch(24% 0.022 75);
+    --popover: oklch(99% 0.004 85);
+    --popover-foreground: oklch(24% 0.022 75);
+    --primary: oklch(30% 0.025 75);
+    --primary-foreground: oklch(98.5% 0.004 85);
+    --secondary: oklch(96.5% 0.012 85);
+    --secondary-foreground: oklch(30% 0.025 75);
+    --muted: oklch(95.5% 0.014 85);
+    --muted-foreground: oklch(48% 0.03 75);
+    --accent: oklch(95% 0.014 85);
+    --accent-foreground: oklch(30% 0.025 75);
+    --border: oklch(88% 0.02 85);
+    --input: oklch(88% 0.02 85);
+    --ring: oklch(72% 0.04 75);
+    --sidebar: oklch(97.8% 0.008 85);
+    --sidebar-foreground: oklch(24% 0.022 75);
+    --sidebar-accent: oklch(95.5% 0.014 85);
+    --sidebar-accent-foreground: oklch(30% 0.025 75);
+    --sidebar-border: oklch(88% 0.02 85);
+    --sidebar-ring: oklch(72% 0.04 75);
+    --surface: oklch(97.2% 0.01 85);
+    --code-highlight: oklch(94% 0.012 85);
+    --code-number: oklch(52% 0.03 75);
+}
+
+/* No dark theme toggle or wide-layout control */
+header button[title="Toggle theme"],
+header button[title="Toggle layout"] {
+    display: none !important;
+}
+
+header div[data-slot="separator"]:has(+ button[title="Toggle layout"]),
+header div[data-slot="separator"]:has(+ button[title="Toggle theme"]) {
+    display: none !important;
+}
+
 /* Hide the copy button in the header */
 #page-header button {
     display: none;
@@ -9,32 +54,12 @@
 .codehilite .o,
 .codehilite .kd,
 .codehilite .kt {
-    color: #eb9002;
+    color: #b45309;
 }
 
 .codehilite .n,
 .codehilite .nb,
 .codehilite .nl,
 .codehilite .nc {
-    color: #24292f;
-}
-
-.dark .codehilite .kn,
-.dark .codehilite .k,
-.dark .codehilite .ow,
-.dark .codehilite .o,
-.dark .codehilite .kd,
-.dark .codehilite .kt {
-    color: #f4d738;
-}
-
-.dark .codehilite .nn {
-    color: #fff;
-}
-
-.dark .codehilite .n,
-.dark .codehilite .nb,
-.dark .codehilite .nl,
-.dark .codehilite .nc {
-    color: #e6edf3;
+    color: #3d3d3a;
 }
