@@ -9,7 +9,7 @@ description = "Local GGUF inference, tool calling, and streaming chat for Python
 readme = "PYPI_DESCRIPTION.md"
 requires-python = ">=3.10"
 authors = [{ name = "Quaynor" }]
-urls = {Homepage = "https://quaynor.ooo/", Documentation = "https://docs.quaynor.ooo/", Repository = "https://github.com/iBz-04/quaynor"}
+urls = {Homepage = "https://www.quaynor.site/", Documentation = "https://www.quaynor.site/", Repository = "https://github.com/iBz-04/quaynor"}
 license = { text = "MIT" }
 keywords = ["AI", "LLM", "Large Language Models", "Inference", "Tool calling", "Local LLM", "Local Inference", 
 "On-device AI", "SLM", "Edge AI","Realtime LLM", "Sustainable AI", "Inference engine", "Inference library", "Local AI"]

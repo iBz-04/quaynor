@@ -4,7 +4,7 @@ Quaynor is a Flutter library for running large language models locally and offli
 
 Free to use under the MIT license — no API key required. Support text, vision, embeddings, RAG & function calling.
 
-- [Documentation](https://docs.quaynor.ooo) — Flutter & other frameworks documentation
+- [Documentation](https://www.quaynor.site) — Flutter & other frameworks documentation
 - [Discord](https://discord.gg/qhaMc2qCYB) — Get help, share ideas, and connect with other developers
 - [GitHub Issues](https://github.com/iBz-04/quaynor/issues) — Report bugs
 - [GitHub Discussions](https://github.com/iBz-04/quaynor/discussions) — Ask questions and request features
@@ -102,7 +102,7 @@ final msg = await chat.ask('Is water wet?').completed();
 print(msg); // Yes, indeed, water is wet!
 ```
 
-You can customize the chat with a system prompt, conversation history, and much more. See the [Chat documentation](https://docs.quaynor.ooo/flutter/chat/) for details.
+You can customize the chat with a system prompt, conversation history, and much more. See the [Chat documentation](https://www.quaynor.site/flutter/chat/) for details.
 
 ## Tool Calling
 
@@ -139,7 +139,7 @@ final response = await chat.ask('What is the area of a circle with a radius of 2
 print(response);
 ```
 
-See the [Tool Calling documentation](https://docs.quaynor.ooo/flutter/tool-calling/) for more.
+See the [Tool Calling documentation](https://www.quaynor.site/flutter/tool-calling/) for more.
 
 ---
 
@@ -154,7 +154,7 @@ final chat = await quaynor.Chat.fromPath(
 );
 ```
 
-See the [Sampling documentation](https://docs.quaynor.ooo/flutter/sampling/) for more.
+See the [Sampling documentation](https://www.quaynor.site/flutter/sampling/) for more.
 
 ---
 
@@ -201,7 +201,7 @@ Future<void> main() async {
 }
 ```
 
-See the [Embeddings & RAG documentation](https://docs.quaynor.ooo/flutter/embeddings-and-rag/) for more.
+See the [Embeddings & RAG documentation](https://www.quaynor.site/flutter/embeddings-and-rag/) for more.
 
 ---
 
@@ -248,4 +248,4 @@ final response = await chat.askWithPrompt(quaynor.Prompt([
 
 You can pass multiple images and audio parts and interleave text between them. If the model performs poorly, try reordering the text and image parts — this can make a noticeable difference. If images consume too much context, increase `contextSize` or preprocess images with compression.
 
-See the [Vision & Hearing documentation](https://docs.quaynor.ooo/flutter/vision/) for model recommendations and advanced tips.
+See the [Vision & Hearing documentation](https://www.quaynor.site/flutter/vision/) for model recommendations and advanced tips.

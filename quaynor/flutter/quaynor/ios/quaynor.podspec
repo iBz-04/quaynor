@@ -38,7 +38,7 @@ Pod::Spec.new do |s|
   s.description      = pubspec['description']
   s.homepage         = pubspec['homepage'] || pubspec['repository']
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Quaynor' => 'https://quaynor.ooo' }
+  s.author           = { 'Quaynor' => 'https://www.quaynor.site' }
 
   s.source           = { :path => '.' }
   s.libraries = 'c++'

@@ -8,7 +8,7 @@
     ".": "./src/wrapper.ts"
   },
   "license": "MIT",
-  "homepage": "https://quaynor.ooo",
+  "homepage": "https://www.quaynor.site",
   "bugs": "https://github.com/iBz-04/quaynor/issues",
   "keywords": [
     "react-native",

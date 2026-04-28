@@ -4,7 +4,7 @@ Quaynor is a React Native library for running large language models locally and 
 
 Free to use under the MIT license — no API key required. Supports text, vision, embeddings, RAG & function calling.
 
-- [Documentation](https://docs.quaynor.ooo) — React Native & other frameworks documentation
+- [Documentation](https://www.quaynor.site) — React Native & other frameworks documentation
 - [Starter example app](https://github.com/quaynor-ooo/react-native-starter-example) — Test this library in 5 minutes
 - [Discord](https://discord.gg/qhaMc2qCYB) — Get help, share ideas, and connect with other developers
 - [GitHub Issues](https://github.com/iBz-04/quaynor/issues) — Report bugs
@@ -68,7 +68,7 @@ for await (const token of chat.ask("Is water wet?")) {
 const response = await chat.ask("Is water wet?").completed();
 ```
 
-See the [Chat documentation](https://docs.quaynor.ooo/react-native/chat/) for details.
+See the [Chat documentation](https://www.quaynor.site/react-native/chat/) for details.
 
 ## Tool Calling
 
@@ -98,7 +98,7 @@ const chat = await Chat.fromPath({
 const response = await chat.ask("What's the weather in Paris?").completed();
 ```
 
-See the [Tool Calling documentation](https://docs.quaynor.ooo/react-native/tool-calling/) for more.
+See the [Tool Calling documentation](https://www.quaynor.site/react-native/tool-calling/) for more.
 
 ---
 
@@ -115,7 +115,7 @@ const chat = await Chat.fromPath({
 });
 ```
 
-See the [Sampling documentation](https://docs.quaynor.ooo/react-native/sampling/) for more.
+See the [Sampling documentation](https://www.quaynor.site/react-native/sampling/) for more.
 
 ---
 
@@ -148,4 +148,4 @@ const response = await chat.ask(prompt).completed();
 
 You can pass multiple images and interleave text between them. If the model performs poorly, try reordering the text and image parts — this can make a noticeable difference. If images consume too much context, increase `contextSize` or preprocess images with compression.
 
-See the [Vision documentation](https://docs.quaynor.ooo/react-native/vision/) for model recommendations and advanced tips.
+See the [Vision documentation](https://www.quaynor.site/react-native/vision/) for model recommendations and advanced tips.

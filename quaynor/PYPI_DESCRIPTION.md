@@ -32,7 +32,7 @@ pip install quaynor
 
 ## Documentation
 
-Full documentation: https://docs.quaynor.ooo/
+Full documentation: https://www.quaynor.site/
 
 ## License
 

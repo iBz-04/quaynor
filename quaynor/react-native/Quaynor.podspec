@@ -41,7 +41,7 @@ Pod::Spec.new do |s|
   s.summary      = package["description"]
   s.homepage     = package["homepage"]
   s.license      = package["license"]
-  s.authors      = package["author"] || { "Quaynor" => "https://quaynor.ooo" }
+  s.authors      = package["author"] || { "Quaynor" => "https://www.quaynor.site" }
 
   s.platforms    = { :ios => min_ios_version_supported }
   s.source       = { :git => "https://github.com/iBz-04/quaynor.git", :tag => "#{s.version}" }

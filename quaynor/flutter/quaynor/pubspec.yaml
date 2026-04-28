@@ -3,8 +3,8 @@ description: "On-device AI for mobile & desktop — text, vision, embeddings, RA
 version: 1.1.0
 repository: https://github.com/iBz-04/quaynor
 issue_tracker: https://github.com/iBz-04/quaynor/issues
-documentation: https://docs.quaynor.ooo/
-homepage: https://docs.quaynor.ooo/
+documentation: https://www.quaynor.site/
+homepage: https://www.quaynor.site/
 
 topics:
   - ai
