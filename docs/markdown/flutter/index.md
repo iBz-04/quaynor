@@ -45,7 +45,7 @@ print(msg); // Yes, indeed, water is wet!
 
 This is a super simple example, but we believe that examples which do simple things, should be simple!
 
-To get a full overview of the functionality provided by Quaynor, simply keep reading. You can also have a look at our [flutter starter app repository](https://github.com/quaynor-ooo/flutter-starter-example).
+For a complete tour of chat, tools, multimodal inputs, embeddings, and more, keep reading below.
 
 ## Minimum recommended specs
 

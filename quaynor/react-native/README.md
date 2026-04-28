@@ -5,7 +5,6 @@ Quaynor is a React Native library for running large language models locally and 
 Free to use under the MIT license — no API key required. Supports text, vision, embeddings, RAG, and tool calling.
 
 - [Documentation](https://www.quaynor.site) — React Native & other frameworks documentation
-- [Starter example app](https://github.com/quaynor-ooo/react-native-starter-example) — Test this library in 5 minutes
 - [GitHub Issues](https://github.com/iBz-04/quaynor/issues) — Report bugs
 - [GitHub Discussions](https://github.com/iBz-04/quaynor/discussions) — Ask questions and request features
 
