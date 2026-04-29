@@ -186,6 +186,48 @@ In CI, native `.so` files are cross-compiled and uploaded as GitHub Release asse
 
 This keeps the npm package small (code only, no binaries).
 
+## Publishing to npm
+
+The npm package name is **`react-native-quaynor`** (`quaynor/react-native/package.json`). Before `npm install` users get TypeScript and native glue from the tarball; **Android and iOS still download prebuilt Rust libraries** from GitHub when they build their app. That means every npm version **must** have a matching GitHub release with binaries (see below).
+
+### 1. GitHub release (required before consumers can build)
+
+Create a release whose **tag** is exactly:
+
+`quaynor-react-native-<version>`
+
+where `<version>` is the semver in `package.json` (e.g. `quaynor-react-native-1.0.1`).  
+URLs look like: `https://github.com/iBz-04/quaynor/releases/tag/quaynor-react-native-1.0.1`
+
+Attach these **release assets** (file names must match):
+
+| Asset | Used by |
+|--------|--------|
+| `libquaynor-uniffi-aarch64-linux-android-release.so` | Android (arm64 devices) |
+| `libquaynor-uniffi-x86_64-linux-android-release.so` | Android (x86_64 emulator) |
+| `QuaynorFramework.xcframework.zip` | iOS (pod install / CocoaPods) |
+
+Produce them locally using the [Build native shared libraries](#build-native-shared-libraries-for-mobile-targets) and iOS static-library steps above, or collect the same artifacts from CI after a full `build` (e.g. `quaynor-uniffi-*-linux-android-release`, `quaynor-react-native-xcframework`) and rename/copy to match the names Gradle and `Quaynor.podspec` expect.
+
+### 2. Publish the package
+
+```bash
+cd quaynor/react-native
+npm install
+npm test
+npm pack --dry-run   # optional: inspect what will be uploaded
+npm login            # once: https://docs.npmjs.com/cli/v11/commands/npm-login
+npm publish --access public
+```
+
+If your npm account uses 2FA for publishes, pass a one-time password:
+
+```bash
+npm publish --access public --otp=123456
+```
+
+Bump `version` in `package.json` (and `package-lock.json` via `npm version patch|minor|major`) before publishing a new release, then **create the new `quaynor-react-native-<version>` GitHub release** with fresh binaries so installs stay consistent.
+
 ## Running tests
 
 ### Jest tests (pure TypeScript)

@@ -2,6 +2,7 @@
   "name": "react-native-quaynor",
   "version": "1.0.1",
   "description": "Run LLMs locally with offline inference — React Native bindings",
+  "author": "Quaynor (https://www.quaynor.site)",
   "main": "src/wrapper.ts",
   "types": "src/wrapper.ts",
   "exports": {
@@ -39,7 +40,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/iBz-04/quaynor.git"
+    "url": "git+https://github.com/iBz-04/quaynor.git",
+    "directory": "quaynor/react-native"
+  },
+  "scripts": {
+    "test": "jest",
+    "prepublishOnly": "npm test"
   },
   "peerDependencies": {
     "react": "*",
