@@ -95,7 +95,7 @@ void main() {
       final msgs = await chat.getChatHistory();
       print(msgs[0].content); // "Why is the sky blue?"
       await chat.setChatHistory([
-        quaynor.Message.message(role: quaynor.Role.user, content: "What is water?")
+        quaynor.Message.message(role: quaynor.Role.user, content: "Why is the sky blue?")
       ]);
     });
 
@@ -264,7 +264,7 @@ void main() {
         modelPath: 'huggingface:bartowski/Qwen_Qwen3-0.6B-GGUF/Qwen_Qwen3-0.6B-Q4_K_M.gguf',
       );
       final msg = await chat.ask('Why is the sky blue?').completed();
-      print(msg); // Yes, indeed, water is wet!
+      print(msg); // The assistant explains how sunlight scatters in the atmosphere.
     });
 
     test('sampling.md:15', () async {

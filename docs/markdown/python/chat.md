@@ -52,7 +52,7 @@ Similarly, if you want to edit what messages are in the context, you can use `se
 ```{.python continuation}
 chat.set_chat_history([{
    "role": "user",
-   "content": "What is water?",
+   "content": "Why is the sky blue?",
    "assets": []
 }])
 ```

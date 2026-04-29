@@ -69,7 +69,7 @@ Similarly, if you want to edit what messages are in the context, you can use `se
 
 ```{.dart continuation}
 await chat.setChatHistory([
-  quaynor.Message.message(role: quaynor.Role.user, content: "What is water?")
+  quaynor.Message.message(role: quaynor.Role.user, content: "Why is the sky blue?")
 ]);
 ```
 

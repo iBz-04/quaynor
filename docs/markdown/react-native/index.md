@@ -23,7 +23,7 @@ import { Chat } from "react-native-quaynor";
 
 const chat = await Chat.fromPath({ modelPath: "/path/to/model.gguf" });
 const response = await chat.ask("Why is the sky blue?").completed();
-console.log(response); // Yes, indeed, water is wet!
+console.log(response); // The assistant explains how sunlight scatters in the atmosphere.
 ```
 
 This is a super simple example, but we believe that examples which do simple things, should be simple!

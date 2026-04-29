@@ -74,7 +74,7 @@ Similarly, if you want to edit what messages are in the context, you can use `se
 import { Role } from "react-native-quaynor";
 
 await chat.setChatHistory([
-  { role: Role.User, content: "What is water?" },
+  { role: Role.User, content: "Why is the sky blue?" },
 ]);
 ```
 

@@ -97,7 +97,7 @@ Use `model.path` in place of `'./model.gguf'` in the examples below.
 ```dart
 final chat = await quaynor.Chat.fromPath(modelPath: './model.gguf');
 final msg = await chat.ask('Why is the sky blue?').completed();
-print(msg); // Yes, indeed, water is wet!
+print(msg); // The assistant explains how sunlight scatters in the atmosphere.
 ```
 
 You can customize the chat with a system prompt, conversation history, and much more. See the [Chat documentation](https://www.quaynor.site/flutter/chat/) for details.

@@ -40,7 +40,7 @@ final chat = await quaynor.Chat.fromPath(
   modelPath: 'huggingface:bartowski/Qwen_Qwen3-0.6B-GGUF/Qwen_Qwen3-0.6B-Q4_K_M.gguf',
 );
 final msg = await chat.ask('Why is the sky blue?').completed();
-print(msg); // Yes, indeed, water is wet!
+print(msg); // The assistant explains how sunlight scatters in the atmosphere.
 ```
 
 This is a super simple example, but we believe that examples which do simple things, should be simple!
