@@ -1,8 +1,3 @@
-
-# Documentation
-
-The docs are hosted on github pages, and are built using mkdocs.
-
 # Installation
 
 ```sh
