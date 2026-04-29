@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" role="img" aria-label="Quaynor">
+  <rect width="32" height="32" rx="7" fill="#2c2c28"/>
+  <circle cx="14.5" cy="15" r="6.5" stroke="#faf9f6" stroke-width="2.25"/>
+  <path stroke="#faf9f6" stroke-width="2.25" stroke-linecap="round" d="M19 19l6 6"/>
+</svg>
