@@ -1,0 +1,5 @@
+# Quaynor
+
+Curated, LLM-friendly documentation map: [/llms.txt](/llms.txt)
+
+Static markdown beside each page uses the `index.html.md` pattern (see https://llmstxt.org/).

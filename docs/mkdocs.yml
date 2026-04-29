@@ -1,6 +1,9 @@
 site_name: Quaynor
 site_url: https://www.quaynor.site/
 
+hooks:
+  - hooks.py
+
 docs_dir: ./markdown
 
 nav:
