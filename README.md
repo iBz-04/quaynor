@@ -31,6 +31,8 @@ Embed **local LLMs** in your app: load GGUF checkpoints, chat on-device or on th
 
 ## Flutter
 
+[`quaynor` on pub.dev](https://pub.dev/packages/quaynor)
+
 ```sh
 flutter pub add quaynor
 ```
