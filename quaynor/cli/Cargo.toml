@@ -1,0 +1,9 @@
+[package]
+name = "quaynor-cli"
+version = "0.1.0"
+edition = "2021"
+description = "Quaynor CLI (banner and future commands)."
+publish = false
+
+[lib]
+path = "src/lib.rs"
