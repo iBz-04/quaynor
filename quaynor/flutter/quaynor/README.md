@@ -96,7 +96,7 @@ Use `model.path` in place of `'./model.gguf'` in the examples below.
 
 ```dart
 final chat = await quaynor.Chat.fromPath(modelPath: './model.gguf');
-final msg = await chat.ask('Is water wet?').completed();
+final msg = await chat.ask('Why is the sky blue?').completed();
 print(msg); // Yes, indeed, water is wet!
 ```
 

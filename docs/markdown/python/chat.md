@@ -15,7 +15,7 @@ The `Chat.ask()` function is central to Quaynor. This function sends your messag
 ```python
 from quaynor import Chat, TokenStream
 chat = Chat("./model.gguf")
-response: TokenStream = chat.ask("Is water wet?")
+response: TokenStream = chat.ask("Why is the sky blue?")
 ```
 
 The return type of `ask` is a `TokenStream`.
@@ -43,7 +43,7 @@ If you want to inspect the messages inside the `Chat` object, you can use `get_c
 
 ```{.python continuation}
 msgs: list[dict] = chat.get_chat_history()
-print(msgs[0]["content"]) # "Is water wet?"
+print(msgs[0]["content"]) # "Why is the sky blue?"
 ```
 
 Similarly, if you want to edit what messages are in the context, you can use `set_chat_history`:

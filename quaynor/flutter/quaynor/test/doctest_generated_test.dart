@@ -87,13 +87,13 @@ void main() {
 
     test('chat.md:34', () async {
       final chat = await quaynor.Chat.fromPath(modelPath: "./model.gguf");
-      final response = chat.ask("Is water wet?");
+      final response = chat.ask("Why is the sky blue?");
       await for (final token in response) {
          print(token);
       }
       final fullResponse = await response.completed();
       final msgs = await chat.getChatHistory();
-      print(msgs[0].content); // "Is water wet?"
+      print(msgs[0].content); // "Why is the sky blue?"
       await chat.setChatHistory([
         quaynor.Message.message(role: quaynor.Role.user, content: "What is water?")
       ]);
@@ -263,7 +263,7 @@ void main() {
       final chat = await quaynor.Chat.fromPath(
         modelPath: 'huggingface:bartowski/Qwen_Qwen3-0.6B-GGUF/Qwen_Qwen3-0.6B-Q4_K_M.gguf',
       );
-      final msg = await chat.ask('Is water wet?').completed();
+      final msg = await chat.ask('Why is the sky blue?').completed();
       print(msg); // Yes, indeed, water is wet!
     });
 

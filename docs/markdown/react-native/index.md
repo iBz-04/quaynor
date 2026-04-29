@@ -22,7 +22,7 @@ Once you have the `.gguf` file on the device, the next step is to create a `Chat
 import { Chat } from "react-native-quaynor";
 
 const chat = await Chat.fromPath({ modelPath: "/path/to/model.gguf" });
-const response = await chat.ask("Is water wet?").completed();
+const response = await chat.ask("Why is the sky blue?").completed();
 console.log(response); // Yes, indeed, water is wet!
 ```
 

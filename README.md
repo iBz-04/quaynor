@@ -86,7 +86,7 @@ for token in chat.ask("Is a zebra black or white?"):
 Wait for the full string with `.completed()`:
 
 ```python
-full = chat.ask("Is water wet?").completed()
+full = chat.ask("Why is the sky blue?").completed()
 ```
 
 **Tool calling:**

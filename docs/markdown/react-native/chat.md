@@ -37,7 +37,7 @@ The `chat.ask()` function is central to Quaynor. This function sends your messag
 
 ```typescript
 const chat = await Chat.fromPath({ modelPath: "/path/to/model.gguf" });
-const response = chat.ask("Is water wet?");
+const response = chat.ask("Why is the sky blue?");
 ```
 
 The return type of `ask` is a `TokenStream`.

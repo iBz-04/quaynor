@@ -22,7 +22,7 @@ Then make a `Chat` object and call `.ask()`!
 from quaynor import Chat
 
 chat = Chat('huggingface:bartowski/Qwen_Qwen3-0.6B-GGUF/Qwen_Qwen3-0.6B-Q4_K_M.gguf')
-response = chat.ask('Is water wet?')
+response = chat.ask('Why is the sky blue?')
 
 # print each token as it is generated
 for token in response:

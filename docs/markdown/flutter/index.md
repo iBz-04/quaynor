@@ -39,7 +39,7 @@ Then create a `Chat` object and call `.ask`!
 final chat = await quaynor.Chat.fromPath(
   modelPath: 'huggingface:bartowski/Qwen_Qwen3-0.6B-GGUF/Qwen_Qwen3-0.6B-Q4_K_M.gguf',
 );
-final msg = await chat.ask('Is water wet?').completed();
+final msg = await chat.ask('Why is the sky blue?').completed();
 print(msg); // Yes, indeed, water is wet!
 ```
 

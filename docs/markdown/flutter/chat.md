@@ -34,7 +34,7 @@ The `Chat.ask()` function is central to Quaynor. This function sends your messag
 ```dart
 import "dart:io";
 final chat = await quaynor.Chat.fromPath(modelPath: "./model.gguf");
-final response = chat.ask("Is water wet?");
+final response = chat.ask("Why is the sky blue?");
 ```
 
 The return type of `ask` is a `TokenStream`.
@@ -62,7 +62,7 @@ If you want to inspect the messages inside the `Chat` object, you can use `getCh
 
 ```{.dart continuation}
 final msgs = await chat.getChatHistory();
-print(msgs[0].content); // "Is water wet?"
+print(msgs[0].content); // "Why is the sky blue?"
 ```
 
 Similarly, if you want to edit what messages are in the context, you can use `setChatHistory`:

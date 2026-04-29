@@ -58,12 +58,12 @@ const chat = await Chat.fromPath({
 });
 
 // Stream tokens
-for await (const token of chat.ask("Is water wet?")) {
+for await (const token of chat.ask("Why is the sky blue?")) {
   console.log(token);
 }
 
 // Or get the full response
-const response = await chat.ask("Is water wet?").completed();
+const response = await chat.ask("Why is the sky blue?").completed();
 ```
 
 See the [Chat documentation](https://www.quaynor.site/react-native/chat/) for details.

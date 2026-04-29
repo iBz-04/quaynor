@@ -33,7 +33,7 @@ class MainApp extends StatelessWidget {
       }
 
       final chat = await quaynor.Chat.fromPath(modelPath: model.path);
-      final msg = await chat.ask('Is water wet?').completed();
+      final msg = await chat.ask('Why is the sky blue?').completed();
 
       print(msg);
     } catch (err) {
