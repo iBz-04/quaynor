@@ -52,6 +52,8 @@ void main() async {
 
 ## React Native
 
+[`react-native-quaynor` on npm](https://www.npmjs.com/package/react-native-quaynor)
+
 ```sh
 npm install react-native-quaynor
 ```
@@ -70,6 +72,8 @@ console.log(msg);
 ---
 
 ## Python
+
+[`quaynor` on PyPI](https://pypi.org/project/quaynor/)
 
 ```sh
 pip install quaynor
