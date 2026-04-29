@@ -2873,7 +2873,7 @@ dependencies = [
 
 [[package]]
 name = "quaynor-python"
-version = "1.1.0"
+version = "2.0.0"
 dependencies = [
  "futures",
  "log",
