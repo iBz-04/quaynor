@@ -1,24 +1,19 @@
 <div align="center">
-
-<pre>
-    ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
-    ██████╗ ██╗   ██╗ █████╗ ██╗   ██╗███╗   ██╗ ██████╗ ██████╗
-   ██╔═══██╗██║   ██║██╔══██╗╚██╗ ██╔╝████╗  ██║██╔═══██╗██╔══██╗
-   ██║   ██║██║   ██║███████║ ╚████╔╝ ██╔██╗ ██║██║   ██║██████╔╝
-   ██║▄▄ ██║██║   ██║██╔══██║  ╚██╔╝  ██║╚██╗██║██║   ██║██╔══██╗
-   ╚██████╔╝╚██████╔╝██║  ██║   ██║   ██║ ╚████║╚██████╔╝██║  ██║
-    ╚══▀▀═╝  ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝
-
-    ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
-</pre>
-
-<p><b>A lightweight, blazing fast AI inference engine written in Rust.</b></p>
-
+   <h1>QUAYNOR</h1>
 </div>
 
-Embed **local LLMs** in your app: load GGUF checkpoints, chat on-device or on the GPU, and keep data off the cloud. Powered by **[llama.cpp](https://github.com/ggml-org/llama.cpp)** — bindings for **Python**, **Flutter**, and **React Native**.
+<p align="center">
+  <img src="https://res.cloudinary.com/diekemzs9/image/upload/v1777823779/hairy_gloam_dmnflg.png" alt="quaynor Logo" width="200"/>
+</p>
 
-**Docs:** [www.quaynor.site](https://www.quaynor.site)
+<div align="center">
+<p><b>A lightweight, blazing fast AI inference engine written in Rust.</b></p>
+</div>
+</div>
+
+Embed **local LLMs** in your app: load GGUF checkpoints, chat on-device or on the GPU, and keep data off the cloud. Bindings available for **Python**, **Flutter**, and **React Native**.
+
+**Documentation:** [www.quaynor.site](https://www.quaynor.site)
 
 ---
 
