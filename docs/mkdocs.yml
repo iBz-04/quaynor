@@ -40,6 +40,7 @@ repo_name: iBz-04/quaynor
 theme:
   name: shadcn
   custom_dir: overrides
+  icon: ../quaynor.svg
   favicon: img/favicon.svg
   show_title: true
   show_stargazers: false
