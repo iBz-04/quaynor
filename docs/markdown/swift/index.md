@@ -1,35 +1,58 @@
 ---
-description: How to set up the Quaynor Swift package for local macOS development
+description: How to install the Quaynor Swift package through Swift Package Manager
 ---
 
 # Getting started with Swift
 
-Quaynor's Swift binding is currently a source-based package for macOS development. It reuses the existing UniFFI layer, so the Swift package depends on the Rust `quaynor-uniffi` library being built locally first.
+Quaynor's Swift binding is distributed through Swift Package Manager for iOS and macOS. The package downloads the published `QuaynorFFI.xcframework` from GitHub Releases, so consumers do not need a local Rust toolchain.
 
-## Build order
+## Install
 
-```sh
-cd quaynor
-cargo build -p quaynor-uniffi
-cd swift
-swift build
+Add the package in Xcode with:
+
+- URL: `https://github.com/iBz-04/quaynor.git`
+- Dependency rule: `Up to Next Major Version`
+- Version: `0.1.0`
+
+Or declare it in `Package.swift`:
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/iBz-04/quaynor.git", from: "0.1.0")
+]
 ```
 
-## What this is for
+## Use it
 
-- Import `Quaynor` from another local Swift package or Xcode project on macOS.
-- Use the wrapper API in `Sources/Quaynor` for `Model`, `Chat`, `TokenStream`, `Encoder`, `CrossEncoder`, `SamplerPresets`, `Prompt`, and `Tool`.
-- Regenerate the committed UniFFI sources with `swift/Scripts/generate-bindings.sh` after Rust API changes.
+The package exposes:
 
-## What it is not yet
+- `Model`
+- `Chat`
+- `TokenStream`
+- `Encoder`
+- `CrossEncoder`
+- `SamplerPresets`
+- `Prompt`
+- `Tool`
 
-- It is not yet distributed as a published XCFramework-backed Swift package.
-- It is not yet a published binary Swift package.
-- It is not yet wired for iOS distribution.
+That means Swift supports chat, streaming, embeddings, reranking, and tool calling through the wrapper API.
 
-## Manual release workflow
+Example:
 
-For controlled manual Swift releases, use:
+```swift
+import Quaynor
+
+let model = try await Model.fromPath(
+    path: "huggingface:bartowski/Qwen_Qwen3-0.6B-GGUF/Qwen_Qwen3-0.6B-Q4_K_M.gguf"
+)
+let chat = Chat(model: model)
+let answer = try await chat.ask("Is a zebra black or white?").completed()
+print(answer)
+```
+
+## Release workflow
+
+For manual release control, use:
 
 - `quaynor/swift/Scripts/release-xcframework.sh`
 - `quaynor/swift/RELEASING.md`

@@ -1,6 +1,6 @@
 # Quaynor Swift
 
-This package is the start of a native Swift binding for Quaynor. It currently supports macOS source checkouts and follows the same split already used by the existing React Native binding:
+The distributed Swift package for Quaynor lives at the repository root so users can install it directly from GitHub in Swift Package Manager. This directory contains the generated FFI layer, wrapper sources, and release tooling that back that package.
 
 - Rust and UniFFI define the ABI layer.
 - Generated `Rust*` Swift bindings live in `Sources/QuaynorFFI`.
@@ -11,6 +11,7 @@ This package is the start of a native Swift binding for Quaynor. It currently su
 - `Sources/CQuaynorFFI`: generated C header and module map
 - `Sources/QuaynorFFI`: generated UniFFI Swift bindings
 - `Sources/Quaynor`: handwritten Swift wrapper layer
+- `../../Package.swift`: root Swift Package Manager manifest used for distribution
 - `Scripts/generate-bindings.sh`: regenerate the committed Swift FFI sources after Rust interface changes
 - `Scripts/release-xcframework.sh`: build Apple release artifacts manually
 - `RELEASING.md`: manual Swift release playbook
@@ -29,19 +30,30 @@ The script:
 2. runs UniFFI Swift code generation
 3. refreshes the committed files in `swift/Sources/CQuaynorFFI` and `swift/Sources/QuaynorFFI`
 
-## Building locally
+## Distribution
 
-Build the Rust UniFFI library before building or consuming the Swift package:
+Consumers install Quaynor from the repository root:
 
 ```bash
-cd quaynor
-cargo build -p quaynor-uniffi
-cd swift
+dependencies: [
+    .package(url: "https://github.com/iBz-04/quaynor.git", from: "0.1.0")
+]
+```
+
+The root package downloads `QuaynorFFI.xcframework.zip` from the matching GitHub release and exposes the Swift wrapper API on top.
+
+## Building locally
+
+To validate the distributed package from this checkout:
+
+```bash
+cd ..
 swift build
 ```
 
-The Swift package links against `../target/debug/libquaynor_uniffi.dylib` for local macOS development. If a release build has already been produced, `../target/release` is also added to the linker search path.
+For binding regeneration work, rebuild the Rust UniFFI library first:
 
-## Scope of this scaffold
-
-This scaffold focuses on the binding surface and wrapper ergonomics. It includes a manual XCFramework release script, but the package itself is still source-first for local macOS development until binary target distribution is wired into `Package.swift`.
+```bash
+cargo build -p quaynor-uniffi
+swift/Scripts/generate-bindings.sh
+```

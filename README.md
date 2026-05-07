@@ -117,22 +117,32 @@ chat = Chat("./path/to/model.gguf", tools=[circle_area])
 
 ## Platforms
 
-Desktop (Windows, Linux, macOS): Python, Flutter, React Native, and Swift source bindings. **Android** and **iOS**: Flutter and React Native bindings (Metal on Apple, Vulkan where enabled on Android). Swift is currently source-based on macOS only.
+Desktop (Windows, Linux, macOS): Python, Flutter, and React Native. Swift package distribution is available for Apple platforms through Swift Package Manager. **Android** and **iOS**: Flutter and React Native bindings (Metal on Apple, Vulkan where enabled on Android).
 
 ---
 
 ## Swift
 
-[`quaynor/swift`](quaynor/swift/README.md)
+[Swift Package docs](docs/markdown/swift/index.md)
 
-```sh
-cd quaynor
-cargo build -p quaynor-uniffi
-cd swift
-swift build
+```swift
+dependencies: [
+    .package(url: "https://github.com/iBz-04/quaynor.git", from: "0.1.0")
+]
 ```
 
-The Swift package is a source checkout for local macOS development. It links against the Rust UniFFI dylib built in `../target/debug` or `../target/release`. It is not yet published as an XCFramework or a binary Swift package.
+```swift
+import Quaynor
+
+let model = try await Model.fromPath(
+    path: "huggingface:bartowski/Qwen_Qwen3-0.6B-GGUF/Qwen_Qwen3-0.6B-Q4_K_M.gguf"
+)
+let chat = Chat(model: model)
+let text = try await chat.ask("Is a zebra black or white?").completed()
+print(text)
+```
+
+The Swift package is distributed through Swift Package Manager for iOS and macOS using the published `QuaynorFFI.xcframework` release artifact. The public Swift API includes `Model`, `Chat`, `TokenStream`, `Encoder`, `CrossEncoder`, `Prompt`, `SamplerPresets`, and `Tool` for tool calling.
 
 ---
 
