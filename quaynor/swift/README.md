@@ -12,6 +12,8 @@ This package is the start of a native Swift binding for Quaynor. It currently su
 - `Sources/QuaynorFFI`: generated UniFFI Swift bindings
 - `Sources/Quaynor`: handwritten Swift wrapper layer
 - `Scripts/generate-bindings.sh`: regenerate the committed Swift FFI sources after Rust interface changes
+- `Scripts/release-xcframework.sh`: build Apple release artifacts manually
+- `RELEASING.md`: manual Swift release playbook
 
 ## Regenerating bindings
 
@@ -42,4 +44,4 @@ The Swift package links against `../target/debug/libquaynor_uniffi.dylib` for lo
 
 ## Scope of this scaffold
 
-This scaffold focuses on the binding surface and wrapper ergonomics. It does not yet ship an XCFramework or an iOS packaging pipeline. The current shape keeps the public Swift API stable while the Apple binary distribution workflow is added next.
+This scaffold focuses on the binding surface and wrapper ergonomics. It includes a manual XCFramework release script, but the package itself is still source-first for local macOS development until binary target distribution is wired into `Package.swift`.

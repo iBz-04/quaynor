@@ -23,6 +23,13 @@ swift build
 
 ## What it is not yet
 
-- It is not yet packaged as an XCFramework.
+- It is not yet distributed as a published XCFramework-backed Swift package.
 - It is not yet a published binary Swift package.
 - It is not yet wired for iOS distribution.
+
+## Manual release workflow
+
+For controlled manual Swift releases, use:
+
+- `quaynor/swift/Scripts/release-xcframework.sh`
+- `quaynor/swift/RELEASING.md`
