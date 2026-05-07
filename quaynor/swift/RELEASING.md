@@ -55,12 +55,27 @@ Output location:
 2. Upload:
    - `QuaynorFFI.xcframework.zip`
 3. Keep release notes explicit about supported platforms and version
+4. Create and push the matching semver Git tag:
+
+```bash
+/usr/bin/git tag <version>
+/usr/bin/git push origin <version>
+```
+
+Example:
+
+```bash
+/usr/bin/git tag 0.1.0
+/usr/bin/git push origin 0.1.0
+```
+
+SwiftPM resolves package versions from semver Git tags such as `0.1.0`. It does not resolve versions from the asset release tag `quaynor-swift-0.1.0`.
 
 ## Wire checksum into Swift package
 
 After upload, use the artifact URL and checksum to update Swift package distribution metadata in your release branch.
 
-If you move the package to SPM binary distribution, use:
+For the distributed package, use:
 
 - `binaryTarget(name:url:checksum:)`
 - the checksum printed by the script

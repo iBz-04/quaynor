@@ -34,13 +34,15 @@ The script:
 
 Consumers install Quaynor from the repository root:
 
-```bash
+```swift
 dependencies: [
     .package(url: "https://github.com/iBz-04/quaynor.git", from: "0.1.0")
 ]
 ```
 
 The root package downloads `QuaynorFFI.xcframework.zip` from the matching GitHub release and exposes the Swift wrapper API on top.
+
+SwiftPM resolves versions from semver Git tags. The binary artifact itself is fetched from the separate GitHub release tag referenced in the root `Package.swift`.
 
 ## Building locally
 

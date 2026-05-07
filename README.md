@@ -125,6 +125,8 @@ Desktop (Windows, Linux, macOS): Python, Flutter, and React Native. Swift packag
 
 [Swift Package docs](docs/markdown/swift/index.md)
 
+SwiftPM is Apple's package manager for Swift and Xcode projects.
+
 ```swift
 dependencies: [
     .package(url: "https://github.com/iBz-04/quaynor.git", from: "0.1.0")
@@ -143,6 +145,12 @@ print(text)
 ```
 
 The Swift package is distributed through Swift Package Manager for iOS and macOS using the published `QuaynorFFI.xcframework` release artifact. The public Swift API includes `Model`, `Chat`, `TokenStream`, `Encoder`, `CrossEncoder`, `Prompt`, `SamplerPresets`, and `Tool` for tool calling.
+
+Release requirements for Swift distribution:
+
+- a semver Git tag such as `0.1.0`
+- a GitHub release asset tag such as `quaynor-swift-0.1.0`
+- the uploaded `QuaynorFFI.xcframework.zip` asset referenced by the root `Package.swift`
 
 ---
 
