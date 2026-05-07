@@ -50,6 +50,6 @@ async def main():
 asyncio.run(main())
 ```
 
-Similarly, the other model types we support also implement async behaviour, so
+Similarly, the other model types we support also implement async behavior, so
 you can go for `EncoderAsync` and `CrossEncoderAsync`, which are
 both part of the [embeddings & rag functionality](./embeddings-and-rag.md).

@@ -1,6 +1,6 @@
 ---
 title: Getting started
-description:  How to setup Quaynor in Python
+description: How to set up Quaynor in Python
 sidebar_title: Getting started
 order: 0
 ---
@@ -14,7 +14,7 @@ First, install `quaynor`.
 pip install quaynor
 ```
 
-Next, pick a model. Quaynor can download GGUF models directly from Hugging Face — just pass a `huggingface:` path. See [model selection](../model-selection.md) for recommendations.
+Next, pick a model. Quaynor can download GGUF models directly from Hugging Face; just pass a `huggingface:` path. See [model selection](../model-selection.md) for recommendations.
 
 Then make a `Chat` object and call `.ask()`!
 

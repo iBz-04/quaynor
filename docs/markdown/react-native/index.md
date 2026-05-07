@@ -1,6 +1,6 @@
 ---
 title: Getting started
-description: How to setup Quaynor in React Native
+description: How to set up Quaynor in React Native
 sidebar_title: Getting started
 order: 0
 ---
@@ -12,7 +12,7 @@ First, install `react-native-quaynor`.
 npm install react-native-quaynor
 ```
 
-No additional initialization step is required — the native module is loaded automatically when you first import from the package.
+No additional initialization step is required, because the native module is loaded automatically when you first import from the package.
 
 Now you are ready to download a GGUF model you like - if you don't have a specific model in mind, try [this one](https://huggingface.co/bartowski/Qwen_Qwen3-0.6B-GGUF/resolve/main/Qwen_Qwen3-0.6B-Q4_K_M.gguf). Read more about [model selection](../model-selection.md).
 
@@ -34,7 +34,7 @@ To get a full overview of the functionality provided by Quaynor, simply keep rea
 
 If you use the x86_64 Android emulator for development, your app must set `minSdkVersion` to at least 31. This is due to a threading feature (ELF TLS) that the Rust runtime requires on x86_64. ARM64 devices (i.e. all real phones) work with any `minSdkVersion`.
 
-No specific NDK version is required — Quaynor ships prebuilt shared libraries, so your project's NDK version does not affect the Rust code.
+No specific NDK version is required, because Quaynor ships prebuilt shared libraries, so your project's NDK version does not affect the Rust code.
 
 ## Minimum recommended specs
 

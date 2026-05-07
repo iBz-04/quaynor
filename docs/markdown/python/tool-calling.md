@@ -81,11 +81,11 @@ from quaynor import tool
 def get_current_temperature(lon: str, lat: str) -> str:
     ...
 ```
-These will be then appended to the information provided to model, so it can better navigate itself
-when using the tool.
+These will then be appended to the information provided to the model, so it can better navigate
+itself when using the tool.
 
 ## Pre-packaged tools
-We ship Quaynor with two packaged-in tools, which are general enough for mutliple use-cases - [monty](https://github.com/pydantic/monty) Python interpreter
+We ship Quaynor with two packaged-in tools, which are general enough for multiple use-cases - [monty](https://github.com/pydantic/monty) Python interpreter
 and [bashkit](https://github.com/everruns/bashkit) Bash interpreter. Both of them should serve similar purpose - to give your small LLM a better chance to answer
 questions requiring precise reasoning or some kind of computation, possibly on a big context.
 

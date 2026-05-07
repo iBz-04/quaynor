@@ -36,7 +36,7 @@ chat = Chat(
 
 !!! info ""
     The language model and projection model have to **fit** together, as they are trained together!
-    Unfortunately you can't just take projection model and a LLM that you like and expect them
+    Unfortunately you can't just take a projection model and an LLM that you like and expect them
     to work together.
 
 ## Composing a prompt object
