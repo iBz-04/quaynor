@@ -590,10 +590,17 @@ impl RustTool {
             );
             let (tx, rx) = std::sync::mpsc::channel();
             resolvers_clone.lock().unwrap().insert(call_id.clone(), tx);
-            let _ = pending_tx.send(PendingToolCall {
-                call_id: call_id.clone(),
-                arguments_json: args.to_string(),
-            });
+            if pending_tx
+                .send(PendingToolCall {
+                    call_id: call_id.clone(),
+                    arguments_json: args.to_string(),
+                })
+                .is_err()
+            {
+                resolvers_clone.lock().unwrap().remove(&call_id);
+                return "Error: tool call receiver dropped".into();
+            }
+
             rx.recv()
                 .unwrap_or_else(|_| "Error: tool call dropped".into())
         };

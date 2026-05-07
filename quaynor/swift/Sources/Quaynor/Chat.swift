@@ -3,6 +3,7 @@ import QuaynorFFI
 
 public final class Chat: @unchecked Sendable {
     private var inner: RustChat?
+    private var activeTools: [Tool]
 
     public init(
         model: Model,
@@ -12,7 +13,8 @@ public final class Chat: @unchecked Sendable {
         tools: [Tool]? = nil,
         sampler: SamplerConfig? = nil
     ) throws {
-        let rustTools = try tools?.map { try $0.requireInner() }
+        let tools = tools ?? []
+        let rustTools = try tools.map { try $0.requireInner() }
         self.inner = RustChat(
             model: try model.requireInner(),
             systemPrompt: systemPrompt,
@@ -21,6 +23,7 @@ public final class Chat: @unchecked Sendable {
             tools: rustTools,
             sampler: sampler
         )
+        self.activeTools = tools
     }
 
     public static func fromPath(
@@ -66,8 +69,10 @@ public final class Chat: @unchecked Sendable {
         systemPrompt: String? = nil,
         tools: [Tool]? = nil
     ) async throws {
-        let rustTools = try tools?.map { try $0.requireInner() }
+        let tools = tools ?? []
+        let rustTools = try tools.map { try $0.requireInner() }
         try await requireInner().resetContext(systemPrompt: systemPrompt, tools: rustTools)
+        activeTools = tools
     }
 
     public func resetHistory() async throws {
@@ -93,6 +98,7 @@ public final class Chat: @unchecked Sendable {
     public func setTools(_ tools: [Tool]) async throws {
         let rustTools = try tools.map { try $0.requireInner() }
         try await requireInner().setTools(tools: rustTools)
+        activeTools = tools
     }
 
     public func setTemplateVariable(name: String, value: Bool) async throws {
@@ -114,6 +120,7 @@ public final class Chat: @unchecked Sendable {
 
     public func destroy() {
         inner = nil
+        activeTools = []
     }
 
     fileprivate func requireInner() throws -> RustChat {

@@ -1,6 +1,6 @@
 # Quaynor Swift
 
-This package is the start of a native Swift binding for Quaynor. It follows the same split already used by the existing React Native binding:
+This package is the start of a native Swift binding for Quaynor. It currently supports macOS source checkouts and follows the same split already used by the existing React Native binding:
 
 - Rust and UniFFI define the ABI layer.
 - Generated `Rust*` Swift bindings live in `Sources/QuaynorFFI`.
@@ -27,6 +27,19 @@ The script:
 2. runs UniFFI Swift code generation
 3. refreshes the committed files in `swift/Sources/CQuaynorFFI` and `swift/Sources/QuaynorFFI`
 
+## Building locally
+
+Build the Rust UniFFI library before building or consuming the Swift package:
+
+```bash
+cd quaynor
+cargo build -p quaynor-uniffi
+cd swift
+swift build
+```
+
+The Swift package links against `../target/debug/libquaynor_uniffi.dylib` for local macOS development. If a release build has already been produced, `../target/release` is also added to the linker search path.
+
 ## Scope of this scaffold
 
-This commit focuses on the binding surface and wrapper ergonomics. It does not yet ship an XCFramework or an iOS packaging pipeline. The current shape is intended to keep the public Swift API stable while the Apple binary distribution workflow is added next.
+This scaffold focuses on the binding surface and wrapper ergonomics. It does not yet ship an XCFramework or an iOS packaging pipeline. The current shape keeps the public Swift API stable while the Apple binary distribution workflow is added next.
