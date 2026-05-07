@@ -1,0 +1,32 @@
+# Quaynor Swift
+
+This package is the start of a native Swift binding for Quaynor. It follows the same split already used by the existing React Native binding:
+
+- Rust and UniFFI define the ABI layer.
+- Generated `Rust*` Swift bindings live in `Sources/QuaynorFFI`.
+- The public Swift API lives in `Sources/Quaynor` and exposes `Model`, `Chat`, `TokenStream`, `Tool`, `Prompt`, `Encoder`, and `CrossEncoder`.
+
+## Layout
+
+- `Sources/CQuaynorFFI`: generated C header and module map
+- `Sources/QuaynorFFI`: generated UniFFI Swift bindings
+- `Sources/Quaynor`: handwritten Swift wrapper layer
+- `Scripts/generate-bindings.sh`: regenerate the committed Swift FFI sources after Rust interface changes
+
+## Regenerating bindings
+
+From the `quaynor/` workspace root:
+
+```bash
+swift/Scripts/generate-bindings.sh
+```
+
+The script:
+
+1. builds `quaynor-uniffi`
+2. runs UniFFI Swift code generation
+3. refreshes the committed files in `swift/Sources/CQuaynorFFI` and `swift/Sources/QuaynorFFI`
+
+## Scope of this scaffold
+
+This commit focuses on the binding surface and wrapper ergonomics. It does not yet ship an XCFramework or an iOS packaging pipeline. The current shape is intended to keep the public Swift API stable while the Apple binary distribution workflow is added next.

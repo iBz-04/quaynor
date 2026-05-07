@@ -1,0 +1,4 @@
+[bindings.swift]
+module_name = "QuaynorFFI"
+ffi_module_name = "CQuaynorFFI"
+generate_codable_conformance = true
