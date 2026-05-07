@@ -37,13 +37,9 @@ mkdir -p "$build_root/device" "$build_root/sim" "$build_root/macos" "$artifact_r
 
 pushd "$workspace_dir" >/dev/null
 
-export IPHONEOS_DEPLOYMENT_TARGET=13.0
-export TVOS_DEPLOYMENT_TARGET=13.0
-export WATCHOS_DEPLOYMENT_TARGET=7.0
-
-cargo build -p quaynor-uniffi --target aarch64-apple-ios --release
-cargo build -p quaynor-uniffi --target aarch64-apple-ios-sim --release
-cargo build -p quaynor-uniffi --target x86_64-apple-ios --release
+IPHONEOS_DEPLOYMENT_TARGET=13.0 cargo build -p quaynor-uniffi --target aarch64-apple-ios --release
+IPHONEOS_DEPLOYMENT_TARGET=13.0 cargo build -p quaynor-uniffi --target aarch64-apple-ios-sim --release
+IPHONEOS_DEPLOYMENT_TARGET=13.0 cargo build -p quaynor-uniffi --target x86_64-apple-ios --release
 cargo build -p quaynor-uniffi --target aarch64-apple-darwin --release
 cargo build -p quaynor-uniffi --target x86_64-apple-darwin --release
 
