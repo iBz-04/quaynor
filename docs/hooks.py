@@ -33,6 +33,7 @@ _BLURBS: dict[str, str] = {
     "flutter/vision.md": "Vision and audio in Flutter.",
     "flutter/sampling.md": "Sampler options.",
     "flutter/embeddings-and-rag.md": "Embeddings and RAG in Flutter.",
+    "swift/index.md": "Swift source package setup and local build flow.",
 }
 
 
@@ -157,7 +158,7 @@ def on_post_build(config: Any, **kwargs: Any) -> None:
         "# Quaynor",
         "",
         "> Local, offline LLM inference with streaming, tool calling, and embeddings.",
-        "> Python, Flutter, and React Native bindings over Llama.cpp.",
+        "> Python, Flutter, React Native, and Swift bindings over Llama.cpp.",
         "",
     ]
 
@@ -168,7 +169,7 @@ def on_post_build(config: Any, **kwargs: Any) -> None:
         for title, doc_path in grouped[section]:
             mirror = _mirror_relpath(doc_path)
             md_url = f"{base}/{mirror}"
-            blurb = _BLURBS.get(doc_path, f"{title} — Quaynor documentation.")
+            blurb = _BLURBS.get(doc_path, f"{title} - Quaynor documentation.")
             lines.append(f"- [{title}]({md_url}): {blurb}")
         lines.append("")
 

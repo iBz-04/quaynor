@@ -11,7 +11,7 @@
 </div>
 </div>
 
-Embed **local LLMs** in your app: load GGUF checkpoints, chat on-device or on the GPU, and keep data off the cloud. Bindings available for **Python**, **Flutter**, and **React Native**.
+Embed **local LLMs** in your app: load GGUF checkpoints, chat on-device or on the GPU, and keep data off the cloud. Bindings available for **Python**, **Flutter**, **React Native**, and **Swift**.
 
 **Documentation:** [www.quaynor.site](https://www.quaynor.site)
 
@@ -19,9 +19,9 @@ Embed **local LLMs** in your app: load GGUF checkpoints, chat on-device or on th
 
 ## Why use it
 
-- **Offline inference** — No inference API keys; models stay on disk or load from URLs / Hugging Face paths you choose.
-- **One chat-style API across bindings** — `Chat`/`ask` patterns align so you can move ideas between Python, Flutter, and React Native without relearning primitives.
-- **Production-oriented features** — Streaming replies, bounded context sizing, embeddings and cross-encoder reranking where supported, grammar-based tool calling wired from native functions (Python) or equivalents in mobile bindings.
+- **Offline inference** - No inference API keys; models stay on disk or load from URLs / Hugging Face paths you choose.
+- **One chat-style API across bindings** - `Chat`/`ask` patterns align so you can move ideas between Python, Flutter, React Native, and Swift without relearning primitives.
+- **Production-oriented features** - Streaming replies, bounded context sizing, embeddings and cross-encoder reranking where supported, grammar-based tool calling wired from native functions (Python) or equivalents in mobile bindings.
 
 **Rough capability map:**
 
@@ -117,7 +117,22 @@ chat = Chat("./path/to/model.gguf", tools=[circle_area])
 
 ## Platforms
 
-Desktop (Windows, Linux, macOS): all bindings. **Android** and **iOS**: Flutter and React Native bindings (Metal on Apple, Vulkan where enabled on Android).
+Desktop (Windows, Linux, macOS): Python, Flutter, React Native, and Swift source bindings. **Android** and **iOS**: Flutter and React Native bindings (Metal on Apple, Vulkan where enabled on Android). Swift is currently source-based on macOS only.
+
+---
+
+## Swift
+
+[`quaynor/swift`](quaynor/swift/README.md)
+
+```sh
+cd quaynor
+cargo build -p quaynor-uniffi
+cd swift
+swift build
+```
+
+The Swift package is a source checkout for local macOS development. It links against the Rust UniFFI dylib built in `../target/debug` or `../target/release`. It is not yet published as an XCFramework or a binary Swift package.
 
 ---
 

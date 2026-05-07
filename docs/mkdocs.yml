@@ -33,6 +33,8 @@ nav:
       - Vision & Hearing: flutter/vision.md
       - Sampling: flutter/sampling.md
       - Embeddings & RAG: flutter/embeddings-and-rag.md
+  - Swift:
+      - Getting started with Swift: swift/index.md
 
 # github link in the top right
 repo_url: https://github.com/iBz-04/quaynor
