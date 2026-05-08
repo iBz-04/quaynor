@@ -22,8 +22,6 @@ dependencies: [
 ]
 ```
 
-This install flow depends on a real semver Git tag like `0.1.0`. SwiftPM resolves package versions from Git tags, not from release asset tags.
-
 ## Use it
 
 The package exposes:
@@ -51,16 +49,3 @@ let chat = Chat(model: model)
 let answer = try await chat.ask("Is a zebra black or white?").completed()
 print(answer)
 ```
-
-## Release workflow
-
-For manual release control, use:
-
-- `quaynor/swift/Scripts/release-xcframework.sh`
-- `quaynor/swift/RELEASING.md`
-
-For each public Swift release, publish all of these:
-
-- a semver Git tag such as `0.1.0`
-- a GitHub release tag such as `quaynor-swift-0.1.0`
-- the `QuaynorFFI.xcframework.zip` asset attached to that GitHub release
