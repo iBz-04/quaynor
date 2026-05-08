@@ -6,6 +6,15 @@ Essential information for AI agents working on the Quaynor codebase.
 
 After any change to the repo (including small doc or config edits), **commit and push to `origin`** in the same session unless the user asks not to. Commit messages must describe the change only. If the shell’s `git` command auto-appends such a footer, use your system `git` binary (e.g. `/usr/bin/git` on macOS) so the commit message stays clean.
 
+## GitHub
+
+- **Repository:** https://github.com/iBz-04/quaynor
+- **Issues:** https://github.com/iBz-04/quaynor/issues — bugs and regressions
+- **Discussions:** https://github.com/iBz-04/quaynor/discussions — questions and feature discussion
+- **CI:** Workflow definitions live under [`.github/workflows/`](.github/workflows/) (Rust core, Python, React Native, combined checks)
+
+Prefer pull requests for non-trivial changes; follow [`CONTRIBUTING.md`](CONTRIBUTING.md) for local setup and conventions.
+
 ## Project Overview
 
 Quaynor is a  lightweight local AI inference library for running LLMs offline. Core features include streaming responses, tool calling, and context management. 
