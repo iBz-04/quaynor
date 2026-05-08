@@ -33,7 +33,12 @@ _BLURBS: dict[str, str] = {
     "flutter/vision.md": "Vision and audio in Flutter.",
     "flutter/sampling.md": "Sampler options.",
     "flutter/embeddings-and-rag.md": "Embeddings and RAG in Flutter.",
-    "swift/index.md": "Swift source package setup and local build flow.",
+    "swift/index.md": "Install and configure the Swift package.",
+    "swift/chat.md": "Chat sessions and token streaming in Swift.",
+    "swift/tool-calling.md": "Tool calling from Swift.",
+    "swift/vision.md": "Vision and audio prompts in Swift.",
+    "swift/sampling.md": "Sampler presets and configuration in Swift.",
+    "swift/embeddings-and-rag.md": "Embeddings, reranking, and RAG in Swift.",
 }
 
 
