@@ -5,6 +5,7 @@
 .direnv/
 .DS_Store
 .claude
+CLAUDE.md
 python_dev_envs/
 checkpoints/
 docs/site/
