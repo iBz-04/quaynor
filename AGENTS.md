@@ -122,6 +122,11 @@ See [`CONTRIBUTING.md`](CONTRIBUTING.md) for detailed setup instructions.
 - Uses `flutter_rust_bridge` for FFI bindings
 - See [`quaynor/flutter/rust/src/lib.rs`](quaynor/flutter/rust/src/lib.rs) for examples
 
+### Code quality
+
+- Avoid **monolithic files**: split logic into appropriate modules or types instead of dumping unrelated code into one large file.
+- Prioritize **clean, clear code** — straightforward structure, naming, and control flow over clever or compressed shortcuts.
+
 ### Code Patterns
 
 - Use `Arc<LlamaModel>` for shared model instances
