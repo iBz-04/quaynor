@@ -1,8 +1,8 @@
-# AGENTS.md
+# Developer guide
 
-Essential information for AI agents working on the Quaynor codebase.
+Architecture, conventions, and workflows for **contributors** mapping the codebase and for **AI coding assistants** using this repo as context.
 
-## Agent workflow
+## Automation workflow (AI assistants)
 
 After any change to the repo (including small doc or config edits), **commit and push to `origin`** in the same session unless the user asks not to. Commit messages must describe the change only. If the shell’s `git` command auto-appends such a footer, use your system `git` binary (e.g. `/usr/bin/git` on macOS) so the commit message stays clean.
 
@@ -17,7 +17,7 @@ Prefer pull requests for non-trivial changes; follow [`CONTRIBUTING.md`](CONTRIB
 
 ## Project Overview
 
-Quaynor is a  lightweight local AI inference library for running LLMs offline. Core features include streaming responses, tool calling, and context management. 
+Quaynor is a lightweight local AI inference library for running LLMs offline. Core features include streaming responses, tool calling, and context management. 
 
 ## Architecture
 ### Core Rust Library
@@ -137,6 +137,7 @@ See [`CONTRIBUTING.md`](CONTRIBUTING.md) for detailed setup instructions.
 
 ## Important Files
 
+- [`DEVELOPER-GUIDE.md`](DEVELOPER-GUIDE.md) — This orientation guide (architecture and dev conventions)
 - [`quaynor/core/src/chat.rs`](quaynor/core/src/chat.rs) - Main chat API
 - [`quaynor/core/src/llm.rs`](quaynor/core/src/llm.rs) - Model and worker management
 - [`quaynor/core/Cargo.toml`](quaynor/core/Cargo.toml) - Core dependencies

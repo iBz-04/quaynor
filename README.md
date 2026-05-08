@@ -150,7 +150,7 @@ The Swift package is distributed through Swift Package Manager for iOS and macOS
 
 ## Contributing
 
-Issues, discussions, and PRs are welcome. See the repo labels and **[www.quaynor.site](https://www.quaynor.site)** for setup and binding-specific guides.
+Issues, discussions, and PRs are welcome. For codebase layout and conventions, see **[DEVELOPER-GUIDE.md](DEVELOPER-GUIDE.md)**. Setup and binding-specific guides live on **[www.quaynor.site](https://www.quaynor.site)** and in repo labels.
 
 ---
 
