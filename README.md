@@ -9,11 +9,16 @@
 <div align="center">
 <p><b>A lightweight, blazing fast AI inference engine written in Rust.</b></p>
 </div>
-</div>
 
 Embed **local LLMs** in your app: load GGUF checkpoints, chat on-device or on the GPU, and keep data off the cloud. Bindings available for **Python**, **Flutter**, **React Native**, and **Swift**.
 
 **Documentation:** [www.quaynor.site](https://www.quaynor.site)
+
+### At a glance
+
+- **Runtime:** Rust core on top of **llama.cpp** (crate **llama-cpp-2**), loading **GGUF** models and using **Vulkan** or **Metal** where the platform enables GPU backends.
+- **Features:** Chat with streaming completions, **Minijinja** chat templates, tokenizer helpers, optional **embeddings** and **cross-encoder** reranking, and **GBNF** grammar-based tool calling—surfaced consistently across bindings where supported.
+- **This repo:** Shared engine and most bindings live under [`quaynor/`](quaynor/) as a **Cargo workspace**; the **Swift** layer is a separate **SwiftPM** package under [`quaynor/swift/`](quaynor/swift/). For module layout and contribution workflow, see **[DEVELOPER-GUIDE.md](DEVELOPER-GUIDE.md)**.
 
 ---
 
