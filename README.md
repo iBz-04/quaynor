@@ -18,7 +18,7 @@ Embed **local LLMs** in your app: load GGUF checkpoints, chat on-device or on th
 
 - **Runtime:** Rust core that loads **GGUF** models and using **Vulkan** or **Metal** where the platform enables GPU backends.
 - **Features:** Chat with streaming completions, **Minijinja** chat templates, tokenizer helpers, optional **embeddings** and **cross-encoder** reranking, and **GBNF** grammar-based tool calling—surfaced consistently across bindings where supported.
-- **This repo:** Shared engine and most bindings live under [`quaynor/`](quaynor/) as a **Cargo workspace**; the **Swift** layer is a separate **SwiftPM** package under [`quaynor/swift/`](quaynor/swift/). For module layout and contribution workflow, see **[DEVELOPER-GUIDE.md](DEVELOPER-GUIDE.md)**.
+- **This repo:** Shared engine and most bindings live under [`quaynor/`](quaynor/) as a **Cargo workspace**; the **Swift** layer is a separate **SwiftPM** package under [`quaynor/swift/`](quaynor/swift/). For module layout and contribution workflow, see **[dev_guide.md]dev_guide.md)**.
 
 ---
 
@@ -161,4 +161,4 @@ Issues, discussions, and PRs are welcome. For codebase layout and conventions, s
 
 ## License
 
-[MIT](LICENSE)
+[GNU GENERAL PUBLIC LICENSE](LICENSE)
