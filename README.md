@@ -18,7 +18,7 @@ Embed **local LLMs** in your app: load GGUF checkpoints, chat on-device or on th
 
 - **Runtime:** Rust core that loads **GGUF** models and using **Vulkan** or **Metal** where the platform enables GPU backends.
 - **Features:** Chat with streaming completions, **Minijinja** chat templates, tokenizer helpers, optional **embeddings** and **cross-encoder** reranking, and **GBNF** grammar-based tool calling—surfaced consistently across bindings where supported.
-- **This repo:** Shared engine and most bindings live under [`quaynor/`](quaynor/) as a **Cargo workspace**; the **Swift** layer is a separate **SwiftPM** package under [`quaynor/swift/`](quaynor/swift/). For module layout and contribution workflow, see **[dev_guide.md]dev_guide.md)**.
+- **This repo:** Shared engine and most bindings live under [`quaynor/`](quaynor/) as a **Cargo workspace**; the **Swift** layer is a separate **SwiftPM** package under [`quaynor/swift/`](quaynor/swift/). For module layout and contribution workflow, see **[dev_guide.md](dev_guide.md)**.
 
 ---
 
@@ -155,7 +155,7 @@ The Swift package is distributed through Swift Package Manager for iOS and macOS
 
 ## Contributing
 
-Issues, discussions, and PRs are welcome. For codebase layout and conventions, see **[DEVELOPER-GUIDE.md](DEVELOPER-GUIDE.md)**. Setup and binding-specific guides live on **[www.quaynor.site](https://www.quaynor.site)** and in repo labels.
+Issues, discussions, and PRs are welcome. For codebase layout and conventions, see **[dev_guide.md](dev_guide.md)**. Setup and binding-specific guides live on **[www.quaynor.site](https://www.quaynor.site)** and in repo labels.
 
 ---
 
