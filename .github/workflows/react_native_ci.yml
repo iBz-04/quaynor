@@ -53,6 +53,10 @@ jobs:
         working-directory: ./quaynor/react-native
         run: npm install
 
+      - name: "Run unit tests"
+        working-directory: ./quaynor/react-native
+        run: npm test
+
       - name: "Generate bindings"
         working-directory: ./quaynor
         run: |

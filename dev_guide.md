@@ -4,7 +4,7 @@ Architecture, conventions, and workflows for **contributors** mapping the codeba
 
 ## Automation workflow (AI assistants)
 
-After any change to the repo (including small doc or config edits), **commit and push to `origin`** in the same session unless the user asks not to. Commit messages must describe the change only. If the shell’s `git` command auto-appends such a footer, use your system `git` binary (e.g. `/usr/bin/git` on macOS) so the commit message stays clean.
+After any change to the repo (including small doc or config edits), **commit and push ** in the same session unless the user asks not to. Commit messages must describe the change only. If the shell’s `git` command auto-appends such a footer, use your system `git` binary (e.g. `/usr/bin/git` on macOS) so the commit message stays clean.
 
 ## GitHub
 
