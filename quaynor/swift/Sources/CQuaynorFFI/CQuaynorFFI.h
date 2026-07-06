@@ -243,11 +243,27 @@ typedef void (*UniffiForeignFutureCompleteVoid)(uint64_t, UniffiForeignFutureRes
     );
 
 #endif
-#ifndef UNIFFI_FFIDEF_CALLBACK_INTERFACE_RUST_TOOL_CALLBACK_METHOD0
-#define UNIFFI_FFIDEF_CALLBACK_INTERFACE_RUST_TOOL_CALLBACK_METHOD0
-typedef void (*UniffiCallbackInterfaceRustToolCallbackMethod0)(uint64_t, RustBuffer, RustBuffer* _Nonnull, 
+#ifndef UNIFFI_FFIDEF_CALLBACK_INTERFACE_RUST_DOWNLOAD_PROGRESS_CALLBACK_METHOD0
+#define UNIFFI_FFIDEF_CALLBACK_INTERFACE_RUST_DOWNLOAD_PROGRESS_CALLBACK_METHOD0
+typedef void (*UniffiCallbackInterfaceRustDownloadProgressCallbackMethod0)(uint64_t, uint64_t, uint64_t, void* _Nonnull,
         RustCallStatus *_Nonnull uniffiCallStatus
     );
+
+#endif
+#ifndef UNIFFI_FFIDEF_CALLBACK_INTERFACE_RUST_TOOL_CALLBACK_METHOD0
+#define UNIFFI_FFIDEF_CALLBACK_INTERFACE_RUST_TOOL_CALLBACK_METHOD0
+typedef void (*UniffiCallbackInterfaceRustToolCallbackMethod0)(uint64_t, RustBuffer, RustBuffer* _Nonnull,
+        RustCallStatus *_Nonnull uniffiCallStatus
+    );
+
+#endif
+#ifndef UNIFFI_FFIDEF_V_TABLE_CALLBACK_INTERFACE_RUST_DOWNLOAD_PROGRESS_CALLBACK
+#define UNIFFI_FFIDEF_V_TABLE_CALLBACK_INTERFACE_RUST_DOWNLOAD_PROGRESS_CALLBACK
+typedef struct UniffiVTableCallbackInterfaceRustDownloadProgressCallback {
+    UniffiCallbackInterfaceFree _Nonnull uniffiFree;
+    UniffiCallbackInterfaceClone _Nonnull uniffiClone;
+    UniffiCallbackInterfaceRustDownloadProgressCallbackMethod0 _Nonnull onDownloadProgress;
+} UniffiVTableCallbackInterfaceRustDownloadProgressCallback;
 
 #endif
 #ifndef UNIFFI_FFIDEF_V_TABLE_CALLBACK_INTERFACE_RUST_TOOL_CALLBACK
@@ -292,6 +308,11 @@ uint64_t uniffi_quaynor_uniffi_fn_method_rustchat_get_chat_history(uint64_t ptr
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_METHOD_RUSTCHAT_GET_SAMPLER_CONFIG_JSON
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_METHOD_RUSTCHAT_GET_SAMPLER_CONFIG_JSON
 uint64_t uniffi_quaynor_uniffi_fn_method_rustchat_get_sampler_config_json(uint64_t ptr
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_METHOD_RUSTCHAT_GET_STATS
+#define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_METHOD_RUSTCHAT_GET_STATS
+uint64_t uniffi_quaynor_uniffi_fn_method_rustchat_get_stats(uint64_t ptr
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_METHOD_RUSTCHAT_GET_SYSTEM_PROMPT
@@ -342,6 +363,11 @@ uint64_t uniffi_quaynor_uniffi_fn_method_rustchat_set_tools(uint64_t ptr, RustBu
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_METHOD_RUSTCHAT_STOP_GENERATION
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_METHOD_RUSTCHAT_STOP_GENERATION
 void uniffi_quaynor_uniffi_fn_method_rustchat_stop_generation(uint64_t ptr, RustCallStatus *_Nonnull out_status
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_METHOD_RUSTCHAT_TOKENIZE
+#define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_METHOD_RUSTCHAT_TOKENIZE
+uint64_t uniffi_quaynor_uniffi_fn_method_rustchat_tokenize(uint64_t ptr, RustBuffer message
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_CLONE_RUSTCROSSENCODER
@@ -397,6 +423,11 @@ uint64_t uniffi_quaynor_uniffi_fn_clone_rustmodel(uint64_t handle, RustCallStatu
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_FREE_RUSTMODEL
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_FREE_RUSTMODEL
 void uniffi_quaynor_uniffi_fn_free_rustmodel(uint64_t handle, RustCallStatus *_Nonnull out_status
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_METHOD_RUSTMODEL_MAX_CTX
+#define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_METHOD_RUSTMODEL_MAX_CTX
+uint32_t uniffi_quaynor_uniffi_fn_method_rustmodel_max_ctx(uint64_t ptr, RustCallStatus *_Nonnull out_status
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_CLONE_RUSTTOKENSTREAM
@@ -467,7 +498,7 @@ void uniffi_quaynor_uniffi_fn_free_samplerbuilder(uint64_t handle, RustCallStatu
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_CONSTRUCTOR_SAMPLERBUILDER_NEW
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_CONSTRUCTOR_SAMPLERBUILDER_NEW
 uint64_t uniffi_quaynor_uniffi_fn_constructor_samplerbuilder_new(RustCallStatus *_Nonnull out_status
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_METHOD_SAMPLERBUILDER_DIST
@@ -555,6 +586,11 @@ uint64_t uniffi_quaynor_uniffi_fn_constructor_samplerconfig_from_json(RustBuffer
 RustBuffer uniffi_quaynor_uniffi_fn_method_samplerconfig_to_json(uint64_t ptr, RustCallStatus *_Nonnull out_status
 );
 #endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_INIT_CALLBACK_VTABLE_RUSTDOWNLOADPROGRESSCALLBACK
+#define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_INIT_CALLBACK_VTABLE_RUSTDOWNLOADPROGRESSCALLBACK
+void uniffi_quaynor_uniffi_fn_init_callback_vtable_rustdownloadprogresscallback(const UniffiVTableCallbackInterfaceRustDownloadProgressCallback* _Nonnull vtable
+);
+#endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_INIT_CALLBACK_VTABLE_RUSTTOOLCALLBACK
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_INIT_CALLBACK_VTABLE_RUSTTOOLCALLBACK
 void uniffi_quaynor_uniffi_fn_init_callback_vtable_rusttoolcallback(const UniffiVTableCallbackInterfaceRustToolCallback* _Nonnull vtable
@@ -565,21 +601,32 @@ void uniffi_quaynor_uniffi_fn_init_callback_vtable_rusttoolcallback(const Uniffi
 float uniffi_quaynor_uniffi_fn_func_cosine_similarity(RustBuffer a, RustBuffer b, RustCallStatus *_Nonnull out_status
 );
 #endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_FUNC_DOWNLOAD_MODEL
+#define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_FUNC_DOWNLOAD_MODEL
+uint64_t uniffi_quaynor_uniffi_fn_func_download_model(RustBuffer model_path, RustBuffer headers, RustBuffer on_download_progress
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_FUNC_GET_CACHED_MODELS
+#define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_FUNC_GET_CACHED_MODELS
+RustBuffer uniffi_quaynor_uniffi_fn_func_get_cached_models(RustCallStatus *_Nonnull out_status
+
+);
+#endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_FUNC_LOAD_MODEL
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_FUNC_LOAD_MODEL
-uint64_t uniffi_quaynor_uniffi_fn_func_load_model(RustBuffer model_path, int8_t use_gpu, RustBuffer projection_model_path
+uint64_t uniffi_quaynor_uniffi_fn_func_load_model(RustBuffer model_path, int8_t use_gpu, RustBuffer projection_model_path, RustBuffer on_download_progress
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_FUNC_SAMPLER_PRESET_DEFAULT
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_FUNC_SAMPLER_PRESET_DEFAULT
 uint64_t uniffi_quaynor_uniffi_fn_func_sampler_preset_default(RustCallStatus *_Nonnull out_status
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_FUNC_SAMPLER_PRESET_DRY
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_FUNC_SAMPLER_PRESET_DRY
 uint64_t uniffi_quaynor_uniffi_fn_func_sampler_preset_dry(RustCallStatus *_Nonnull out_status
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_FUNC_SAMPLER_PRESET_GRAMMAR
@@ -590,13 +637,13 @@ uint64_t uniffi_quaynor_uniffi_fn_func_sampler_preset_grammar(RustBuffer grammar
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_FUNC_SAMPLER_PRESET_GREEDY
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_FUNC_SAMPLER_PRESET_GREEDY
 uint64_t uniffi_quaynor_uniffi_fn_func_sampler_preset_greedy(RustCallStatus *_Nonnull out_status
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_FUNC_SAMPLER_PRESET_JSON
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_FUNC_SAMPLER_PRESET_JSON
 uint64_t uniffi_quaynor_uniffi_fn_func_sampler_preset_json(RustCallStatus *_Nonnull out_status
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_FN_FUNC_SAMPLER_PRESET_TEMPERATURE
@@ -877,331 +924,367 @@ void ffi_quaynor_uniffi_rust_future_complete_void(uint64_t handle, RustCallStatu
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_FUNC_COSINE_SIMILARITY
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_FUNC_COSINE_SIMILARITY
 uint16_t uniffi_quaynor_uniffi_checksum_func_cosine_similarity(void
-    
+
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_FUNC_DOWNLOAD_MODEL
+#define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_FUNC_DOWNLOAD_MODEL
+uint16_t uniffi_quaynor_uniffi_checksum_func_download_model(void
+
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_FUNC_GET_CACHED_MODELS
+#define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_FUNC_GET_CACHED_MODELS
+uint16_t uniffi_quaynor_uniffi_checksum_func_get_cached_models(void
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_FUNC_LOAD_MODEL
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_FUNC_LOAD_MODEL
 uint16_t uniffi_quaynor_uniffi_checksum_func_load_model(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_FUNC_SAMPLER_PRESET_DEFAULT
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_FUNC_SAMPLER_PRESET_DEFAULT
 uint16_t uniffi_quaynor_uniffi_checksum_func_sampler_preset_default(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_FUNC_SAMPLER_PRESET_DRY
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_FUNC_SAMPLER_PRESET_DRY
 uint16_t uniffi_quaynor_uniffi_checksum_func_sampler_preset_dry(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_FUNC_SAMPLER_PRESET_GRAMMAR
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_FUNC_SAMPLER_PRESET_GRAMMAR
 uint16_t uniffi_quaynor_uniffi_checksum_func_sampler_preset_grammar(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_FUNC_SAMPLER_PRESET_GREEDY
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_FUNC_SAMPLER_PRESET_GREEDY
 uint16_t uniffi_quaynor_uniffi_checksum_func_sampler_preset_greedy(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_FUNC_SAMPLER_PRESET_JSON
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_FUNC_SAMPLER_PRESET_JSON
 uint16_t uniffi_quaynor_uniffi_checksum_func_sampler_preset_json(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_FUNC_SAMPLER_PRESET_TEMPERATURE
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_FUNC_SAMPLER_PRESET_TEMPERATURE
 uint16_t uniffi_quaynor_uniffi_checksum_func_sampler_preset_temperature(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_FUNC_SAMPLER_PRESET_TOP_K
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_FUNC_SAMPLER_PRESET_TOP_K
 uint16_t uniffi_quaynor_uniffi_checksum_func_sampler_preset_top_k(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_FUNC_SAMPLER_PRESET_TOP_P
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_FUNC_SAMPLER_PRESET_TOP_P
 uint16_t uniffi_quaynor_uniffi_checksum_func_sampler_preset_top_p(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_ASK
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_ASK
 uint16_t uniffi_quaynor_uniffi_checksum_method_rustchat_ask(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_ASK_WITH_PROMPT
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_ASK_WITH_PROMPT
 uint16_t uniffi_quaynor_uniffi_checksum_method_rustchat_ask_with_prompt(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_GET_CHAT_HISTORY
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_GET_CHAT_HISTORY
 uint16_t uniffi_quaynor_uniffi_checksum_method_rustchat_get_chat_history(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_GET_SAMPLER_CONFIG_JSON
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_GET_SAMPLER_CONFIG_JSON
 uint16_t uniffi_quaynor_uniffi_checksum_method_rustchat_get_sampler_config_json(void
-    
+
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_GET_STATS
+#define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_GET_STATS
+uint16_t uniffi_quaynor_uniffi_checksum_method_rustchat_get_stats(void
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_GET_SYSTEM_PROMPT
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_GET_SYSTEM_PROMPT
 uint16_t uniffi_quaynor_uniffi_checksum_method_rustchat_get_system_prompt(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_GET_TEMPLATE_VARIABLES
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_GET_TEMPLATE_VARIABLES
 uint16_t uniffi_quaynor_uniffi_checksum_method_rustchat_get_template_variables(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_RESET_CONTEXT
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_RESET_CONTEXT
 uint16_t uniffi_quaynor_uniffi_checksum_method_rustchat_reset_context(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_RESET_HISTORY
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_RESET_HISTORY
 uint16_t uniffi_quaynor_uniffi_checksum_method_rustchat_reset_history(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_SET_CHAT_HISTORY
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_SET_CHAT_HISTORY
 uint16_t uniffi_quaynor_uniffi_checksum_method_rustchat_set_chat_history(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_SET_SAMPLER_CONFIG
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_SET_SAMPLER_CONFIG
 uint16_t uniffi_quaynor_uniffi_checksum_method_rustchat_set_sampler_config(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_SET_SYSTEM_PROMPT
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_SET_SYSTEM_PROMPT
 uint16_t uniffi_quaynor_uniffi_checksum_method_rustchat_set_system_prompt(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_SET_TEMPLATE_VARIABLE
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_SET_TEMPLATE_VARIABLE
 uint16_t uniffi_quaynor_uniffi_checksum_method_rustchat_set_template_variable(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_SET_TOOLS
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_SET_TOOLS
 uint16_t uniffi_quaynor_uniffi_checksum_method_rustchat_set_tools(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_STOP_GENERATION
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_STOP_GENERATION
 uint16_t uniffi_quaynor_uniffi_checksum_method_rustchat_stop_generation(void
-    
+
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_TOKENIZE
+#define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCHAT_TOKENIZE
+uint16_t uniffi_quaynor_uniffi_checksum_method_rustchat_tokenize(void
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCROSSENCODER_RANK
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCROSSENCODER_RANK
 uint16_t uniffi_quaynor_uniffi_checksum_method_rustcrossencoder_rank(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCROSSENCODER_RANK_AND_SORT_JSON
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTCROSSENCODER_RANK_AND_SORT_JSON
 uint16_t uniffi_quaynor_uniffi_checksum_method_rustcrossencoder_rank_and_sort_json(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTENCODER_ENCODE
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTENCODER_ENCODE
 uint16_t uniffi_quaynor_uniffi_checksum_method_rustencoder_encode(void
-    
+
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTMODEL_MAX_CTX
+#define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTMODEL_MAX_CTX
+uint16_t uniffi_quaynor_uniffi_checksum_method_rustmodel_max_ctx(void
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTTOKENSTREAM_COMPLETED
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTTOKENSTREAM_COMPLETED
 uint16_t uniffi_quaynor_uniffi_checksum_method_rusttokenstream_completed(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTTOKENSTREAM_NEXT_TOKEN
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTTOKENSTREAM_NEXT_TOKEN
 uint16_t uniffi_quaynor_uniffi_checksum_method_rusttokenstream_next_token(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTTOOL_GET_SCHEMA_JSON
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTTOOL_GET_SCHEMA_JSON
 uint16_t uniffi_quaynor_uniffi_checksum_method_rusttool_get_schema_json(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTTOOL_NEXT_PENDING_CALL
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTTOOL_NEXT_PENDING_CALL
 uint16_t uniffi_quaynor_uniffi_checksum_method_rusttool_next_pending_call(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTTOOL_RESOLVE_PENDING_CALL
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTTOOL_RESOLVE_PENDING_CALL
 uint16_t uniffi_quaynor_uniffi_checksum_method_rusttool_resolve_pending_call(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_SAMPLERBUILDER_DIST
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_SAMPLERBUILDER_DIST
 uint16_t uniffi_quaynor_uniffi_checksum_method_samplerbuilder_dist(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_SAMPLERBUILDER_DRY
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_SAMPLERBUILDER_DRY
 uint16_t uniffi_quaynor_uniffi_checksum_method_samplerbuilder_dry(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_SAMPLERBUILDER_GRAMMAR
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_SAMPLERBUILDER_GRAMMAR
 uint16_t uniffi_quaynor_uniffi_checksum_method_samplerbuilder_grammar(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_SAMPLERBUILDER_GREEDY
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_SAMPLERBUILDER_GREEDY
 uint16_t uniffi_quaynor_uniffi_checksum_method_samplerbuilder_greedy(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_SAMPLERBUILDER_MIN_P
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_SAMPLERBUILDER_MIN_P
 uint16_t uniffi_quaynor_uniffi_checksum_method_samplerbuilder_min_p(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_SAMPLERBUILDER_MIROSTAT_V1
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_SAMPLERBUILDER_MIROSTAT_V1
 uint16_t uniffi_quaynor_uniffi_checksum_method_samplerbuilder_mirostat_v1(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_SAMPLERBUILDER_MIROSTAT_V2
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_SAMPLERBUILDER_MIROSTAT_V2
 uint16_t uniffi_quaynor_uniffi_checksum_method_samplerbuilder_mirostat_v2(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_SAMPLERBUILDER_PENALTIES
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_SAMPLERBUILDER_PENALTIES
 uint16_t uniffi_quaynor_uniffi_checksum_method_samplerbuilder_penalties(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_SAMPLERBUILDER_TEMPERATURE
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_SAMPLERBUILDER_TEMPERATURE
 uint16_t uniffi_quaynor_uniffi_checksum_method_samplerbuilder_temperature(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_SAMPLERBUILDER_TOP_K
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_SAMPLERBUILDER_TOP_K
 uint16_t uniffi_quaynor_uniffi_checksum_method_samplerbuilder_top_k(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_SAMPLERBUILDER_TOP_P
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_SAMPLERBUILDER_TOP_P
 uint16_t uniffi_quaynor_uniffi_checksum_method_samplerbuilder_top_p(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_SAMPLERBUILDER_TYPICAL_P
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_SAMPLERBUILDER_TYPICAL_P
 uint16_t uniffi_quaynor_uniffi_checksum_method_samplerbuilder_typical_p(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_SAMPLERBUILDER_XTC
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_SAMPLERBUILDER_XTC
 uint16_t uniffi_quaynor_uniffi_checksum_method_samplerbuilder_xtc(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_SAMPLERCONFIG_TO_JSON
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_SAMPLERCONFIG_TO_JSON
 uint16_t uniffi_quaynor_uniffi_checksum_method_samplerconfig_to_json(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_CONSTRUCTOR_RUSTCHAT_NEW
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_CONSTRUCTOR_RUSTCHAT_NEW
 uint16_t uniffi_quaynor_uniffi_checksum_constructor_rustchat_new(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_CONSTRUCTOR_RUSTCROSSENCODER_NEW
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_CONSTRUCTOR_RUSTCROSSENCODER_NEW
 uint16_t uniffi_quaynor_uniffi_checksum_constructor_rustcrossencoder_new(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_CONSTRUCTOR_RUSTENCODER_NEW
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_CONSTRUCTOR_RUSTENCODER_NEW
 uint16_t uniffi_quaynor_uniffi_checksum_constructor_rustencoder_new(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_CONSTRUCTOR_RUSTTOOL_NEW
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_CONSTRUCTOR_RUSTTOOL_NEW
 uint16_t uniffi_quaynor_uniffi_checksum_constructor_rusttool_new(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_CONSTRUCTOR_RUSTTOOL_NEW_ASYNC
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_CONSTRUCTOR_RUSTTOOL_NEW_ASYNC
 uint16_t uniffi_quaynor_uniffi_checksum_constructor_rusttool_new_async(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_CONSTRUCTOR_SAMPLERBUILDER_NEW
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_CONSTRUCTOR_SAMPLERBUILDER_NEW
 uint16_t uniffi_quaynor_uniffi_checksum_constructor_samplerbuilder_new(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_CONSTRUCTOR_SAMPLERCONFIG_FROM_JSON
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_CONSTRUCTOR_SAMPLERCONFIG_FROM_JSON
 uint16_t uniffi_quaynor_uniffi_checksum_constructor_samplerconfig_from_json(void
-    
+
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTDOWNLOADPROGRESSCALLBACK_ON_DOWNLOAD_PROGRESS
+#define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTDOWNLOADPROGRESSCALLBACK_ON_DOWNLOAD_PROGRESS
+uint16_t uniffi_quaynor_uniffi_checksum_method_rustdownloadprogresscallback_on_download_progress(void
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTTOOLCALLBACK_CALL
 #define UNIFFI_FFIDEF_UNIFFI_QUAYNOR_UNIFFI_CHECKSUM_METHOD_RUSTTOOLCALLBACK_CALL
 uint16_t uniffi_quaynor_uniffi_checksum_method_rusttoolcallback_call(void
-    
+
 );
 #endif
 #ifndef UNIFFI_FFIDEF_FFI_QUAYNOR_UNIFFI_UNIFFI_CONTRACT_VERSION
 #define UNIFFI_FFIDEF_FFI_QUAYNOR_UNIFFI_UNIFFI_CONTRACT_VERSION
 uint32_t ffi_quaynor_uniffi_uniffi_contract_version(void
-    
+
 );
 #endif
 
