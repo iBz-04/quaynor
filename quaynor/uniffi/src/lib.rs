@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 
 uniffi::setup_scaffolding!("quaynor");
 
@@ -224,7 +224,7 @@ fn uniffi_message_to_core(m: &Message) -> Result<quaynor::chat::Message, Quaynor
 
 #[derive(uniffi::Object)]
 pub struct RustModel {
-    inner: Arc<quaynor::llm::Model>,
+    inner: Mutex<Option<Arc<quaynor::llm::Model>>>,
 }
 
 #[derive(uniffi::Record, Clone)]
@@ -272,7 +272,7 @@ pub async fn load_model(
 
     log::info!("load_model SUCCESS for {}", model_path);
     Ok(Arc::new(RustModel {
-        inner: Arc::new(model),
+        inner: Mutex::new(Some(Arc::new(model))),
     }))
 }
 
@@ -316,9 +316,47 @@ pub fn get_cached_models() -> Result<Vec<CachedModel>, QuaynorError> {
 }
 
 #[uniffi::export]
+pub fn delete_cached_model(model_path: String) -> Result<u64, QuaynorError> {
+    quaynor::llm::delete_cached_model(&model_path).map_err(|e| QuaynorError::Error {
+        message: e.to_string(),
+    })
+}
+
+#[uniffi::export]
 impl RustModel {
-    pub fn max_ctx(&self) -> u32 {
-        self.inner.max_ctx()
+    pub fn max_ctx(&self) -> Result<u32, QuaynorError> {
+        Ok(self.model_arc()?.max_ctx())
+    }
+
+    pub fn unload(&self) -> Result<(), QuaynorError> {
+        let mut model = self.inner.lock().map_err(|_| QuaynorError::Error {
+            message: "Model lock was poisoned".into(),
+        })?;
+        let loaded_model = model.as_ref().ok_or_else(|| QuaynorError::Error {
+            message: "Model is already unloaded".into(),
+        })?;
+        let reference_count = Arc::strong_count(loaded_model);
+        if reference_count > 1 {
+            return Err(QuaynorError::Error {
+                message: format!(
+                    "Cannot unload model while {count} dependent handle(s) still hold it",
+                    count = reference_count - 1
+                ),
+            });
+        }
+        *model = None;
+        Ok(())
+    }
+}
+
+impl RustModel {
+    fn model_arc(&self) -> Result<Arc<quaynor::llm::Model>, QuaynorError> {
+        let model = self.inner.lock().map_err(|_| QuaynorError::Error {
+            message: "Model lock was poisoned".into(),
+        })?;
+        model.as_ref().cloned().ok_or_else(|| QuaynorError::Error {
+            message: "Model is unloaded".into(),
+        })
     }
 }
 
@@ -350,7 +388,7 @@ impl RustChat {
         template_variables: Option<HashMap<String, bool>>,
         tools: Option<Vec<Arc<RustTool>>>,
         sampler: Option<Arc<SamplerConfig>>,
-    ) -> Self {
+    ) -> Result<Self, QuaynorError> {
         let core_tools: Vec<quaynor::tool_calling::Tool> = tools
             .unwrap_or_default()
             .into_iter()
@@ -359,7 +397,7 @@ impl RustChat {
 
         let sampler_config = sampler.map(|s| s.inner.clone()).unwrap_or_default();
 
-        let chat = quaynor::chat::ChatBuilder::new(Arc::clone(&model.inner))
+        let chat = quaynor::chat::ChatBuilder::new(model.model_arc()?)
             .with_context_size(context_size)
             .with_system_prompt(system_prompt)
             .with_template_variables(template_variables.unwrap_or_default())
@@ -367,7 +405,7 @@ impl RustChat {
             .with_sampler(sampler_config)
             .build_async();
 
-        Self { inner: chat }
+        Ok(Self { inner: chat })
     }
 
     /// Send a message and get a token stream for the response.
@@ -752,12 +790,10 @@ pub struct RustEncoder {
 impl RustEncoder {
     /// Create a new encoder for generating text embeddings.
     #[uniffi::constructor]
-    pub fn new(model: &RustModel, context_size: Option<u32>) -> Arc<Self> {
-        let handle = quaynor::encoder::EncoderAsync::new(
-            Arc::clone(&model.inner),
-            context_size.unwrap_or(4096),
-        );
-        Arc::new(Self { inner: handle })
+    pub fn new(model: &RustModel, context_size: Option<u32>) -> Result<Arc<Self>, QuaynorError> {
+        let handle =
+            quaynor::encoder::EncoderAsync::new(model.model_arc()?, context_size.unwrap_or(4096));
+        Ok(Arc::new(Self { inner: handle }))
     }
 
     /// Encode text into an embedding vector.
@@ -789,12 +825,12 @@ pub struct RustCrossEncoder {
 impl RustCrossEncoder {
     /// Create a new cross-encoder for ranking documents by relevance.
     #[uniffi::constructor]
-    pub fn new(model: &RustModel, context_size: Option<u32>) -> Arc<Self> {
+    pub fn new(model: &RustModel, context_size: Option<u32>) -> Result<Arc<Self>, QuaynorError> {
         let handle = quaynor::crossencoder::CrossEncoderAsync::new(
-            Arc::clone(&model.inner),
+            model.model_arc()?,
             context_size.unwrap_or(4096),
         );
-        Arc::new(Self { inner: handle })
+        Ok(Arc::new(Self { inner: handle }))
     }
 
     /// Rank documents by relevance to a query. Returns similarity scores.

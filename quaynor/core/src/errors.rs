@@ -28,6 +28,28 @@ pub enum LoadModelError {
     FailedParsingModelPath(#[from] nom::Err<nom::error::Error<String>>),
     #[error("Failed to download model: {0}")]
     DownloadError(String),
+    #[error("Refusing to delete model outside the Quaynor cache: {0}")]
+    ModelOutsideCache(String),
+    #[error("Cached model is not a GGUF file: {0}")]
+    CachedModelNotGguf(String),
+    #[error("Failed to delete cached model {path}: {source}")]
+    DeleteCachedModel {
+        path: String,
+        #[source]
+        source: std::io::Error,
+    },
+    #[error("Cached model is currently loaded and must be unloaded before deletion: {0}")]
+    CachedModelInUse(String),
+    #[error("Failed to clean up cached model directory {path}: {source}")]
+    CleanupCachedModelDirectory {
+        path: String,
+        #[source]
+        source: std::io::Error,
+    },
+    #[error("Model cache operation lock was poisoned")]
+    ModelCacheOperationLockPoisoned,
+    #[error("Loaded model registry lock was poisoned")]
+    LoadedModelRegistryLockPoisoned,
 }
 
 // Worker errors

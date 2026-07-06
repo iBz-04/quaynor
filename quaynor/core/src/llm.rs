@@ -16,7 +16,7 @@ use std::io::{Read, Write};
 use std::pin::pin;
 use std::rc::Rc;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{Arc, LazyLock, Mutex, MutexGuard};
+use std::sync::{Arc, LazyLock, Mutex, MutexGuard, RwLock};
 use tracing::{debug, debug_span, error, info, info_span, warn};
 
 #[derive(Debug)]
@@ -28,16 +28,44 @@ lazy_static! {
 
 static LLAMA_BACKEND: LazyLock<LlamaBackend> =
     LazyLock::new(|| LlamaBackend::init().expect("Failed to initialize llama backend"));
+static LOADED_CACHE_MODELS: LazyLock<Mutex<std::collections::HashMap<std::path::PathBuf, usize>>> =
+    LazyLock::new(|| Mutex::new(std::collections::HashMap::new()));
+static MODEL_CACHE_OPERATION_LOCK: LazyLock<RwLock<()>> = LazyLock::new(|| RwLock::new(()));
 
 #[derive(Debug)]
 pub struct Model {
     pub(crate) language_model: LlamaModel,
     pub(crate) projection_model: Option<ProjectionModel>,
+    loaded_cache_keys: Vec<std::path::PathBuf>,
 }
 
 impl Model {
     pub fn max_ctx(&self) -> u32 {
         self.language_model.n_ctx_train()
+    }
+}
+
+impl Drop for Model {
+    fn drop(&mut self) {
+        if self.loaded_cache_keys.is_empty() {
+            return;
+        }
+
+        let mut loaded_cache_models = LOADED_CACHE_MODELS
+            .lock()
+            .expect("Loaded model registry lock was poisoned while dropping a model");
+        for cache_key in &self.loaded_cache_keys {
+            match loaded_cache_models.get_mut(cache_key) {
+                Some(count) if *count > 1 => *count -= 1,
+                Some(_) => {
+                    loaded_cache_models.remove(cache_key);
+                }
+                None => panic!(
+                    "Loaded model registry did not contain cache key while dropping model: {}",
+                    cache_key.display()
+                ),
+            }
+        }
     }
 }
 
@@ -169,18 +197,79 @@ pub fn resolve_model_path(
     resolve_fancy_path_to_fs(parse_model_path(model_path)?, headers, progress)
 }
 
+fn cache_tracking_key_for_existing_path(
+    path: &std::path::Path,
+) -> Result<Option<std::path::PathBuf>, LoadModelError> {
+    let cache_dir = get_cache_dir()?;
+
+    if !cache_dir.exists() {
+        return Ok(None);
+    }
+
+    let canonical_cache_dir = cache_dir.canonicalize().map_err(|e| {
+        LoadModelError::DownloadError(format!(
+            "Failed to read cache directory {}: {e}",
+            cache_dir.display()
+        ))
+    })?;
+    let canonical_path = path
+        .canonicalize()
+        .map_err(|_| LoadModelError::ModelNotFound(path.to_string_lossy().into_owned()))?;
+
+    if canonical_path.starts_with(&canonical_cache_dir) {
+        Ok(Some(canonical_path))
+    } else {
+        Ok(None)
+    }
+}
+
+fn register_loaded_cache_models(cache_keys: &[std::path::PathBuf]) -> Result<(), LoadModelError> {
+    if cache_keys.is_empty() {
+        return Ok(());
+    }
+
+    let mut loaded_cache_models = LOADED_CACHE_MODELS
+        .lock()
+        .map_err(|_| LoadModelError::LoadedModelRegistryLockPoisoned)?;
+    for cache_key in cache_keys {
+        *loaded_cache_models.entry(cache_key.clone()).or_insert(0) += 1;
+    }
+    Ok(())
+}
+
+fn cached_model_is_loaded(cache_key: &std::path::Path) -> Result<bool, LoadModelError> {
+    let loaded_cache_models = LOADED_CACHE_MODELS
+        .lock()
+        .map_err(|_| LoadModelError::LoadedModelRegistryLockPoisoned)?;
+    Ok(loaded_cache_models
+        .get(cache_key)
+        .is_some_and(|count| *count > 0))
+}
+
 #[tracing::instrument(level = "info")]
 pub fn get_model(
     model_path: &str,
     use_gpu_if_available: bool,
     mmproj_path: Option<&str>,
 ) -> Result<Model, LoadModelError> {
-    let real_model_path = resolve_model_path(model_path, None, None)?;
-    let real_mmproj_path = mmproj_path
-        .map(parse_model_path) // parse inside option
-        .transpose()? // return early if parse fails
-        .map(|path| resolve_fancy_path_to_fs(path, None, None)) // download the file if needed
-        .transpose()?; // return early if download fails
+    let _cache_operation_guard = MODEL_CACHE_OPERATION_LOCK
+        .read()
+        .map_err(|_| LoadModelError::ModelCacheOperationLockPoisoned)?;
+    let parsed_model_path = parse_model_path(model_path)?;
+    let real_model_path = resolve_fancy_path_to_fs(parsed_model_path, None, None)?;
+    let parsed_mmproj_path = mmproj_path.map(parse_model_path).transpose()?;
+    let real_mmproj_path = parsed_mmproj_path
+        .map(|path| resolve_fancy_path_to_fs(path, None, None))
+        .transpose()?;
+    let mut loaded_cache_keys = Vec::new();
+    if let Some(cache_key) = cache_tracking_key_for_existing_path(&real_model_path)? {
+        loaded_cache_keys.push(cache_key);
+    }
+    if let Some(real_mmproj_path) = real_mmproj_path.as_deref() {
+        if let Some(cache_key) = cache_tracking_key_for_existing_path(real_mmproj_path)? {
+            loaded_cache_keys.push(cache_key);
+        }
+    }
 
     // TODO: `LlamaModelParams` uses all devices by default. Set it to an empty list once an upstream device API is available.
     let use_gpu = use_gpu_if_available && has_gpu_backend();
@@ -217,10 +306,12 @@ pub fn get_model(
         .as_ref()
         .map(|path| ProjectionModel::from_path(path, &language_model, use_gpu))
         .transpose()?;
+    register_loaded_cache_models(&loaded_cache_keys)?;
 
     Ok(Model {
         language_model,
         projection_model,
+        loaded_cache_keys,
     })
 }
 
@@ -523,12 +614,151 @@ fn download_model_from_url_with_options(
     Ok(target_path)
 }
 
+fn cached_model_path_for(
+    parsed_path: ParsedModelPath,
+) -> Result<std::path::PathBuf, LoadModelError> {
+    let cache_dir = get_cache_dir()?;
+    let path = match parsed_path {
+        ParsedModelPath::HuggingFaceUrl(owner, repo, filename) => {
+            cache_dir.join(owner).join(repo).join(filename)
+        }
+        ParsedModelPath::HttpUrl(url) => {
+            let path_part = url
+                .trim_start_matches("https://")
+                .trim_start_matches("http://");
+            cache_dir.join("http").join(path_part)
+        }
+        ParsedModelPath::FilesystemPath(path) => path,
+    };
+    Ok(path)
+}
+
+fn ensure_cached_gguf_path(
+    path: &std::path::Path,
+) -> Result<(std::path::PathBuf, std::path::PathBuf), LoadModelError> {
+    let cache_dir = get_cache_dir()?;
+    ensure_cached_gguf_path_in_cache(path, &cache_dir)
+}
+
+fn ensure_cached_gguf_path_in_cache(
+    path: &std::path::Path,
+    cache_dir: &std::path::Path,
+) -> Result<(std::path::PathBuf, std::path::PathBuf), LoadModelError> {
+    let canonical_cache_dir = cache_dir.canonicalize().map_err(|e| {
+        LoadModelError::DownloadError(format!(
+            "Failed to read cache directory {}: {e}",
+            cache_dir.display()
+        ))
+    })?;
+    let canonical_path = path
+        .canonicalize()
+        .map_err(|_| LoadModelError::ModelNotFound(path.to_string_lossy().into_owned()))?;
+
+    if !canonical_path.starts_with(&canonical_cache_dir) {
+        return Err(LoadModelError::ModelOutsideCache(
+            path.to_string_lossy().into_owned(),
+        ));
+    }
+
+    let metadata = std::fs::symlink_metadata(&canonical_path).map_err(|e| {
+        LoadModelError::DownloadError(format!(
+            "Failed to read metadata for {}: {e}",
+            canonical_path.display()
+        ))
+    })?;
+    if !metadata.is_file() {
+        return Err(LoadModelError::DownloadError(format!(
+            "Cached model is not a file: {}",
+            canonical_path.display()
+        )));
+    }
+
+    if canonical_path.extension().and_then(|ext| ext.to_str()) != Some("gguf") {
+        return Err(LoadModelError::CachedModelNotGguf(
+            canonical_path.to_string_lossy().into_owned(),
+        ));
+    }
+
+    Ok((canonical_path, canonical_cache_dir))
+}
+
+fn cleanup_empty_cache_dirs(
+    mut dir: std::path::PathBuf,
+    cache_dir: &std::path::Path,
+) -> Result<(), LoadModelError> {
+    while dir.starts_with(cache_dir) && dir != cache_dir {
+        match std::fs::remove_dir(&dir) {
+            Ok(()) => {
+                if let Some(parent) = dir.parent() {
+                    dir = parent.to_path_buf();
+                } else {
+                    break;
+                }
+            }
+            Err(error)
+                if matches!(
+                    error.kind(),
+                    std::io::ErrorKind::DirectoryNotEmpty | std::io::ErrorKind::NotFound
+                ) =>
+            {
+                return Ok(());
+            }
+            Err(source) => {
+                return Err(LoadModelError::CleanupCachedModelDirectory {
+                    path: dir.to_string_lossy().into_owned(),
+                    source,
+                });
+            }
+        }
+    }
+    Ok(())
+}
+
 pub fn download_model(
     model_path: &str,
     headers: Option<&std::collections::HashMap<String, String>>,
     progress: Option<&(dyn Fn(u64, u64) + Send + Sync)>,
 ) -> Result<std::path::PathBuf, crate::errors::LoadModelError> {
     resolve_model_path(model_path, headers, progress)
+}
+
+pub fn delete_cached_model(model_path: &str) -> Result<u64, crate::errors::LoadModelError> {
+    let _cache_operation_guard = MODEL_CACHE_OPERATION_LOCK
+        .write()
+        .map_err(|_| LoadModelError::ModelCacheOperationLockPoisoned)?;
+    let target_path = cached_model_path_for(parse_model_path(model_path)?)?;
+    let (canonical_path, cache_dir) = ensure_cached_gguf_path(&target_path)?;
+    delete_cached_model_at_path(canonical_path, cache_dir)
+}
+
+fn delete_cached_model_at_path(
+    canonical_path: std::path::PathBuf,
+    cache_dir: std::path::PathBuf,
+) -> Result<u64, crate::errors::LoadModelError> {
+    let size = std::fs::metadata(&canonical_path)
+        .map_err(|e| {
+            LoadModelError::DownloadError(format!(
+                "Failed to read metadata for {}: {e}",
+                canonical_path.display()
+            ))
+        })?
+        .len();
+    if cached_model_is_loaded(&canonical_path)? {
+        return Err(LoadModelError::CachedModelInUse(
+            canonical_path.to_string_lossy().into_owned(),
+        ));
+    }
+
+    std::fs::remove_file(&canonical_path).map_err(|source| LoadModelError::DeleteCachedModel {
+        path: canonical_path.to_string_lossy().into_owned(),
+        source,
+    })?;
+
+    if let Some(parent) = canonical_path.parent() {
+        cleanup_empty_cache_dirs(parent.to_path_buf(), &cache_dir)?;
+    }
+
+    Ok(size)
 }
 
 pub fn get_cached_models() -> Result<Vec<CachedModel>, crate::errors::LoadModelError> {
@@ -902,4 +1132,88 @@ impl<T> Drop for WorkerGuard<T> {
 }
 
 #[cfg(test)]
-mod tests {}
+mod tests {
+    use super::*;
+
+    fn test_root(name: &str) -> std::path::PathBuf {
+        std::env::temp_dir().join(format!(
+            "quaynor-{name}-{}-{:x}",
+            std::process::id(),
+            rand::random::<u64>()
+        ))
+    }
+
+    #[test]
+    fn delete_cached_model_at_path_removes_file_and_empty_parent_dirs() {
+        let root = test_root("delete-cached-model");
+        let cache_dir = root.join("cache");
+        let model_path = cache_dir.join("owner").join("repo").join("model.gguf");
+        std::fs::create_dir_all(model_path.parent().unwrap()).unwrap();
+        std::fs::write(&model_path, [1, 2, 3, 4]).unwrap();
+
+        let (canonical_path, canonical_cache_dir) =
+            ensure_cached_gguf_path_in_cache(&model_path, &cache_dir).unwrap();
+        let deleted_bytes =
+            delete_cached_model_at_path(canonical_path, canonical_cache_dir).unwrap();
+
+        assert_eq!(deleted_bytes, 4);
+        assert!(!model_path.exists());
+        assert!(!cache_dir.join("owner").exists());
+        assert!(cache_dir.exists());
+
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn ensure_cached_gguf_path_rejects_paths_outside_cache() {
+        let root = test_root("outside-cache");
+        let cache_dir = root.join("cache");
+        let outside_path = root.join("outside.gguf");
+        std::fs::create_dir_all(&cache_dir).unwrap();
+        std::fs::write(&outside_path, [1]).unwrap();
+
+        let error = ensure_cached_gguf_path_in_cache(&outside_path, &cache_dir).unwrap_err();
+        assert!(matches!(error, LoadModelError::ModelOutsideCache(_)));
+
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn ensure_cached_gguf_path_rejects_non_gguf_files() {
+        let root = test_root("non-gguf");
+        let cache_dir = root.join("cache");
+        let model_path = cache_dir.join("owner").join("repo").join("model.bin");
+        std::fs::create_dir_all(model_path.parent().unwrap()).unwrap();
+        std::fs::write(&model_path, [1]).unwrap();
+
+        let error = ensure_cached_gguf_path_in_cache(&model_path, &cache_dir).unwrap_err();
+        assert!(matches!(error, LoadModelError::CachedModelNotGguf(_)));
+
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn delete_cached_model_at_path_rejects_loaded_models() {
+        let root = test_root("loaded-model");
+        let cache_dir = root.join("cache");
+        let model_path = cache_dir.join("owner").join("repo").join("model.gguf");
+        std::fs::create_dir_all(model_path.parent().unwrap()).unwrap();
+        std::fs::write(&model_path, [1]).unwrap();
+
+        let (canonical_path, canonical_cache_dir) =
+            ensure_cached_gguf_path_in_cache(&model_path, &cache_dir).unwrap();
+        register_loaded_cache_models(&[canonical_path.clone()]).unwrap();
+
+        let error =
+            delete_cached_model_at_path(canonical_path.clone(), canonical_cache_dir).unwrap_err();
+        assert!(matches!(error, LoadModelError::CachedModelInUse(_)));
+        assert!(model_path.exists());
+
+        LOADED_CACHE_MODELS
+            .lock()
+            .unwrap()
+            .remove(&canonical_path)
+            .unwrap();
+        std::fs::remove_dir_all(root).unwrap();
+    }
+}
