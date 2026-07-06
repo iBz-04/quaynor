@@ -31,6 +31,16 @@ let chat1 = try Chat(model: model)
 let chat2 = try Chat(model: model)
 ```
 
+When loading a remote model, pass a progress callback:
+
+```swift
+let model = try await Model.load(
+    modelPath: "hf://bartowski/Qwen_Qwen3-0.6B-GGUF/Qwen_Qwen3-0.6B-Q4_K_M.gguf"
+) { downloaded, total in
+    print("\(downloaded) / \(total)")
+}
+```
+
 ## Asking and streaming
 
 `chat.ask` returns a `TokenStream`.
@@ -96,6 +106,20 @@ Or just clear the accumulated history:
 
 ```swift
 try await chat.resetHistory()
+```
+
+Inspect context usage:
+
+```swift
+let stats = try await chat.getStats()
+print("\(stats.contextUsed) / \(stats.contextSize)")
+```
+
+Tokenize a message as the chat template would render it:
+
+```swift
+let tokens = try await chat.tokenize(message: "Hello")
+print(tokens)
 ```
 
 ## Template variables
