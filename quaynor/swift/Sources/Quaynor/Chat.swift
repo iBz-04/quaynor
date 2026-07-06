@@ -15,7 +15,7 @@ public final class Chat: @unchecked Sendable {
     ) throws {
         let tools = tools ?? []
         let rustTools = try tools.map { try $0.requireInner() }
-        self.inner = RustChat(
+        self.inner = try RustChat(
             model: try model.requireInner(),
             systemPrompt: systemPrompt,
             contextSize: contextSize,

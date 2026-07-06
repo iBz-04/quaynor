@@ -41,10 +41,20 @@ public final class Model: @unchecked Sendable {
         try QuaynorFFI.getCachedModels()
     }
 
+    @discardableResult
+    public static func deleteCachedModel(modelPath: String) throws -> UInt64 {
+        try QuaynorFFI.deleteCachedModel(modelPath: modelPath)
+    }
+
     public var maxCtx: UInt32 {
         get throws {
             try requireInner().maxCtx()
         }
+    }
+
+    public func unload() throws {
+        try requireInner().unload()
+        inner = nil
     }
 
     public func destroy() {
