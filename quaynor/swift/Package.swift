@@ -52,5 +52,10 @@ let package = Package(
             dependencies: ["QuaynorFFI"],
             path: "Sources/Quaynor"
         ),
+        .testTarget(
+            name: "QuaynorTests",
+            dependencies: ["Quaynor"],
+            path: "Tests/QuaynorTests"
+        ),
     ]
 )
