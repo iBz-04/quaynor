@@ -352,7 +352,7 @@ private func uniffiTraitInterfaceCallWithError<T, E>(
         callStatus.pointee.errorBuf = FfiConverterString.lower(String(describing: error))
     }
 }
-// Initial value and increment amount for handles.
+// Initial value and increment amount for handles. 
 // These ensure that SWIFT handles always have the lowest bit set
 fileprivate let UNIFFI_HANDLEMAP_INITIAL: UInt64 = 1
 fileprivate let UNIFFI_HANDLEMAP_DELTA: UInt64 = 2
@@ -555,12 +555,12 @@ fileprivate struct FfiConverterString: FfiConverter {
 
 
 public protocol RustChatProtocol: AnyObject, Sendable {
-
+    
     /**
      * Send a message and get a token stream for the response.
      */
     func ask(message: String)  -> RustTokenStream
-
+    
     /**
      * Send a multimodal prompt (text + images/audio) and get a token stream.
      *
@@ -568,71 +568,71 @@ public protocol RustChatProtocol: AnyObject, Sendable {
      * Image and audio parts should contain a local file-system path.
      */
     func askWithPrompt(parts: [PromptPart])  -> RustTokenStream
-
+    
     /**
      * Get the current chat history as a list of messages.
      */
     func getChatHistory() async throws  -> [Message]
-
+    
     /**
      * Get the current sampler configuration as a JSON string.
      */
     func getSamplerConfigJson() async throws  -> String
-
+    
     func getStats() async throws  -> ChatStats
-
+    
     /**
      * Get the current system prompt.
      */
     func getSystemPrompt() async throws  -> String?
-
+    
     /**
      * Get all template variables.
      */
     func getTemplateVariables() async throws  -> [String: Bool]
-
+    
     /**
      * Reset the chat context with a new system prompt and tools.
      */
-    func resetContext(systemPrompt: String?, tools: [RustTool]?) async throws
-
+    func resetContext(systemPrompt: String?, tools: [RustTool]?) async throws 
+    
     /**
      * Reset the chat history, keeping the system prompt and tools.
      */
-    func resetHistory() async throws
-
+    func resetHistory() async throws 
+    
     /**
      * Set the chat history from a list of messages.
      */
-    func setChatHistory(messages: [Message]) async throws
-
+    func setChatHistory(messages: [Message]) async throws 
+    
     /**
      * Set the sampler configuration.
      */
-    func setSamplerConfig(sampler: SamplerConfig) async throws
-
+    func setSamplerConfig(sampler: SamplerConfig) async throws 
+    
     /**
      * Set the system prompt.
      */
-    func setSystemPrompt(systemPrompt: String?) async throws
-
+    func setSystemPrompt(systemPrompt: String?) async throws 
+    
     /**
      * Set a template variable.
      */
-    func setTemplateVariable(name: String, value: Bool) async throws
-
+    func setTemplateVariable(name: String, value: Bool) async throws 
+    
     /**
      * Set the tools available to the model.
      */
-    func setTools(tools: [RustTool]) async throws
-
+    func setTools(tools: [RustTool]) async throws 
+    
     /**
      * Stop the current generation.
      */
-    func stopGeneration()
-
+    func stopGeneration() 
+    
     func tokenize(message: String) async throws  -> [Int32?]
-
+    
 }
 open class RustChat: RustChatProtocol, @unchecked Sendable {
     fileprivate let handle: UInt64
@@ -676,9 +676,9 @@ open class RustChat: RustChatProtocol, @unchecked Sendable {
     /**
      * Create a new chat session.
      */
-public convenience init(model: RustModel, systemPrompt: String?, contextSize: UInt32, templateVariables: [String: Bool]?, tools: [RustTool]?, sampler: SamplerConfig?) {
+public convenience init(model: RustModel, systemPrompt: String?, contextSize: UInt32, templateVariables: [String: Bool]?, tools: [RustTool]?, sampler: SamplerConfig?)throws  {
     let handle =
-        try! rustCall() {
+        try rustCallWithError(FfiConverterTypeQuaynorError_lift) {
     uniffi_quaynor_uniffi_fn_constructor_rustchat_new(
         FfiConverterTypeRustModel_lower(model),
         FfiConverterOptionString.lower(systemPrompt),
@@ -695,9 +695,9 @@ public convenience init(model: RustModel, systemPrompt: String?, contextSize: UI
         try! rustCall { uniffi_quaynor_uniffi_fn_free_rustchat(handle, $0) }
     }
 
+    
 
-
-
+    
     /**
      * Send a message and get a token stream for the response.
      */
@@ -709,7 +709,7 @@ open func ask(message: String) -> RustTokenStream  {
     )
 })
 }
-
+    
     /**
      * Send a multimodal prompt (text + images/audio) and get a token stream.
      *
@@ -724,7 +724,7 @@ open func askWithPrompt(parts: [PromptPart]) -> RustTokenStream  {
     )
 })
 }
-
+    
     /**
      * Get the current chat history as a list of messages.
      */
@@ -734,7 +734,7 @@ open func getChatHistory()async throws  -> [Message]  {
             rustFutureFunc: {
                 uniffi_quaynor_uniffi_fn_method_rustchat_get_chat_history(
                     self.uniffiCloneHandle()
-
+                    
                 )
             },
             pollFunc: ffi_quaynor_uniffi_rust_future_poll_rust_buffer,
@@ -744,7 +744,7 @@ open func getChatHistory()async throws  -> [Message]  {
             errorHandler: FfiConverterTypeQuaynorError_lift
         )
 }
-
+    
     /**
      * Get the current sampler configuration as a JSON string.
      */
@@ -754,7 +754,7 @@ open func getSamplerConfigJson()async throws  -> String  {
             rustFutureFunc: {
                 uniffi_quaynor_uniffi_fn_method_rustchat_get_sampler_config_json(
                     self.uniffiCloneHandle()
-
+                    
                 )
             },
             pollFunc: ffi_quaynor_uniffi_rust_future_poll_rust_buffer,
@@ -764,14 +764,14 @@ open func getSamplerConfigJson()async throws  -> String  {
             errorHandler: FfiConverterTypeQuaynorError_lift
         )
 }
-
+    
 open func getStats()async throws  -> ChatStats  {
     return
         try  await uniffiRustCallAsync(
             rustFutureFunc: {
                 uniffi_quaynor_uniffi_fn_method_rustchat_get_stats(
                     self.uniffiCloneHandle()
-
+                    
                 )
             },
             pollFunc: ffi_quaynor_uniffi_rust_future_poll_rust_buffer,
@@ -781,7 +781,7 @@ open func getStats()async throws  -> ChatStats  {
             errorHandler: FfiConverterTypeQuaynorError_lift
         )
 }
-
+    
     /**
      * Get the current system prompt.
      */
@@ -791,7 +791,7 @@ open func getSystemPrompt()async throws  -> String?  {
             rustFutureFunc: {
                 uniffi_quaynor_uniffi_fn_method_rustchat_get_system_prompt(
                     self.uniffiCloneHandle()
-
+                    
                 )
             },
             pollFunc: ffi_quaynor_uniffi_rust_future_poll_rust_buffer,
@@ -801,7 +801,7 @@ open func getSystemPrompt()async throws  -> String?  {
             errorHandler: FfiConverterTypeQuaynorError_lift
         )
 }
-
+    
     /**
      * Get all template variables.
      */
@@ -811,7 +811,7 @@ open func getTemplateVariables()async throws  -> [String: Bool]  {
             rustFutureFunc: {
                 uniffi_quaynor_uniffi_fn_method_rustchat_get_template_variables(
                     self.uniffiCloneHandle()
-
+                    
                 )
             },
             pollFunc: ffi_quaynor_uniffi_rust_future_poll_rust_buffer,
@@ -821,7 +821,7 @@ open func getTemplateVariables()async throws  -> [String: Bool]  {
             errorHandler: FfiConverterTypeQuaynorError_lift
         )
 }
-
+    
     /**
      * Reset the chat context with a new system prompt and tools.
      */
@@ -841,7 +841,7 @@ open func resetContext(systemPrompt: String?, tools: [RustTool]?)async throws   
             errorHandler: FfiConverterTypeQuaynorError_lift
         )
 }
-
+    
     /**
      * Reset the chat history, keeping the system prompt and tools.
      */
@@ -851,7 +851,7 @@ open func resetHistory()async throws   {
             rustFutureFunc: {
                 uniffi_quaynor_uniffi_fn_method_rustchat_reset_history(
                     self.uniffiCloneHandle()
-
+                    
                 )
             },
             pollFunc: ffi_quaynor_uniffi_rust_future_poll_void,
@@ -861,7 +861,7 @@ open func resetHistory()async throws   {
             errorHandler: FfiConverterTypeQuaynorError_lift
         )
 }
-
+    
     /**
      * Set the chat history from a list of messages.
      */
@@ -881,7 +881,7 @@ open func setChatHistory(messages: [Message])async throws   {
             errorHandler: FfiConverterTypeQuaynorError_lift
         )
 }
-
+    
     /**
      * Set the sampler configuration.
      */
@@ -901,7 +901,7 @@ open func setSamplerConfig(sampler: SamplerConfig)async throws   {
             errorHandler: FfiConverterTypeQuaynorError_lift
         )
 }
-
+    
     /**
      * Set the system prompt.
      */
@@ -921,7 +921,7 @@ open func setSystemPrompt(systemPrompt: String?)async throws   {
             errorHandler: FfiConverterTypeQuaynorError_lift
         )
 }
-
+    
     /**
      * Set a template variable.
      */
@@ -941,7 +941,7 @@ open func setTemplateVariable(name: String, value: Bool)async throws   {
             errorHandler: FfiConverterTypeQuaynorError_lift
         )
 }
-
+    
     /**
      * Set the tools available to the model.
      */
@@ -961,7 +961,7 @@ open func setTools(tools: [RustTool])async throws   {
             errorHandler: FfiConverterTypeQuaynorError_lift
         )
 }
-
+    
     /**
      * Stop the current generation.
      */
@@ -971,7 +971,7 @@ open func stopGeneration()  {try! rustCall() {
     )
 }
 }
-
+    
 open func tokenize(message: String)async throws  -> [Int32?]  {
     return
         try  await uniffiRustCallAsync(
@@ -988,9 +988,9 @@ open func tokenize(message: String)async throws  -> [Int32?]  {
             errorHandler: FfiConverterTypeQuaynorError_lift
         )
 }
+    
 
-
-
+    
 }
 
 
@@ -1040,19 +1040,19 @@ public func FfiConverterTypeRustChat_lower(_ value: RustChat) -> UInt64 {
 
 
 public protocol RustCrossEncoderProtocol: AnyObject, Sendable {
-
+    
     /**
      * Rank documents by relevance to a query. Returns similarity scores.
      */
     func rank(query: String, documents: [String]) async throws  -> [Float]
-
+    
     /**
      * Rank documents and return them sorted by descending relevance.
      * Returns a JSON string of [document, score] pairs since UniFFI
      * doesn't support tuples directly.
      */
     func rankAndSortJson(query: String, documents: [String]) async throws  -> String
-
+    
 }
 open class RustCrossEncoder: RustCrossEncoderProtocol, @unchecked Sendable {
     fileprivate let handle: UInt64
@@ -1096,9 +1096,9 @@ open class RustCrossEncoder: RustCrossEncoderProtocol, @unchecked Sendable {
     /**
      * Create a new cross-encoder for ranking documents by relevance.
      */
-public convenience init(model: RustModel, contextSize: UInt32?) {
+public convenience init(model: RustModel, contextSize: UInt32?)throws  {
     let handle =
-        try! rustCall() {
+        try rustCallWithError(FfiConverterTypeQuaynorError_lift) {
     uniffi_quaynor_uniffi_fn_constructor_rustcrossencoder_new(
         FfiConverterTypeRustModel_lower(model),
         FfiConverterOptionUInt32.lower(contextSize),$0
@@ -1111,9 +1111,9 @@ public convenience init(model: RustModel, contextSize: UInt32?) {
         try! rustCall { uniffi_quaynor_uniffi_fn_free_rustcrossencoder(handle, $0) }
     }
 
+    
 
-
-
+    
     /**
      * Rank documents by relevance to a query. Returns similarity scores.
      */
@@ -1133,7 +1133,7 @@ open func rank(query: String, documents: [String])async throws  -> [Float]  {
             errorHandler: FfiConverterTypeQuaynorError_lift
         )
 }
-
+    
     /**
      * Rank documents and return them sorted by descending relevance.
      * Returns a JSON string of [document, score] pairs since UniFFI
@@ -1155,9 +1155,9 @@ open func rankAndSortJson(query: String, documents: [String])async throws  -> St
             errorHandler: FfiConverterTypeQuaynorError_lift
         )
 }
+    
 
-
-
+    
 }
 
 
@@ -1207,12 +1207,12 @@ public func FfiConverterTypeRustCrossEncoder_lower(_ value: RustCrossEncoder) ->
 
 
 public protocol RustEncoderProtocol: AnyObject, Sendable {
-
+    
     /**
      * Encode text into an embedding vector.
      */
     func encode(text: String) async throws  -> [Float]
-
+    
 }
 open class RustEncoder: RustEncoderProtocol, @unchecked Sendable {
     fileprivate let handle: UInt64
@@ -1256,9 +1256,9 @@ open class RustEncoder: RustEncoderProtocol, @unchecked Sendable {
     /**
      * Create a new encoder for generating text embeddings.
      */
-public convenience init(model: RustModel, contextSize: UInt32?) {
+public convenience init(model: RustModel, contextSize: UInt32?)throws  {
     let handle =
-        try! rustCall() {
+        try rustCallWithError(FfiConverterTypeQuaynorError_lift) {
     uniffi_quaynor_uniffi_fn_constructor_rustencoder_new(
         FfiConverterTypeRustModel_lower(model),
         FfiConverterOptionUInt32.lower(contextSize),$0
@@ -1271,9 +1271,9 @@ public convenience init(model: RustModel, contextSize: UInt32?) {
         try! rustCall { uniffi_quaynor_uniffi_fn_free_rustencoder(handle, $0) }
     }
 
+    
 
-
-
+    
     /**
      * Encode text into an embedding vector.
      */
@@ -1293,9 +1293,9 @@ open func encode(text: String)async throws  -> [Float]  {
             errorHandler: FfiConverterTypeQuaynorError_lift
         )
 }
+    
 
-
-
+    
 }
 
 
@@ -1345,9 +1345,11 @@ public func FfiConverterTypeRustEncoder_lower(_ value: RustEncoder) -> UInt64 {
 
 
 public protocol RustModelProtocol: AnyObject, Sendable {
-
-    func maxCtx()  -> UInt32
-
+    
+    func maxCtx() throws  -> UInt32
+    
+    func unload() throws 
+    
 }
 open class RustModel: RustModelProtocol, @unchecked Sendable {
     fileprivate let handle: UInt64
@@ -1394,19 +1396,26 @@ open class RustModel: RustModelProtocol, @unchecked Sendable {
         try! rustCall { uniffi_quaynor_uniffi_fn_free_rustmodel(handle, $0) }
     }
 
+    
 
-
-
-open func maxCtx() -> UInt32  {
-    return try!  FfiConverterUInt32.lift(try! rustCall() {
+    
+open func maxCtx()throws  -> UInt32  {
+    return try  FfiConverterUInt32.lift(try rustCallWithError(FfiConverterTypeQuaynorError_lift) {
     uniffi_quaynor_uniffi_fn_method_rustmodel_max_ctx(
             self.uniffiCloneHandle(),$0
     )
 })
 }
+    
+open func unload()throws   {try rustCallWithError(FfiConverterTypeQuaynorError_lift) {
+    uniffi_quaynor_uniffi_fn_method_rustmodel_unload(
+            self.uniffiCloneHandle(),$0
+    )
+}
+}
+    
 
-
-
+    
 }
 
 
@@ -1456,17 +1465,17 @@ public func FfiConverterTypeRustModel_lower(_ value: RustModel) -> UInt64 {
 
 
 public protocol RustTokenStreamProtocol: AnyObject, Sendable {
-
+    
     /**
      * Wait for the full response to complete and return it.
      */
     func completed() async throws  -> String
-
+    
     /**
      * Get the next token. Returns None when generation is complete.
      */
     func nextToken() async  -> String?
-
+    
 }
 open class RustTokenStream: RustTokenStreamProtocol, @unchecked Sendable {
     fileprivate let handle: UInt64
@@ -1513,9 +1522,9 @@ open class RustTokenStream: RustTokenStreamProtocol, @unchecked Sendable {
         try! rustCall { uniffi_quaynor_uniffi_fn_free_rusttokenstream(handle, $0) }
     }
 
+    
 
-
-
+    
     /**
      * Wait for the full response to complete and return it.
      */
@@ -1525,7 +1534,7 @@ open func completed()async throws  -> String  {
             rustFutureFunc: {
                 uniffi_quaynor_uniffi_fn_method_rusttokenstream_completed(
                     self.uniffiCloneHandle()
-
+                    
                 )
             },
             pollFunc: ffi_quaynor_uniffi_rust_future_poll_rust_buffer,
@@ -1535,7 +1544,7 @@ open func completed()async throws  -> String  {
             errorHandler: FfiConverterTypeQuaynorError_lift
         )
 }
-
+    
     /**
      * Get the next token. Returns None when generation is complete.
      */
@@ -1545,7 +1554,7 @@ open func nextToken()async  -> String?  {
             rustFutureFunc: {
                 uniffi_quaynor_uniffi_fn_method_rusttokenstream_next_token(
                     self.uniffiCloneHandle()
-
+                    
                 )
             },
             pollFunc: ffi_quaynor_uniffi_rust_future_poll_rust_buffer,
@@ -1553,12 +1562,12 @@ open func nextToken()async  -> String?  {
             freeFunc: ffi_quaynor_uniffi_rust_future_free_rust_buffer,
             liftFunc: FfiConverterOptionString.lift,
             errorHandler: nil
-
+            
         )
 }
+    
 
-
-
+    
 }
 
 
@@ -1608,22 +1617,22 @@ public func FfiConverterTypeRustTokenStream_lower(_ value: RustTokenStream) -> U
 
 
 public protocol RustToolProtocol: AnyObject, Sendable {
-
+    
     /**
      * Get the JSON schema for this tool's parameters as a string.
      */
     func getSchemaJson()  -> String
-
+    
     /**
      * Await the next tool call from inference. Returns `None` when the tool is dropped.
      */
     func nextPendingCall() async  -> PendingToolCall?
-
+    
     /**
      * Resolve a pending tool call with the result string.
      */
-    func resolvePendingCall(callId: String, result: String)
-
+    func resolvePendingCall(callId: String, result: String) 
+    
 }
 open class RustTool: RustToolProtocol, @unchecked Sendable {
     fileprivate let handle: UInt64
@@ -1684,7 +1693,7 @@ public convenience init(name: String, description: String, parameters: [ToolPara
         try! rustCall { uniffi_quaynor_uniffi_fn_free_rusttool(handle, $0) }
     }
 
-
+    
     /**
      * Create a tool with async callback support (for React Native).
      *
@@ -1701,9 +1710,9 @@ public static func newAsync(name: String, description: String, parameters: [Tool
     )
 })
 }
+    
 
-
-
+    
     /**
      * Get the JSON schema for this tool's parameters as a string.
      */
@@ -1714,7 +1723,7 @@ open func getSchemaJson() -> String  {
     )
 })
 }
-
+    
     /**
      * Await the next tool call from inference. Returns `None` when the tool is dropped.
      */
@@ -1724,7 +1733,7 @@ open func nextPendingCall()async  -> PendingToolCall?  {
             rustFutureFunc: {
                 uniffi_quaynor_uniffi_fn_method_rusttool_next_pending_call(
                     self.uniffiCloneHandle()
-
+                    
                 )
             },
             pollFunc: ffi_quaynor_uniffi_rust_future_poll_rust_buffer,
@@ -1732,10 +1741,10 @@ open func nextPendingCall()async  -> PendingToolCall?  {
             freeFunc: ffi_quaynor_uniffi_rust_future_free_rust_buffer,
             liftFunc: FfiConverterOptionTypePendingToolCall.lift,
             errorHandler: nil
-
+            
         )
 }
-
+    
     /**
      * Resolve a pending tool call with the result string.
      */
@@ -1747,9 +1756,9 @@ open func resolvePendingCall(callId: String, result: String)  {try! rustCall() {
     )
 }
 }
+    
 
-
-
+    
 }
 
 
@@ -1799,72 +1808,72 @@ public func FfiConverterTypeRustTool_lower(_ value: RustTool) -> UInt64 {
 
 
 public protocol SamplerBuilderProtocol: AnyObject, Sendable {
-
+    
     /**
      * Sample from the probability distribution (weighted random selection).
      */
     func dist()  -> SamplerConfig
-
+    
     /**
      * DRY (Don't Repeat Yourself) sampler to reduce repetition.
      */
     func dry(multiplier: Float, base: Float, allowedLength: Int32, penaltyLastN: Int32, seqBreakers: [String])  -> SamplerBuilder
-
+    
     /**
      * Apply a grammar constraint to enforce structured output.
      */
     func grammar(grammar: String, triggerOn: String?, root: String)  -> SamplerBuilder
-
+    
     /**
      * Always select the most probable token (deterministic).
      */
     func greedy()  -> SamplerConfig
-
+    
     /**
      * Keep tokens with probability above min_p * (probability of most likely token).
      */
     func minP(minP: Float, minKeep: UInt32)  -> SamplerBuilder
-
+    
     /**
      * Use Mirostat v1 algorithm for perplexity-controlled sampling.
      */
     func mirostatV1(tau: Float, eta: Float, m: Int32)  -> SamplerConfig
-
+    
     /**
      * Use Mirostat v2 algorithm for perplexity-controlled sampling.
      */
     func mirostatV2(tau: Float, eta: Float)  -> SamplerConfig
-
+    
     /**
      * Apply repetition penalties to discourage repeated tokens.
      */
     func penalties(penaltyLastN: Int32, penaltyRepeat: Float, penaltyFreq: Float, penaltyPresent: Float)  -> SamplerBuilder
-
+    
     /**
      * Apply temperature scaling to the probability distribution.
      */
     func temperature(temperature: Float)  -> SamplerBuilder
-
+    
     /**
      * Keep only the top K most probable tokens.
      */
     func topK(topK: Int32)  -> SamplerBuilder
-
+    
     /**
      * Keep tokens whose cumulative probability is below top_p.
      */
     func topP(topP: Float, minKeep: UInt32)  -> SamplerBuilder
-
+    
     /**
      * Typical sampling: keeps tokens close to expected information content.
      */
     func typicalP(typP: Float, minKeep: UInt32)  -> SamplerBuilder
-
+    
     /**
      * XTC sampler that probabilistically excludes high-probability tokens.
      */
     func xtc(xtcProbability: Float, xtcThreshold: Float, minKeep: UInt32)  -> SamplerBuilder
-
+    
 }
 open class SamplerBuilder: SamplerBuilderProtocol, @unchecked Sendable {
     fileprivate let handle: UInt64
@@ -1921,9 +1930,9 @@ public convenience init() {
         try! rustCall { uniffi_quaynor_uniffi_fn_free_samplerbuilder(handle, $0) }
     }
 
+    
 
-
-
+    
     /**
      * Sample from the probability distribution (weighted random selection).
      */
@@ -1934,7 +1943,7 @@ open func dist() -> SamplerConfig  {
     )
 })
 }
-
+    
     /**
      * DRY (Don't Repeat Yourself) sampler to reduce repetition.
      */
@@ -1950,7 +1959,7 @@ open func dry(multiplier: Float, base: Float, allowedLength: Int32, penaltyLastN
     )
 })
 }
-
+    
     /**
      * Apply a grammar constraint to enforce structured output.
      */
@@ -1964,7 +1973,7 @@ open func grammar(grammar: String, triggerOn: String?, root: String) -> SamplerB
     )
 })
 }
-
+    
     /**
      * Always select the most probable token (deterministic).
      */
@@ -1975,7 +1984,7 @@ open func greedy() -> SamplerConfig  {
     )
 })
 }
-
+    
     /**
      * Keep tokens with probability above min_p * (probability of most likely token).
      */
@@ -1988,7 +1997,7 @@ open func minP(minP: Float, minKeep: UInt32) -> SamplerBuilder  {
     )
 })
 }
-
+    
     /**
      * Use Mirostat v1 algorithm for perplexity-controlled sampling.
      */
@@ -2002,7 +2011,7 @@ open func mirostatV1(tau: Float, eta: Float, m: Int32) -> SamplerConfig  {
     )
 })
 }
-
+    
     /**
      * Use Mirostat v2 algorithm for perplexity-controlled sampling.
      */
@@ -2015,7 +2024,7 @@ open func mirostatV2(tau: Float, eta: Float) -> SamplerConfig  {
     )
 })
 }
-
+    
     /**
      * Apply repetition penalties to discourage repeated tokens.
      */
@@ -2030,7 +2039,7 @@ open func penalties(penaltyLastN: Int32, penaltyRepeat: Float, penaltyFreq: Floa
     )
 })
 }
-
+    
     /**
      * Apply temperature scaling to the probability distribution.
      */
@@ -2042,7 +2051,7 @@ open func temperature(temperature: Float) -> SamplerBuilder  {
     )
 })
 }
-
+    
     /**
      * Keep only the top K most probable tokens.
      */
@@ -2054,7 +2063,7 @@ open func topK(topK: Int32) -> SamplerBuilder  {
     )
 })
 }
-
+    
     /**
      * Keep tokens whose cumulative probability is below top_p.
      */
@@ -2067,7 +2076,7 @@ open func topP(topP: Float, minKeep: UInt32) -> SamplerBuilder  {
     )
 })
 }
-
+    
     /**
      * Typical sampling: keeps tokens close to expected information content.
      */
@@ -2080,7 +2089,7 @@ open func typicalP(typP: Float, minKeep: UInt32) -> SamplerBuilder  {
     )
 })
 }
-
+    
     /**
      * XTC sampler that probabilistically excludes high-probability tokens.
      */
@@ -2094,9 +2103,9 @@ open func xtc(xtcProbability: Float, xtcThreshold: Float, minKeep: UInt32) -> Sa
     )
 })
 }
+    
 
-
-
+    
 }
 
 
@@ -2146,12 +2155,12 @@ public func FfiConverterTypeSamplerBuilder_lower(_ value: SamplerBuilder) -> UIn
 
 
 public protocol SamplerConfigProtocol: AnyObject, Sendable {
-
+    
     /**
      * Serialize the sampler configuration to a JSON string.
      */
     func toJson() throws  -> String
-
+    
 }
 open class SamplerConfig: SamplerConfigProtocol, @unchecked Sendable {
     fileprivate let handle: UInt64
@@ -2198,7 +2207,7 @@ open class SamplerConfig: SamplerConfigProtocol, @unchecked Sendable {
         try! rustCall { uniffi_quaynor_uniffi_fn_free_samplerconfig(handle, $0) }
     }
 
-
+    
     /**
      * Deserialize a sampler configuration from a JSON string.
      */
@@ -2209,9 +2218,9 @@ public static func fromJson(jsonStr: String)throws  -> SamplerConfig  {
     )
 })
 }
+    
 
-
-
+    
     /**
      * Serialize the sampler configuration to a JSON string.
      */
@@ -2222,9 +2231,9 @@ open func toJson()throws  -> String  {
     )
 })
 }
+    
 
-
-
+    
 }
 
 
@@ -2282,7 +2291,7 @@ public struct Asset: Equatable, Hashable, Codable {
         self.path = path
     }
 
-
+    
 }
 
 #if compiler(>=6)
@@ -2296,7 +2305,7 @@ public struct FfiConverterTypeAsset: FfiConverterRustBuffer {
     public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> Asset {
         return
             try Asset(
-                id: FfiConverterString.read(from: &buf),
+                id: FfiConverterString.read(from: &buf), 
                 path: FfiConverterString.read(from: &buf)
         )
     }
@@ -2334,7 +2343,7 @@ public struct CachedModel: Equatable, Hashable, Codable {
         self.size = size
     }
 
-
+    
 }
 
 #if compiler(>=6)
@@ -2348,7 +2357,7 @@ public struct FfiConverterTypeCachedModel: FfiConverterRustBuffer {
     public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> CachedModel {
         return
             try CachedModel(
-                path: FfiConverterString.read(from: &buf),
+                path: FfiConverterString.read(from: &buf), 
                 size: FfiConverterUInt64.read(from: &buf)
         )
     }
@@ -2392,7 +2401,7 @@ public struct ChatStats: Equatable, Hashable, Codable {
         self.templateVariableCount = templateVariableCount
     }
 
-
+    
 }
 
 #if compiler(>=6)
@@ -2406,10 +2415,10 @@ public struct FfiConverterTypeChatStats: FfiConverterRustBuffer {
     public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> ChatStats {
         return
             try ChatStats(
-                contextSize: FfiConverterUInt32.read(from: &buf),
-                contextUsed: FfiConverterUInt32.read(from: &buf),
-                historyCount: FfiConverterUInt32.read(from: &buf),
-                toolCount: FfiConverterUInt32.read(from: &buf),
+                contextSize: FfiConverterUInt32.read(from: &buf), 
+                contextUsed: FfiConverterUInt32.read(from: &buf), 
+                historyCount: FfiConverterUInt32.read(from: &buf), 
+                toolCount: FfiConverterUInt32.read(from: &buf), 
                 templateVariableCount: FfiConverterUInt32.read(from: &buf)
         )
     }
@@ -2453,7 +2462,7 @@ public struct PendingToolCall: Equatable, Hashable, Codable {
         self.argumentsJson = argumentsJson
     }
 
-
+    
 }
 
 #if compiler(>=6)
@@ -2467,7 +2476,7 @@ public struct FfiConverterTypePendingToolCall: FfiConverterRustBuffer {
     public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> PendingToolCall {
         return
             try PendingToolCall(
-                callId: FfiConverterString.read(from: &buf),
+                callId: FfiConverterString.read(from: &buf), 
                 argumentsJson: FfiConverterString.read(from: &buf)
         )
     }
@@ -2505,7 +2514,7 @@ public struct ToolCall: Equatable, Hashable, Codable {
         self.argumentsJson = argumentsJson
     }
 
-
+    
 }
 
 #if compiler(>=6)
@@ -2519,7 +2528,7 @@ public struct FfiConverterTypeToolCall: FfiConverterRustBuffer {
     public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> ToolCall {
         return
             try ToolCall(
-                name: FfiConverterString.read(from: &buf),
+                name: FfiConverterString.read(from: &buf), 
                 argumentsJson: FfiConverterString.read(from: &buf)
         )
     }
@@ -2555,7 +2564,7 @@ public struct ToolParameter: Equatable, Hashable, Codable {
 
     // Default memberwise initializers are never public by default, so we
     // declare one manually.
-    public init(name: String,
+    public init(name: String, 
         /**
          * JSON Schema for this parameter (e.g. `{"type": "string"}`).
          */schema: String) {
@@ -2563,7 +2572,7 @@ public struct ToolParameter: Equatable, Hashable, Codable {
         self.schema = schema
     }
 
-
+    
 }
 
 #if compiler(>=6)
@@ -2577,7 +2586,7 @@ public struct FfiConverterTypeToolParameter: FfiConverterRustBuffer {
     public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> ToolParameter {
         return
             try ToolParameter(
-                name: FfiConverterString.read(from: &buf),
+                name: FfiConverterString.read(from: &buf), 
                 schema: FfiConverterString.read(from: &buf)
         )
     }
@@ -2607,7 +2616,7 @@ public func FfiConverterTypeToolParameter_lower(_ value: ToolParameter) -> RustB
 // See https://github.com/mozilla/uniffi-rs/issues/396 for further discussion.
 
 public enum Message: Equatable, Hashable, Codable {
-
+    
     case message(role: Role, content: String, assets: [Asset]
     )
     case toolCalls(role: Role, content: String, toolCalls: [ToolCall]
@@ -2632,44 +2641,44 @@ public struct FfiConverterTypeMessage: FfiConverterRustBuffer {
     public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> Message {
         let variant: Int32 = try readInt(&buf)
         switch variant {
-
+        
         case 1: return .message(role: try FfiConverterTypeRole.read(from: &buf), content: try FfiConverterString.read(from: &buf), assets: try FfiConverterSequenceTypeAsset.read(from: &buf)
         )
-
+        
         case 2: return .toolCalls(role: try FfiConverterTypeRole.read(from: &buf), content: try FfiConverterString.read(from: &buf), toolCalls: try FfiConverterSequenceTypeToolCall.read(from: &buf)
         )
-
+        
         case 3: return .toolResp(role: try FfiConverterTypeRole.read(from: &buf), name: try FfiConverterString.read(from: &buf), content: try FfiConverterString.read(from: &buf)
         )
-
+        
         default: throw UniffiInternalError.unexpectedEnumCase
         }
     }
 
     public static func write(_ value: Message, into buf: inout [UInt8]) {
         switch value {
-
-
+        
+        
         case let .message(role,content,assets):
             writeInt(&buf, Int32(1))
             FfiConverterTypeRole.write(role, into: &buf)
             FfiConverterString.write(content, into: &buf)
             FfiConverterSequenceTypeAsset.write(assets, into: &buf)
-
-
+            
+        
         case let .toolCalls(role,content,toolCalls):
             writeInt(&buf, Int32(2))
             FfiConverterTypeRole.write(role, into: &buf)
             FfiConverterString.write(content, into: &buf)
             FfiConverterSequenceTypeToolCall.write(toolCalls, into: &buf)
-
-
+            
+        
         case let .toolResp(role,name,content):
             writeInt(&buf, Int32(3))
             FfiConverterTypeRole.write(role, into: &buf)
             FfiConverterString.write(name, into: &buf)
             FfiConverterString.write(content, into: &buf)
-
+            
         }
     }
 }
@@ -2697,7 +2706,7 @@ public func FfiConverterTypeMessage_lower(_ value: Message) -> RustBuffer {
  */
 
 public enum PromptPart: Equatable, Hashable, Codable {
-
+    
     case text(content: String
     )
     case image(path: String
@@ -2722,38 +2731,38 @@ public struct FfiConverterTypePromptPart: FfiConverterRustBuffer {
     public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> PromptPart {
         let variant: Int32 = try readInt(&buf)
         switch variant {
-
+        
         case 1: return .text(content: try FfiConverterString.read(from: &buf)
         )
-
+        
         case 2: return .image(path: try FfiConverterString.read(from: &buf)
         )
-
+        
         case 3: return .audio(path: try FfiConverterString.read(from: &buf)
         )
-
+        
         default: throw UniffiInternalError.unexpectedEnumCase
         }
     }
 
     public static func write(_ value: PromptPart, into buf: inout [UInt8]) {
         switch value {
-
-
+        
+        
         case let .text(content):
             writeInt(&buf, Int32(1))
             FfiConverterString.write(content, into: &buf)
-
-
+            
+        
         case let .image(path):
             writeInt(&buf, Int32(2))
             FfiConverterString.write(path, into: &buf)
-
-
+            
+        
         case let .audio(path):
             writeInt(&buf, Int32(3))
             FfiConverterString.write(path, into: &buf)
-
+            
         }
     }
 }
@@ -2777,18 +2786,18 @@ public func FfiConverterTypePromptPart_lower(_ value: PromptPart) -> RustBuffer 
 
 public enum QuaynorError: Swift.Error, Equatable, Hashable, Codable, Foundation.LocalizedError {
 
-
-
+    
+    
     case Error(message: String)
+    
 
+    
 
-
-
-
+    
     public var errorDescription: String? {
         String(reflecting: self)
     }
-
+    
 }
 
 #if compiler(>=6)
@@ -2805,13 +2814,13 @@ public struct FfiConverterTypeQuaynorError: FfiConverterRustBuffer {
         let variant: Int32 = try readInt(&buf)
         switch variant {
 
+        
 
-
-
+        
         case 1: return .Error(
             message: try FfiConverterString.read(from: &buf)
         )
-
+        
 
         default: throw UniffiInternalError.unexpectedEnumCase
         }
@@ -2820,13 +2829,13 @@ public struct FfiConverterTypeQuaynorError: FfiConverterRustBuffer {
     public static func write(_ value: QuaynorError, into buf: inout [UInt8]) {
         switch value {
 
+        
 
-
-
+        
         case .Error(_ /* message is ignored*/):
             writeInt(&buf, Int32(1))
 
-
+        
         }
     }
 }
@@ -2850,7 +2859,7 @@ public func FfiConverterTypeQuaynorError_lower(_ value: QuaynorError) -> RustBuf
 // See https://github.com/mozilla/uniffi-rs/issues/396 for further discussion.
 
 public enum Role: Equatable, Hashable, Codable {
-
+    
     case user
     case assistant
     case system
@@ -2873,38 +2882,38 @@ public struct FfiConverterTypeRole: FfiConverterRustBuffer {
     public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> Role {
         let variant: Int32 = try readInt(&buf)
         switch variant {
-
+        
         case 1: return .user
-
+        
         case 2: return .assistant
-
+        
         case 3: return .system
-
+        
         case 4: return .tool
-
+        
         default: throw UniffiInternalError.unexpectedEnumCase
         }
     }
 
     public static func write(_ value: Role, into buf: inout [UInt8]) {
         switch value {
-
-
+        
+        
         case .user:
             writeInt(&buf, Int32(1))
-
-
+        
+        
         case .assistant:
             writeInt(&buf, Int32(2))
-
-
+        
+        
         case .system:
             writeInt(&buf, Int32(3))
-
-
+        
+        
         case .tool:
             writeInt(&buf, Int32(4))
-
+        
         }
     }
 }
@@ -2929,9 +2938,9 @@ public func FfiConverterTypeRole_lower(_ value: Role) -> RustBuffer {
 
 
 public protocol RustDownloadProgressCallback: AnyObject, Sendable {
-
-    func onDownloadProgress(downloaded: UInt64, total: UInt64)
-
+    
+    func onDownloadProgress(downloaded: UInt64, total: UInt64) 
+    
 }
 
 
@@ -2976,7 +2985,7 @@ fileprivate struct UniffiCallbackInterfaceRustDownloadProgressCallback {
                 )
             }
 
-
+            
             let writeReturn = { () }
             uniffiTraitInterfaceCall(
                 callStatus: uniffiCallStatus,
@@ -3061,9 +3070,9 @@ public func FfiConverterCallbackInterfaceRustDownloadProgressCallback_lower(_ v:
  * and should return the tool's result as a string.
  */
 public protocol RustToolCallback: AnyObject, Sendable {
-
+    
     func call(argumentsJson: String)  -> String
-
+    
 }
 
 
@@ -3106,7 +3115,7 @@ fileprivate struct UniffiCallbackInterfaceRustToolCallback {
                 )
             }
 
-
+            
             let writeReturn = { uniffiOutReturn.pointee = FfiConverterString.lower($0) }
             uniffiTraitInterfaceCall(
                 callStatus: uniffiCallStatus,
@@ -3757,6 +3766,13 @@ public func cosineSimilarity(a: [Float], b: [Float]) -> Float  {
     )
 })
 }
+public func deleteCachedModel(modelPath: String)throws  -> UInt64  {
+    return try  FfiConverterUInt64.lift(try rustCallWithError(FfiConverterTypeQuaynorError_lift) {
+    uniffi_quaynor_uniffi_fn_func_delete_cached_model(
+        FfiConverterString.lower(modelPath),$0
+    )
+})
+}
 public func downloadModel(modelPath: String, headers: [String: String]?, onDownloadProgress: RustDownloadProgressCallback?)async throws  -> String  {
     return
         try  await uniffiRustCallAsync(
@@ -3896,6 +3912,9 @@ private let initializationResult: InitializationResult = {
     if (uniffi_quaynor_uniffi_checksum_func_cosine_similarity() != 45661) {
         return InitializationResult.apiChecksumMismatch
     }
+    if (uniffi_quaynor_uniffi_checksum_func_delete_cached_model() != 28357) {
+        return InitializationResult.apiChecksumMismatch
+    }
     if (uniffi_quaynor_uniffi_checksum_func_download_model() != 39262) {
         return InitializationResult.apiChecksumMismatch
     }
@@ -3986,7 +4005,10 @@ private let initializationResult: InitializationResult = {
     if (uniffi_quaynor_uniffi_checksum_method_rustencoder_encode() != 12637) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_quaynor_uniffi_checksum_method_rustmodel_max_ctx() != 28151) {
+    if (uniffi_quaynor_uniffi_checksum_method_rustmodel_max_ctx() != 26782) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_quaynor_uniffi_checksum_method_rustmodel_unload() != 51114) {
         return InitializationResult.apiChecksumMismatch
     }
     if (uniffi_quaynor_uniffi_checksum_method_rusttokenstream_completed() != 60570) {
@@ -4046,13 +4068,13 @@ private let initializationResult: InitializationResult = {
     if (uniffi_quaynor_uniffi_checksum_method_samplerconfig_to_json() != 22965) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_quaynor_uniffi_checksum_constructor_rustchat_new() != 5971) {
+    if (uniffi_quaynor_uniffi_checksum_constructor_rustchat_new() != 35636) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_quaynor_uniffi_checksum_constructor_rustcrossencoder_new() != 4788) {
+    if (uniffi_quaynor_uniffi_checksum_constructor_rustcrossencoder_new() != 32789) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_quaynor_uniffi_checksum_constructor_rustencoder_new() != 52832) {
+    if (uniffi_quaynor_uniffi_checksum_constructor_rustencoder_new() != 49994) {
         return InitializationResult.apiChecksumMismatch
     }
     if (uniffi_quaynor_uniffi_checksum_constructor_rusttool_new() != 56826) {
