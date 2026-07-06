@@ -34,12 +34,14 @@ public final class Chat: @unchecked Sendable {
         contextSize: UInt32 = 4096,
         templateVariables: [String: Bool]? = nil,
         tools: [Tool]? = nil,
-        sampler: SamplerConfig? = nil
+        sampler: SamplerConfig? = nil,
+        onDownloadProgress: ((UInt64, UInt64) -> Void)? = nil
     ) async throws -> Chat {
         let model = try await Model.load(
             modelPath: modelPath,
             useGpu: useGpu,
-            projectionModelPath: projectionModelPath
+            projectionModelPath: projectionModelPath,
+            onDownloadProgress: onDownloadProgress
         )
         return try Chat(
             model: model,
@@ -116,6 +118,14 @@ public final class Chat: @unchecked Sendable {
     public func getSamplerConfig() async throws -> SamplerConfig {
         let json = try await requireInner().getSamplerConfigJson()
         return try SamplerConfig.fromJson(jsonStr: json)
+    }
+
+    public func getStats() async throws -> ChatStats {
+        try await requireInner().getStats()
+    }
+
+    public func tokenize(message: String) async throws -> [Int32?] {
+        try await requireInner().tokenize(message: message)
     }
 
     public func destroy() {
