@@ -216,6 +216,20 @@ impl TokenizerChunks {
         self.chunks.iter().map(|chunk| chunk.n_tokens()).sum()
     }
 
+    pub fn token_ids(&self) -> Vec<Option<i32>> {
+        self.chunks
+            .iter()
+            .flat_map(|chunk| match chunk {
+                TokenizerChunk::Text(tokens, _) => {
+                    tokens.iter().map(|token| Some(token.0)).collect::<Vec<_>>()
+                }
+                TokenizerChunk::Image(_, _) | TokenizerChunk::Audio(_, _) => {
+                    vec![None; chunk.n_tokens()]
+                }
+            })
+            .collect()
+    }
+
     pub fn len(&self) -> usize {
         self.chunks.len()
     }
