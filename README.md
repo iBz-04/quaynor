@@ -134,7 +134,7 @@ SwiftPM is Apple's package manager for Swift and Xcode projects.
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/iBz-04/quaynor.git", from: "0.1.0")
+    .package(url: "https://github.com/iBz-04/quaynor.git", from: "0.1.1")
 ]
 ```
 
@@ -149,7 +149,7 @@ let text = try await chat.ask("Is a zebra black or white?").completed()
 print(text)
 ```
 
-The Swift package is distributed through Swift Package Manager for iOS and macOS using the published `QuaynorFFI.xcframework` release artifact. The public Swift API includes `Model`, `Chat`, `TokenStream`, `Encoder`, `CrossEncoder`, `Prompt`, `SamplerPresets`, and `Tool` for tool calling.
+The Swift package is distributed through Swift Package Manager for iOS and macOS using the published `QuaynorFFI.xcframework` release artifact. The public Swift API includes `Model`, `Chat`, `TokenStream`, `Encoder`, `CrossEncoder`, `Prompt`, `SamplerPresets`, `Tool`, `CachedModel`, and `ChatStats`. `Model` also supports Hugging Face downloads, cache inspection with `getCachedModels()`, and cache deletion with `deleteCachedModel(modelPath:)`.
 
 ---
 

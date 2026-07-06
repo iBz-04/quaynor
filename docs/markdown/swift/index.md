@@ -12,13 +12,13 @@ Add the package in Xcode with:
 
 - URL: `https://github.com/iBz-04/quaynor.git`
 - Dependency rule: `Up to Next Major Version`
-- Version: `0.1.0`
+- Version: `0.1.1`
 
 Or declare it in `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/iBz-04/quaynor.git", from: "0.1.0")
+    .package(url: "https://github.com/iBz-04/quaynor.git", from: "0.1.1")
 ]
 ```
 
@@ -37,7 +37,7 @@ The package exposes:
 - `CachedModel`
 - `ChatStats`
 
-That means Swift supports model loading and downloads, chat, streaming, embeddings, reranking, tokenization, chat stats, cache inspection, and tool calling through the wrapper API.
+That means Swift supports model loading and downloads, chat, streaming, embeddings, reranking, tokenization, chat stats, cache inspection, cache deletion, and tool calling through the wrapper API.
 
 Example:
 
@@ -52,7 +52,7 @@ let answer = try await chat.ask("Is a zebra black or white?").completed()
 print(answer)
 ```
 
-Download progress and cache inspection are available directly on `Model`:
+Download progress, cache inspection, and cache deletion are available directly on `Model`:
 
 ```swift
 let localPath = try await Model.downloadModel(
@@ -62,6 +62,13 @@ let localPath = try await Model.downloadModel(
 }
 
 let cachedModels = try Model.getCachedModels()
+for model in cachedModels {
+    print("\(model.path) (\(model.size) bytes)")
+}
+
+let deletedBytes = try Model.deleteCachedModel(modelPath: cachedModels[0].path)
+print("Deleted \(deletedBytes) bytes")
 print(localPath)
-print(cachedModels)
 ```
+
+`deleteCachedModel` only accepts paths inside Quaynor's model cache. It returns the number of bytes removed and throws if the path is outside the cache or the model is still loaded.

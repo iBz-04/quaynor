@@ -4,7 +4,8 @@ The distributed Swift package for Quaynor lives at the repository root so users 
 
 - Rust and UniFFI define the ABI layer.
 - Generated `Rust*` Swift bindings live in `Sources/QuaynorFFI`.
-- The public Swift API lives in `Sources/Quaynor` and exposes `Model`, `Chat`, `TokenStream`, `Tool`, `Prompt`, `Encoder`, and `CrossEncoder`.
+- The public Swift API lives in `Sources/Quaynor` and exposes `Model`, `Chat`, `TokenStream`, `Tool`, `Prompt`, `Encoder`, `CrossEncoder`, `CachedModel`, and `ChatStats`.
+- `Model` also provides `downloadModel`, `getCachedModels`, and `deleteCachedModel` for Hugging Face downloads and on-disk cache management.
 
 ## Layout
 
@@ -36,7 +37,7 @@ Consumers install Quaynor from the repository root:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/iBz-04/quaynor.git", from: "0.1.0")
+    .package(url: "https://github.com/iBz-04/quaynor.git", from: "0.1.1")
 ]
 ```
 
