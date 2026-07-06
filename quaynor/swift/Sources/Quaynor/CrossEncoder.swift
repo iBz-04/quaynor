@@ -5,7 +5,7 @@ public final class CrossEncoder: @unchecked Sendable {
     private var inner: RustCrossEncoder?
 
     public init(model: Model, contextSize: UInt32? = nil) throws {
-        self.inner = RustCrossEncoder(model: try model.requireInner(), contextSize: contextSize)
+        self.inner = try RustCrossEncoder(model: try model.requireInner(), contextSize: contextSize)
     }
 
     public static func fromPath(

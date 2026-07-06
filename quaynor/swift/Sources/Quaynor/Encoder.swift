@@ -5,7 +5,7 @@ public final class Encoder: @unchecked Sendable {
     private var inner: RustEncoder?
 
     public init(model: Model, contextSize: UInt32? = nil) throws {
-        self.inner = RustEncoder(model: try model.requireInner(), contextSize: contextSize)
+        self.inner = try RustEncoder(model: try model.requireInner(), contextSize: contextSize)
     }
 
     public static func fromPath(
