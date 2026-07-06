@@ -169,6 +169,15 @@ pub struct ChatConfig {
     pub sampler_config: Option<SamplerConfig>,
 }
 
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ChatStats {
+    pub context_size: u32,
+    pub context_used: u32,
+    pub history_count: u32,
+    pub tool_count: u32,
+    pub template_variable_count: u32,
+}
+
 impl Default for ChatConfig {
     fn default() -> Self {
         Self {
@@ -556,6 +565,23 @@ impl ChatHandle {
                 "get_system_prompt".into(),
             ))
     }
+
+    pub fn get_stats(&self) -> Result<ChatStats, crate::errors::GetterError> {
+        let (output_tx, mut output_rx) = tokio::sync::mpsc::channel(1);
+        self.guard.send(ChatMsg::GetStats { output_tx });
+        output_rx
+            .blocking_recv()
+            .ok_or(crate::errors::GetterError::GetterError("get_stats".into()))
+    }
+
+    pub fn tokenize(&self, message: String) -> Result<Vec<Option<i32>>, crate::errors::GetterError> {
+        let (output_tx, mut output_rx) = tokio::sync::mpsc::channel(1);
+        self.guard.send(ChatMsg::Tokenize { message, output_tx });
+        output_rx
+            .blocking_recv()
+            .ok_or(crate::errors::GetterError::GetterError("tokenize".into()))?
+            .map_err(crate::errors::GetterError::GetterError)
+    }
 }
 
 /// Interact with a ChatWorker in an asynchronous manner.
@@ -840,6 +866,28 @@ impl ChatHandleAsync {
                 "get_system_prompt".into(),
             ))
     }
+
+    pub async fn get_stats(&self) -> Result<ChatStats, crate::errors::GetterError> {
+        let (output_tx, mut output_rx) = tokio::sync::mpsc::channel(1);
+        self.guard.send(ChatMsg::GetStats { output_tx });
+        output_rx
+            .recv()
+            .await
+            .ok_or(crate::errors::GetterError::GetterError("get_stats".into()))
+    }
+
+    pub async fn tokenize(
+        &self,
+        message: String,
+    ) -> Result<Vec<Option<i32>>, crate::errors::GetterError> {
+        let (output_tx, mut output_rx) = tokio::sync::mpsc::channel(1);
+        self.guard.send(ChatMsg::Tokenize { message, output_tx });
+        output_rx
+            .recv()
+            .await
+            .ok_or(crate::errors::GetterError::GetterError("tokenize".into()))?
+            .map_err(crate::errors::GetterError::GetterError)
+    }
 }
 
 /// A stream of tokens from the model.
@@ -995,6 +1043,13 @@ enum ChatMsg {
         messages: Vec<Message>,
         output_tx: tokio::sync::mpsc::Sender<()>,
     },
+    GetStats {
+        output_tx: tokio::sync::mpsc::Sender<ChatStats>,
+    },
+    Tokenize {
+        message: String,
+        output_tx: tokio::sync::mpsc::Sender<Result<Vec<Option<i32>>, String>>,
+    },
 }
 
 impl std::fmt::Debug for ChatMsg {
@@ -1043,6 +1098,11 @@ impl std::fmt::Debug for ChatMsg {
                 .field("messages", &format!("[{} messages]", messages.len()))
                 .finish(),
             ChatMsg::GetSamplerConfig { .. } => f.debug_struct("GetSamplerConfig").finish(),
+            ChatMsg::GetStats { .. } => f.debug_struct("GetStats").finish(),
+            ChatMsg::Tokenize { message, .. } => f
+                .debug_struct("Tokenize")
+                .field("message", message)
+                .finish(),
         }
     }
 }
@@ -1134,6 +1194,16 @@ fn process_worker_msg(
         ChatMsg::GetSamplerConfig { output_tx } => {
             let sampler_config = worker_state.get_sampler_config();
             let _ = output_tx.blocking_send(sampler_config);
+        }
+        ChatMsg::GetStats { output_tx } => {
+            let stats = worker_state.get_stats();
+            let _ = output_tx.blocking_send(stats);
+        }
+        ChatMsg::Tokenize { message, output_tx } => {
+            let result = worker_state
+                .tokenize_message(message)
+                .map_err(|e| e.to_string());
+            let _ = output_tx.blocking_send(result);
         }
     };
 
@@ -1985,6 +2055,36 @@ impl Worker<'_, ChatWorker> {
 
     pub fn get_sampler_config(&self) -> SamplerConfig {
         self.extra.sampler_config.clone()
+    }
+
+    pub fn get_stats(&self) -> ChatStats {
+        ChatStats {
+            context_size: self.ctx.n_ctx(),
+            context_used: self.n_past.max(0) as u32,
+            history_count: self.get_chat_history().len() as u32,
+            tool_count: self.extra.tools.len() as u32,
+            template_variable_count: self.extra.template_variables.len() as u32,
+        }
+    }
+
+    pub fn tokenize_message(&mut self, message: String) -> Result<Vec<Option<i32>>, RenderError> {
+        let mut messages = self.extra.messages.clone();
+        messages.push(Message::new_user(message));
+        let template_context = ChatTemplateContext::new(
+            self.extra.template_variables.clone(),
+            if self.extra.tools.is_empty() {
+                None
+            } else {
+                Some(self.extra.tools.clone())
+            },
+        );
+        let rendered_chat = self.extra.chat_template.render(&messages, &template_context)?;
+        let bitmaps: Vec<&MtmdBitmap> = messages
+            .iter()
+            .flat_map(|msg| msg.assets())
+            .filter_map(|asset| self.extra.context.bitmaps.get(&asset.id))
+            .collect();
+        Ok(self.tokenizer.tokenize(rendered_chat, bitmaps)?.token_ids())
     }
 }
 
