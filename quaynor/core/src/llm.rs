@@ -81,6 +81,11 @@ enum ParsedModelPath {
     FilesystemPath(std::path::PathBuf),     // e.g. ./qwen3.gguf
 }
 
+pub struct CachedModel {
+    pub path: String,
+    pub size: u64,
+}
+
 fn parse_model_path(
     model_path: &str,
 ) -> Result<ParsedModelPath, nom::Err<nom::error::Error<String>>> {
@@ -130,13 +135,15 @@ fn parse_model_path(
 /// on the filesystem
 fn resolve_fancy_path_to_fs(
     parsed_path: ParsedModelPath,
+    headers: Option<&std::collections::HashMap<String, String>>,
+    progress: Option<&(dyn Fn(u64, u64) + Send + Sync)>,
 ) -> Result<std::path::PathBuf, LoadModelError> {
     let fs_model_path = match parsed_path {
         ParsedModelPath::HuggingFaceUrl(owner, repo, filename) => {
-            download_model_from_hf(&owner, &repo, &filename)?
+            download_model_from_hf_with_options(&owner, &repo, &filename, headers, progress)?
         }
         ParsedModelPath::FilesystemPath(path) => path,
-        ParsedModelPath::HttpUrl(url) => download_model_from_url(&url)?,
+        ParsedModelPath::HttpUrl(url) => download_model_from_url_with_options(&url, headers, progress)?,
     };
 
     if !fs_model_path.exists() {
@@ -148,17 +155,25 @@ fn resolve_fancy_path_to_fs(
     Ok(fs_model_path)
 }
 
+pub fn resolve_model_path(
+    model_path: &str,
+    headers: Option<&std::collections::HashMap<String, String>>,
+    progress: Option<&(dyn Fn(u64, u64) + Send + Sync)>,
+) -> Result<std::path::PathBuf, LoadModelError> {
+    resolve_fancy_path_to_fs(parse_model_path(model_path)?, headers, progress)
+}
+
 #[tracing::instrument(level = "info")]
 pub fn get_model(
     model_path: &str,
     use_gpu_if_available: bool,
     mmproj_path: Option<&str>,
 ) -> Result<Model, LoadModelError> {
-    let real_model_path = resolve_fancy_path_to_fs(parse_model_path(model_path)?)?;
+    let real_model_path = resolve_model_path(model_path, None, None)?;
     let real_mmproj_path = mmproj_path
         .map(parse_model_path) // parse inside option
         .transpose()? // return early if parse fails
-        .map(resolve_fancy_path_to_fs) // download the file if needed
+        .map(|path| resolve_fancy_path_to_fs(path, None, None)) // download the file if needed
         .transpose()?; // return early if download fails
 
     // TODO: `LlamaModelParams` uses all devices by default. Set it to an empty list once an upstream device API is available.
@@ -245,6 +260,28 @@ pub async fn get_model_async(
     }
 }
 
+pub async fn get_model_async_with_progress(
+    model_path: String,
+    use_gpu_if_available: bool,
+    mmproj_path: Option<String>,
+    progress: Option<Arc<dyn Fn(u64, u64) + Send + Sync>>,
+) -> Result<Model, LoadModelError> {
+    let (output_tx, mut output_rx) = tokio::sync::mpsc::channel(4096);
+    std::thread::spawn(move || {
+        let progress_ref = progress.as_deref();
+        let real_model_path = resolve_model_path(&model_path, None, progress_ref);
+        let result = real_model_path.and_then(|_| {
+            get_model(&model_path, use_gpu_if_available, mmproj_path.as_deref())
+        });
+        output_tx.blocking_send(result)
+    });
+
+    match output_rx.recv().await {
+        Some(model) => return model,
+        None => Err(LoadModelError::ModelChannelError),
+    }
+}
+
 /// Get the cache directory for downloaded models.
 ///
 /// On Android, the package name is read from `/proc/self/cmdline` and the user ID
@@ -253,7 +290,7 @@ pub async fn get_model_async(
 /// via `dlopen` (not `System.loadLibrary`), so `JNI_OnLoad` is never called.
 ///
 /// On other platforms, uses the `dirs` crate to find the standard cache directory.
-fn get_cache_dir() -> Result<std::path::PathBuf, crate::errors::LoadModelError> {
+pub fn get_cache_dir() -> Result<std::path::PathBuf, crate::errors::LoadModelError> {
     let base = get_platform_cache_dir()?;
     Ok(base.join("quaynor").join("models"))
 }
@@ -307,6 +344,8 @@ fn get_platform_cache_dir() -> Result<std::path::PathBuf, crate::errors::LoadMod
 fn download_file(
     url: &str,
     target_path: &std::path::Path,
+    headers: Option<&std::collections::HashMap<String, String>>,
+    progress: Option<&(dyn Fn(u64, u64) + Send + Sync)>,
 ) -> Result<(), crate::errors::LoadModelError> {
     for component in target_path.components() {
         if component == std::path::Component::ParentDir {
@@ -333,7 +372,14 @@ fn download_file(
 
     info!("Downloading {} -> {}", url, target_path.display());
 
-    let response = ureq::get(url).call().map_err(|e| {
+    let mut request = ureq::get(url);
+    if let Some(headers) = headers {
+        for (name, value) in headers {
+            request = request.header(name.as_str(), value.as_str());
+        }
+    }
+
+    let response = request.call().map_err(|e| {
         crate::errors::LoadModelError::DownloadError(format!("HTTP request failed: {e}"))
     })?;
 
@@ -376,6 +422,9 @@ fn download_file(
         let mut downloaded: u64 = 0;
         let mut last_logged_pct: u64 = 0;
         let mut buf = vec![0u8; 256 * 1024]; // 256 KB chunks
+        if let Some(progress) = progress {
+            progress(0, content_length.get());
+        }
 
         loop {
             let n = reader.read(&mut buf).map_err(|e| {
@@ -392,6 +441,9 @@ fn download_file(
                 ))
             })?;
             downloaded += n as u64;
+            if let Some(progress) = progress {
+                progress(downloaded, content_length.get());
+            }
 
             let pct = (downloaded * 100) / content_length;
             if pct >= last_logged_pct + 5 {
@@ -438,10 +490,20 @@ fn download_model_from_hf(
     repo: &str,
     filename: &str,
 ) -> Result<std::path::PathBuf, crate::errors::LoadModelError> {
+    download_model_from_hf_with_options(owner, repo, filename, None, None)
+}
+
+fn download_model_from_hf_with_options(
+    owner: &str,
+    repo: &str,
+    filename: &str,
+    headers: Option<&std::collections::HashMap<String, String>>,
+    progress: Option<&(dyn Fn(u64, u64) + Send + Sync)>,
+) -> Result<std::path::PathBuf, crate::errors::LoadModelError> {
     let cache_dir = get_cache_dir()?;
     let target_path = cache_dir.join(owner).join(repo).join(filename);
     let url = format!("https://huggingface.co/{owner}/{repo}/resolve/main/{filename}");
-    download_file(&url, &target_path)?;
+    download_file(&url, &target_path, headers, progress)?;
     Ok(target_path)
 }
 
@@ -449,14 +511,79 @@ fn download_model_from_hf(
 ///
 /// The file is cached by its URL path components under the cache directory.
 fn download_model_from_url(url: &str) -> Result<std::path::PathBuf, crate::errors::LoadModelError> {
+    download_model_from_url_with_options(url, None, None)
+}
+
+fn download_model_from_url_with_options(
+    url: &str,
+    headers: Option<&std::collections::HashMap<String, String>>,
+    progress: Option<&(dyn Fn(u64, u64) + Send + Sync)>,
+) -> Result<std::path::PathBuf, crate::errors::LoadModelError> {
     let cache_dir = get_cache_dir()?;
     // Derive a cache path from the URL: strip scheme, use the rest as path components
     let path_part = url
         .trim_start_matches("https://")
         .trim_start_matches("http://");
     let target_path = cache_dir.join("http").join(path_part);
-    download_file(url, &target_path)?;
+    download_file(url, &target_path, headers, progress)?;
     Ok(target_path)
+}
+
+pub fn download_model(
+    model_path: &str,
+    headers: Option<&std::collections::HashMap<String, String>>,
+    progress: Option<&(dyn Fn(u64, u64) + Send + Sync)>,
+) -> Result<std::path::PathBuf, crate::errors::LoadModelError> {
+    resolve_model_path(model_path, headers, progress)
+}
+
+pub fn get_cached_models() -> Result<Vec<CachedModel>, crate::errors::LoadModelError> {
+    let cache_dir = get_cache_dir()?;
+    if !cache_dir.exists() {
+        return Ok(Vec::new());
+    }
+
+    let mut models = Vec::new();
+    collect_cached_models(&cache_dir, &mut models)?;
+    models.sort_by(|a, b| a.path.cmp(&b.path));
+    Ok(models)
+}
+
+fn collect_cached_models(
+    dir: &std::path::Path,
+    models: &mut Vec<CachedModel>,
+) -> Result<(), crate::errors::LoadModelError> {
+    for entry in std::fs::read_dir(dir).map_err(|e| {
+        crate::errors::LoadModelError::DownloadError(format!(
+            "Failed to read cache directory {}: {e}",
+            dir.display()
+        ))
+    })? {
+        let entry = entry.map_err(|e| {
+            crate::errors::LoadModelError::DownloadError(format!(
+                "Failed to read cache entry in {}: {e}",
+                dir.display()
+            ))
+        })?;
+        let path = entry.path();
+        let metadata = entry.metadata().map_err(|e| {
+            crate::errors::LoadModelError::DownloadError(format!(
+                "Failed to read metadata for {}: {e}",
+                path.display()
+            ))
+        })?;
+        if metadata.is_dir() {
+            collect_cached_models(&path, models)?;
+        } else if metadata.is_file()
+            && path.extension().and_then(|ext| ext.to_str()) == Some("gguf")
+        {
+            models.push(CachedModel {
+                path: path.to_string_lossy().into_owned(),
+                size: metadata.len(),
+            });
+        }
+    }
+    Ok(())
 }
 
 fn read_add_bos_metadata(model: &LlamaModel) -> Result<AddBos, InitWorkerError> {
