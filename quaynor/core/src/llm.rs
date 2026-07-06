@@ -35,6 +35,12 @@ pub struct Model {
     pub(crate) projection_model: Option<ProjectionModel>,
 }
 
+impl Model {
+    pub fn max_ctx(&self) -> u32 {
+        self.language_model.n_ctx_train()
+    }
+}
+
 pub fn has_gpu_backend() -> bool {
     #[cfg(any(
         all(target_os = "ios", target_arch = "aarch64", target_abi = "sim"),
@@ -485,14 +491,6 @@ fn download_file(
 /// Download a GGUF model from HuggingFace Hub and return the local path to it.
 ///
 /// If the model is already cached locally, the cached path is returned without downloading.
-fn download_model_from_hf(
-    owner: &str,
-    repo: &str,
-    filename: &str,
-) -> Result<std::path::PathBuf, crate::errors::LoadModelError> {
-    download_model_from_hf_with_options(owner, repo, filename, None, None)
-}
-
 fn download_model_from_hf_with_options(
     owner: &str,
     repo: &str,
@@ -510,10 +508,6 @@ fn download_model_from_hf_with_options(
 /// Download a model from a generic HTTP(S) URL and return the local path to it.
 ///
 /// The file is cached by its URL path components under the cache directory.
-fn download_model_from_url(url: &str) -> Result<std::path::PathBuf, crate::errors::LoadModelError> {
-    download_model_from_url_with_options(url, None, None)
-}
-
 fn download_model_from_url_with_options(
     url: &str,
     headers: Option<&std::collections::HashMap<String, String>>,
