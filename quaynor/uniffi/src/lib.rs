@@ -227,6 +227,12 @@ pub struct RustModel {
     inner: Arc<quaynor::llm::Model>,
 }
 
+#[derive(uniffi::Record, Clone)]
+pub struct CachedModel {
+    pub path: String,
+    pub size: u64,
+}
+
 /// Load a GGUF model from a local path or remote URL.
 ///
 /// Accepts local filesystem paths, `hf://owner/repo/file.gguf` for HuggingFace downloads,
@@ -240,6 +246,7 @@ pub async fn load_model(
     model_path: String,
     use_gpu: bool,
     projection_model_path: Option<String>,
+    on_download_progress: Option<Box<dyn RustDownloadProgressCallback>>,
 ) -> Result<Arc<RustModel>, QuaynorError> {
     init_logging();
     log::info!(
@@ -249,7 +256,13 @@ pub async fn load_model(
         projection_model_path
     );
 
-    let model = quaynor::llm::get_model_async(model_path.clone(), use_gpu, projection_model_path)
+    let progress = on_download_progress.map(wrap_progress);
+    let model = quaynor::llm::get_model_async_with_progress(
+        model_path.clone(),
+        use_gpu,
+        projection_model_path,
+        progress,
+    )
         .await
         .map_err(|e| {
             let msg = format!("Failed to load model '{}': {}", model_path, e);
@@ -261,6 +274,61 @@ pub async fn load_model(
     Ok(Arc::new(RustModel {
         inner: Arc::new(model),
     }))
+}
+
+#[uniffi::export]
+pub async fn download_model(
+    model_path: String,
+    headers: Option<HashMap<String, String>>,
+    on_download_progress: Option<Box<dyn RustDownloadProgressCallback>>,
+) -> Result<String, QuaynorError> {
+    init_logging();
+    let progress = on_download_progress.map(wrap_progress);
+    let (tx, mut rx) = tokio::sync::mpsc::channel(1);
+    std::thread::spawn(move || {
+        let result = quaynor::llm::download_model(&model_path, headers.as_ref(), progress.as_deref())
+            .map(|p| p.to_string_lossy().into_owned())
+            .map_err(|e| QuaynorError::Error {
+                message: e.to_string(),
+            });
+        let _ = tx.blocking_send(result);
+    });
+    rx.recv().await.ok_or_else(|| QuaynorError::Error {
+        message: "Download thread terminated unexpectedly".into(),
+    })?
+}
+
+#[uniffi::export]
+pub fn get_cached_models() -> Result<Vec<CachedModel>, QuaynorError> {
+    quaynor::llm::get_cached_models()
+        .map(|models| {
+            models
+                .into_iter()
+                .map(|model| CachedModel {
+                    path: model.path,
+                    size: model.size,
+                })
+                .collect()
+        })
+        .map_err(|e| QuaynorError::Error {
+            message: e.to_string(),
+        })
+}
+
+#[uniffi::export]
+impl RustModel {
+    pub fn max_ctx(&self) -> u32 {
+        self.inner.max_ctx()
+    }
+}
+
+#[derive(uniffi::Record, Clone)]
+pub struct ChatStats {
+    pub context_size: u32,
+    pub context_used: u32,
+    pub history_count: u32,
+    pub tool_count: u32,
+    pub template_variable_count: u32,
 }
 
 // ---------- RustChat ----------
@@ -326,6 +394,15 @@ impl RustChat {
         Arc::new(RustTokenStream {
             inner: tokio::sync::Mutex::new(self.inner.ask(prompt)),
         })
+    }
+
+    pub async fn tokenize(&self, message: String) -> Result<Vec<Option<i32>>, QuaynorError> {
+        self.inner
+            .tokenize(message)
+            .await
+            .map_err(|e| QuaynorError::Error {
+                message: e.to_string(),
+            })
     }
 
     /// Stop the current generation.
@@ -468,6 +545,22 @@ impl RustChat {
             message: e.to_string(),
         })
     }
+
+    pub async fn get_stats(&self) -> Result<ChatStats, QuaynorError> {
+        self.inner
+            .get_stats()
+            .await
+            .map(|stats| ChatStats {
+                context_size: stats.context_size,
+                context_used: stats.context_used,
+                history_count: stats.history_count,
+                tool_count: stats.tool_count,
+                template_variable_count: stats.template_variable_count,
+            })
+            .map_err(|e| QuaynorError::Error {
+                message: e.to_string(),
+            })
+    }
 }
 
 // ---------- RustTokenStream ----------
@@ -515,6 +608,20 @@ impl RustTokenStream {
 #[uniffi::export(callback_interface)]
 pub trait RustToolCallback: Send + Sync {
     fn call(&self, arguments_json: String) -> String;
+}
+
+#[uniffi::export(callback_interface)]
+pub trait RustDownloadProgressCallback: Send + Sync {
+    fn on_download_progress(&self, downloaded: u64, total: u64);
+}
+
+fn wrap_progress(
+    cb: Box<dyn RustDownloadProgressCallback>,
+) -> Arc<dyn Fn(u64, u64) + Send + Sync> {
+    let cb: Arc<dyn RustDownloadProgressCallback> = Arc::from(cb);
+    Arc::new(move |downloaded, total| {
+        cb.on_download_progress(downloaded, total);
+    })
 }
 
 /// A pending tool call waiting for resolution from the language binding.
