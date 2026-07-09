@@ -12,13 +12,13 @@ Add the package in Xcode with:
 
 - URL: `https://github.com/iBz-04/quaynor.git`
 - Dependency rule: `Up to Next Major Version`
-- Version: `0.1.1`
+- Version: `0.1.2`
 
 Or declare it in `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/iBz-04/quaynor.git", from: "0.1.1")
+    .package(url: "https://github.com/iBz-04/quaynor.git", from: "0.1.2")
 ]
 ```
 

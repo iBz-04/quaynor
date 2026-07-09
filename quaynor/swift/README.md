@@ -37,7 +37,7 @@ Consumers install Quaynor from the repository root:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/iBz-04/quaynor.git", from: "0.1.1")
+    .package(url: "https://github.com/iBz-04/quaynor.git", from: "0.1.2")
 ]
 ```
 

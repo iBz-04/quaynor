@@ -134,7 +134,7 @@ SwiftPM is Apple's package manager for Swift and Xcode projects.
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/iBz-04/quaynor.git", from: "0.1.1")
+    .package(url: "https://github.com/iBz-04/quaynor.git", from: "0.1.2")
 ]
 ```
 
