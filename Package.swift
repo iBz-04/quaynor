@@ -17,7 +17,7 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "CQuaynorFFI",
-            url: "https://github.com/iBz-04/quaynor/releases/download/quaynor-swift-0.1.1/QuaynorFFI.xcframework.zip",
+            url: "https://github.com/iBz-04/quaynor/releases/download/quaynor-swift-0.1.2/QuaynorFFI.xcframework.zip",
             checksum: "0b70cc398cefac513e42ec96a3cb1083ad5112a4ddf1d078779f875e56c5d6d4"
         ),
         .target(
