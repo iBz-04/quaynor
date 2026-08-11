@@ -11,7 +11,10 @@ __pycache__/
 # Swift and Kotlin standalone packages
 swift/.build/
 swift/Artifacts/
-kotlin/
+kotlin/.gradle/
+kotlin/build/
+kotlin/*/build/
+kotlin/local.properties
 
 # React Native (uniffi-bindgen-react-native)
 react-native/node_modules/

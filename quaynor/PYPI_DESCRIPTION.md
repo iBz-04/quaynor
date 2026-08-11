@@ -2,11 +2,11 @@
 
 **Run LLMs locally and efficiently on any device**
 
-Quaynor is a lightweight, open-source inference engine that makes it simple to run open-weights language models directly inside your Python applications. No API keys, no cloud infrastructure, no complexity—just fast, easy local AI.
+Quaynor is a lightweight, open-source inference engine that makes it simple to run open-weights language models directly inside your Python applications. 
 
 ## Key Features
 
-- **Run locally, offline, for free** - No API keys or cloud services required
+- **Run locally, offline, for free** - No API keys / cloud services required
 - **Fast, simple tool calling** - Just pass normal Python functions
 - **Reliable tool execution** - Automatically derives grammar from function signatures
 - **Infinite conversations** - Conversation-aware preemptive context shifting prevents mid-conversation crashes
