@@ -8,7 +8,7 @@ enable real-time streaming of tokens, or use it to create embeddings, Quaynor ma
 
 All of this is enabled by [Llama.cpp](https://github.com/ggml-org/llama.cpp), while providing a nice, simple API.
 
-No need to mess around with docker containers, GPU servers, API keys, etc. We make it easy to run local LLMs in Python, Flutter, React Native, and Swift, with more integrations coming soon!
+No need to mess around with docker containers, GPU servers, API keys, etc. We make it easy to run local LLMs in Python, Flutter, React Native, Swift, and Kotlin, with more integrations coming soon!
 
 ## Code documentation 
 
@@ -18,6 +18,7 @@ If you are already familiar with the basics of LLMs, we suggest you go straight 
 - [React Native](react-native/index.md)
 - [Flutter](flutter/index.md)
 - [Swift](swift/index.md)
+- [Kotlin](kotlin/index.md)
 
 ## Basic LLM concepts
 

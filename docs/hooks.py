@@ -39,6 +39,13 @@ _BLURBS: dict[str, str] = {
     "swift/vision.md": "Vision and audio prompts in Swift.",
     "swift/sampling.md": "Sampler presets and configuration in Swift.",
     "swift/embeddings-and-rag.md": "Embeddings, reranking, and RAG in Swift.",
+    "kotlin/index.md": "Install and configure the Kotlin package for Android.",
+    "kotlin/chat.md": "Chat sessions and Flow-based streaming in Kotlin.",
+    "kotlin/tool-calling.md": "Tool calling from Kotlin function references.",
+    "kotlin/vision.md": "Vision and audio prompts in Kotlin.",
+    "kotlin/sampling.md": "Sampler presets and the buildSampler DSL in Kotlin.",
+    "kotlin/embeddings-and-rag.md": "Embeddings, reranking, and RAG in Kotlin.",
+    "kotlin/logging-and-troubleshooting.md": "Logcat output and common Kotlin failures.",
 }
 
 

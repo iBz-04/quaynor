@@ -40,6 +40,14 @@ nav:
       - Vision & Hearing: swift/vision.md
       - Sampling: swift/sampling.md
       - Embeddings & RAG: swift/embeddings-and-rag.md
+  - Kotlin:
+      - Getting started with Kotlin: kotlin/index.md
+      - Chat: kotlin/chat.md
+      - Tool Calling: kotlin/tool-calling.md
+      - Vision & Hearing: kotlin/vision.md
+      - Sampling: kotlin/sampling.md
+      - Embeddings & RAG: kotlin/embeddings-and-rag.md
+      - Logging & Troubleshooting: kotlin/logging-and-troubleshooting.md
 
 # github link in the top right
 repo_url: https://github.com/iBz-04/quaynor
