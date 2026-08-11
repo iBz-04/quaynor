@@ -44,12 +44,20 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
 }
 
+// Maven Central rejects deployments without a javadoc jar. This module has no sources
+// of its own (it only repackages :quaynor-core with native libs), so an empty jar
+// satisfies the requirement — the same approach :quaynor-core uses.
+val javadocJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("javadoc")
+}
+
 publishing {
     publications {
         register<MavenPublication>("release") {
             groupId = "site.quaynor"
             artifactId = "quaynor-android"
             version = project.version.toString()
+            artifact(javadocJar)
 
             afterEvaluate {
                 from(components["release"])

@@ -106,7 +106,7 @@ nmcpSettings {
 
 The `publishAggregationToCentralPortal` task collects all three publications, signs them, and uploads them as a single atomic deployment bundle. Maven Central validates them together — all succeed or all fail.
 
-POM metadata (name, description, license, developers, SCM) is configured once in the root `build.gradle.kts` and applied to all subprojects via `afterEvaluate`. Signing uses in-memory PGP keys from environment variables (`SIGNING_KEY`, `SIGNING_PASSWORD`).
+POM metadata (name, description, license, developers, SCM) is configured once in the root `build.gradle.kts` and applied to all subprojects via `afterEvaluate`.
 
 ### Required environment variables for publishing
 
@@ -114,8 +114,65 @@ POM metadata (name, description, license, developers, SCM) is configured once in
 |---|---|
 | `MAVEN_CENTRAL_USERNAME` | Central Portal API token username |
 | `MAVEN_CENTRAL_PASSWORD` | Central Portal API token password |
-| `SIGNING_KEY` | ASCII-armored GPG private key |
+| `SIGNING_KEY` | ASCII-armored GPG private key (CI signing) |
 | `SIGNING_PASSWORD` | GPG key passphrase |
+| `SIGNING_USE_GPG_CMD` | `true` to sign via the local `gpg` binary instead (local releases) |
+
+Never put these in a `gradle.properties` inside the repo — that file is committed. Use
+environment variables, or `~/.gradle/gradle.properties` in your home directory.
+
+### Publishing the public key to a keyserver
+
+**Required, and the single most common cause of a failed deployment.** Central verifies
+each `.asc` by looking your public key up on a keyserver. Valid signatures from a key it
+cannot find are rejected with:
+
+```
+Invalid signature for file: ...asc - Could not find a public key by the key fingerprint.
+```
+
+Upload to **both** supported keyservers. Central's validator queries `keys.openpgp.org`,
+so uploading only to `keyserver.ubuntu.com` is not enough:
+
+```bash
+gpg --keyserver hkps://keys.openpgp.org --send-keys <FINGERPRINT>
+gpg --keyserver hkps://keyserver.ubuntu.com --send-keys <FINGERPRINT>
+```
+
+Use the `hkps://` scheme explicitly. The bare hostname resolves to `hkp://` on port 11371,
+which many networks block — and `gpg` prints `sending key ...` regardless, so a blocked
+upload looks identical to a successful one. Always verify the key is actually retrievable
+before publishing:
+
+```bash
+curl -s -o /dev/null -w "%{http_code}\n" \
+  "https://keys.openpgp.org/vks/v1/by-fingerprint/<FINGERPRINT>"
+```
+
+`200` means Central will find it. No email verification is needed — `keys.openpgp.org`
+withholds identity information until an address is confirmed, but serves key material by
+fingerprint immediately. Note that Central caches keyserver lookups, so after a failed
+attempt allow ~30 minutes before retrying rather than re-uploading the key.
+
+### Signing locally vs in CI
+
+GnuPG 2.4+ protects exported secret keys with an AEAD scheme the signing plugin's bundled
+Bouncy Castle cannot parse, so `SIGNING_KEY` fails with `Could not read PGP secret key`.
+For local releases, delegate to the `gpg` binary instead:
+
+```bash
+export SIGNING_USE_GPG_CMD=true
+export GPG_TTY=$(tty)          # otherwise pinentry fails: "Inappropriate ioctl for device"
+echo test | gpg --clearsign > /dev/null   # caches the passphrase in gpg-agent
+```
+
+The last step matters: the Gradle daemon has no controlling terminal and can never prompt
+for a passphrase, so it must already be cached (default TTL 10 minutes). Installing
+`pinentry-mac` and pointing `~/.gnupg/gpg-agent.conf` at it gives a GUI prompt that works
+from any process, making the cache-warming step unnecessary.
+
+`signing.gnupg.executable=gpg` is set in `gradle.properties` because Gradle otherwise
+looks for `gpg2`, which Homebrew's gnupg does not install.
 
 ### Testing locally
 
@@ -126,6 +183,55 @@ Publish to the local Maven repository (no credentials needed):
 ```
 
 Artifacts go to `~/.m2/repository/site/quaynor/`. Inspect the POMs to verify dependencies and metadata.
+
+### Release checklist
+
+Maven Central releases are **immutable** — a version number cannot be reused once
+published, so verify locally first. (A deployment rejected during *validation* is not a
+release; that version is still available.)
+
+1. Stage the Android native libraries. This must come after any `clean`, because the
+   `:android` module reads `jniLibs` from its own build directory:
+
+   ```bash
+   ./Scripts/build-android-libs.sh release
+   ```
+
+2. Publish locally and confirm what was actually produced:
+
+   ```bash
+   ./gradlew publishToMavenLocal
+   ```
+
+   - Both ABIs are inside the AAR — an AAR with no native libraries is the worst
+     failure mode, since it installs and then fails at runtime:
+
+     ```bash
+     unzip -l ~/.m2/repository/site/quaynor/quaynor-android/*/quaynor-android-*.aar | grep '\.so'
+     ```
+
+   - Every artifact is signed (expect one `.asc` per file, 10 in total):
+
+     ```bash
+     find ~/.m2/repository/site/quaynor -name '*.asc' | wc -l
+     ```
+
+   - Each artifact has both a sources and a javadoc jar. Central rejects deployments
+     missing either; `:android` has no sources of its own, so it publishes empty ones.
+
+3. Confirm the signing key is on the keyservers (see above) — do this before uploading,
+   not after a rejection, because Central caches negative lookups.
+
+4. Publish. **Do not run `clean` first**, or the staged native libraries are deleted and
+   an empty AAR is published:
+
+   ```bash
+   ./gradlew publishAggregationToCentralPortal
+   ```
+
+`publishingType = "AUTOMATIC"` means a successful validation releases immediately with no
+confirmation step in the portal. Artifacts take a few minutes to validate and up to ~30
+minutes to appear on `repo1.maven.org`.
 
 ## Version management
 

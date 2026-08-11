@@ -31,5 +31,10 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "quaynor-kotlin"
-include(":common", ":android", ":jvm")
+
+// :jvm is excluded until the desktop native libraries (Linux, macOS, Windows) are
+// built in CI. Without them it packages an empty JAR, and Maven Central releases
+// are immutable — publishing it once would permanently burn the coordinate.
+// Re-add ":jvm" here when the cross-platform build exists.
+include(":common", ":android")
 project(":common").name = "quaynor-core"

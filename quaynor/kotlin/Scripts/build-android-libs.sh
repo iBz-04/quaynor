@@ -21,20 +21,29 @@ if ! command -v cargo-ndk >/dev/null 2>&1; then
   exit 1
 fi
 
-# cargo-ndk locates the toolchain through one of these, in order.
-if [[ -z "${ANDROID_NDK_HOME:-}" && -z "${ANDROID_NDK_ROOT:-}" ]]; then
+ndk_home="${ANDROID_NDK_HOME:-${ANDROID_NDK_ROOT:-${ANDROID_NDK:-${NDK_ROOT:-}}}}"
+
+if [[ -z "$ndk_home" ]]; then
   sdk_root="${ANDROID_HOME:-$HOME/Library/Android/sdk}"
   # Pick the highest installed NDK version.
-  detected="$(ls -d "$sdk_root"/ndk/* 2>/dev/null | sort -V | tail -1 || true)"
-  if [[ -z "$detected" ]]; then
+  ndk_home="$(ls -d "$sdk_root"/ndk/* 2>/dev/null | sort -V | tail -1 || true)"
+  if [[ -z "$ndk_home" ]]; then
     echo "No Android NDK found under $sdk_root/ndk." >&2
     echo "Install it via Android Studio (SDK Manager -> SDK Tools -> NDK)," >&2
     echo "or set ANDROID_NDK_HOME to an existing NDK." >&2
     exit 1
   fi
-  export ANDROID_NDK_HOME="$detected"
-  echo "Using NDK: $ANDROID_NDK_HOME"
 fi
+
+# Strip any trailing slash, then export every spelling the toolchain might read.
+# cargo-ndk itself uses ANDROID_NDK_HOME, but llama-cpp-sys-2's build script only
+# checks ANDROID_NDK / NDK_ROOT / ANDROID_NDK_ROOT and panics without one of them.
+ndk_home="${ndk_home%/}"
+export ANDROID_NDK_HOME="$ndk_home"
+export ANDROID_NDK_ROOT="$ndk_home"
+export ANDROID_NDK="$ndk_home"
+export NDK_ROOT="$ndk_home"
+echo "Using NDK: $ndk_home"
 
 for target in aarch64-linux-android x86_64-linux-android; do
   if ! rustup target list --installed | grep -qx "$target"; then
@@ -62,6 +71,20 @@ cargo ndk \
   --output-dir "$jni_dir" \
   "${build_args[@]}"
 popd >/dev/null
+
+if [[ "$profile" == "release" ]]; then
+  # Debug symbols roughly a third of the shipped size and are useless to consumers.
+  # The unstripped copies stay under target/<triple>/release/ for symbolicating crashes.
+  strip_bin="$(ls "$ndk_home"/toolchains/llvm/prebuilt/*/bin/llvm-strip 2>/dev/null | head -1 || true)"
+  if [[ -z "$strip_bin" ]]; then
+    echo "warning: llvm-strip not found in the NDK; shipping unstripped libraries" >&2
+  else
+    find "$jni_dir" -name '*.so' -print0 | while IFS= read -r -d '' lib; do
+      "$strip_bin" --strip-unneeded "$lib"
+    done
+    echo "Stripped debug symbols from the staged libraries."
+  fi
+fi
 
 echo
 echo "Native libraries staged for the AAR:"
