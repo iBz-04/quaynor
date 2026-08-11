@@ -41,6 +41,10 @@ The workspace [`Cargo.toml`](quaynor/Cargo.toml) may pin or patch dependencies (
 
 [`quaynor/swift/`](quaynor/swift/) is a **SwiftPM** package (`Package.swift`) with its own build story and FFI bindings. It is **not** listed in the Cargo workspace; see [`quaynor/swift/README.md`](quaynor/swift/README.md) and [`quaynor/swift/RELEASING.md`](quaynor/swift/RELEASING.md) for Swift-specific work.
 
+### Kotlin package (outside Cargo)
+
+[`quaynor/kotlin/`](quaynor/kotlin/) is a **Gradle** multi-module package, also outside the Cargo workspace. It wraps [`quaynor/uniffi/`](quaynor/uniffi/) via UniFFI-generated JNA bindings and splits into three modules: `:quaynor-core` (all Kotlin source), `:android` (AAR packaging), and `:jvm` (desktop JAR packaging). See [`quaynor/kotlin/BUILD_SETUP.md`](quaynor/kotlin/BUILD_SETUP.md) for the module split and publishing setup, and [`quaynor/kotlin/DEVELOPMENT.md`](quaynor/kotlin/DEVELOPMENT.md) for local builds and binding regeneration.
+
 ## Architecture
 ### Core Rust Library
 
@@ -63,6 +67,7 @@ The main implementation is in `quaynor/core/src/`:
 - **Flutter** ([`quaynor/flutter/`](quaynor/flutter/)) - FFI bindings via `flutter_rust_bridge`
 - **React Native** — UniFFI bindings (see [`quaynor/uniffi/`](quaynor/uniffi/), [`quaynor/react-native/`](quaynor/react-native/), npm package `react-native-quaynor`)
 - **Swift** — [`quaynor/swift/`](quaynor/swift/) SwiftPM package wrapping the native FFI
+- **Kotlin / Android** — [`quaynor/kotlin/`](quaynor/kotlin/) Gradle package; UniFFI bindings loaded through JNA
 
 ### Tool-calling stack
 
@@ -143,6 +148,17 @@ cd quaynor/python
 pytest  # Also tests markdown documentation code blocks
 ```
 
+**Kotlin tests:** run on the host JVM, so build the native library for the host first. Requires a JDK 17 toolchain.
+
+```bash
+cd quaynor
+cargo build -p quaynor-uniffi
+cd kotlin
+export QUAYNOR_LIB_DIR="$(cd ../target/debug && pwd)"
+export TEST_MODEL=/path/to/model.gguf   # integration tests skip if unset
+./gradlew :quaynor-core:test
+```
+
 ### Development Environment
 
 - **Linux/WSL:** Use Nix flakes (`nix develop`)
@@ -150,10 +166,11 @@ pytest  # Also tests markdown documentation code blocks
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md) for detailed setup instructions.
 
-### Flutter and React Native
+### Flutter, React Native, and Kotlin
 
 - **Flutter:** Rust crate under [`quaynor/flutter/rust/`](quaynor/flutter/rust/); Dart package under [`quaynor/flutter/quaynor/`](quaynor/flutter/quaynor/). Run `flutter`/Dart tooling from the Flutter package directory when iterating on the app-facing API.
 - **React Native:** TurboModule and codegen docs under [`quaynor/react-native/`](quaynor/react-native/) (see `DEVELOPMENT.md` there for UniFFI / JSI details).
+- **Kotlin:** Gradle package under [`quaynor/kotlin/`](quaynor/kotlin/). Regenerate the UniFFI bindings with [`quaynor/kotlin/Scripts/generate-bindings.sh`](quaynor/kotlin/Scripts/generate-bindings.sh) whenever the signatures in [`quaynor/uniffi/src/lib.rs`](quaynor/uniffi/src/lib.rs) change, then check that the hand-written wrappers in `common/src/` still match.
 
 ## Development Notes
 
@@ -164,8 +181,8 @@ Use Issues for defects and Discussions for design questions. For pull requests: 
 ### Platform Support
 
 - Desktop (all bindings): Windows, Linux, macOS
-- Android: Flutter and React Native bindings
-- iOS: Flutter and React Native bindings
+- Android: Flutter, React Native, and Kotlin bindings
+- iOS: Flutter, React Native, and Swift bindings
 - GPU acceleration: Vulkan (x86/x86_64), Metal (macOS/iOS)
 
 ### Integration Patterns

@@ -10,7 +10,7 @@
 <p><b>A lightweight, blazing fast AI inference engine written in Rust.</b></p>
 </div>
 
-Embed **local LLMs** in your app: load GGUF checkpoints, chat on-device or on the GPU, and keep data off the cloud. Bindings available for **Python**, **Flutter**, **React Native**, and **Swift**.
+Embed **local LLMs** in your app: load GGUF checkpoints, chat on-device or on the GPU, and keep data off the cloud. Bindings available for **Python**, **Flutter**, **React Native**, **Swift**, and **Kotlin/Android**.
 
 **Documentation:** [www.quaynor.site](https://www.quaynor.site)
 
@@ -18,14 +18,14 @@ Embed **local LLMs** in your app: load GGUF checkpoints, chat on-device or on th
 
 - **Runtime:** Rust core that loads **GGUF** models and using **Vulkan** or **Metal** where the platform enables GPU backends.
 - **Features:** Chat with streaming completions, **Minijinja** chat templates, tokenizer helpers, optional **embeddings** and **cross-encoder** reranking, and **GBNF** grammar-based tool calling—surfaced consistently across bindings where supported.
-- **This repo:** Shared engine and most bindings live under [`quaynor/`](quaynor/) as a **Cargo workspace**; the **Swift** layer is a separate **SwiftPM** package under [`quaynor/swift/`](quaynor/swift/). For module layout and contribution workflow, see **[dev_guide.md](dev_guide.md)**.
+- **This repo:** Shared engine and most bindings live under [`quaynor/`](quaynor/) as a **Cargo workspace**; the **Swift** layer is a separate **SwiftPM** package under [`quaynor/swift/`](quaynor/swift/), and the **Kotlin** layer a separate **Gradle** package under [`quaynor/kotlin/`](quaynor/kotlin/). For module layout and contribution workflow, see **[dev_guide.md](dev_guide.md)**.
 
 ---
 
 ## Why use it
 
 - **Offline inference** - No inference API keys; models stay on disk or load from URLs / Hugging Face paths you choose.
-- **One chat-style API across bindings** - `Chat`/`ask` patterns align so you can move ideas between Python, Flutter, React Native, and Swift without relearning primitives.
+- **One chat-style API across bindings** - `Chat`/`ask` patterns align so you can move ideas between Python, Flutter, React Native, Swift, and Kotlin without relearning primitives.
 - **Production-oriented features** - Streaming replies, bounded context sizing, embeddings and cross-encoder reranking where supported, grammar-based tool calling wired from native functions (Python) or equivalents in mobile bindings.
 
 **Rough capability map:**
@@ -122,7 +122,7 @@ chat = Chat("./path/to/model.gguf", tools=[circle_area])
 
 ## Platforms
 
-Desktop (Windows, Linux, macOS): Python, Flutter, and React Native. Swift package distribution is available for Apple platforms through Swift Package Manager. **Android** and **iOS**: Flutter and React Native bindings (Metal on Apple, Vulkan where enabled on Android).
+Desktop (Windows, Linux, macOS): Python, Flutter, React Native, and Kotlin/JVM. Swift package distribution is available for Apple platforms through Swift Package Manager. **Android**: Flutter, React Native, and Kotlin bindings. **iOS**: Flutter, React Native, and Swift bindings (Metal on Apple, Vulkan where enabled on Android).
 
 ---
 
@@ -150,6 +150,34 @@ print(text)
 ```
 
 The Swift package is distributed through Swift Package Manager for iOS and macOS using the published `QuaynorFFI.xcframework` release artifact. The public Swift API includes `Model`, `Chat`, `TokenStream`, `Encoder`, `CrossEncoder`, `Prompt`, `SamplerPresets`, `Tool`, `CachedModel`, and `ChatStats`. `Model` also supports Hugging Face downloads, cache inspection with `getCachedModels()`, and cache deletion with `deleteCachedModel(modelPath:)`.
+
+---
+
+## Kotlin / Android
+
+Gradle package under [`quaynor/kotlin/`](quaynor/kotlin/), built with [UniFFI](https://mozilla.github.io/uniffi-rs/) and loaded through JNA.
+
+```kotlin
+// Android
+implementation("ai.quaynor:quaynor-android:0.1.0")
+
+// Desktop JVM
+implementation("ai.quaynor:quaynor:0.1.0")
+```
+
+```kotlin
+import ai.quaynor.Chat
+import ai.quaynor.Model
+
+val model = Model.load("hf://bartowski/Qwen_Qwen3-0.6B-GGUF/Qwen_Qwen3-0.6B-Q4_K_M.gguf")
+val chat = Chat(model = model)
+println(chat.ask("Is a zebra black or white?").completed())
+
+// Or stream tokens as they arrive
+chat.ask("Tell me a joke").asFlow().collect { print(it) }
+```
+
+The public Kotlin API includes `Model`, `Chat`, `TokenStream`, `Encoder`, `CrossEncoder`, `Prompt`, `Tool`, `SamplerPresets`, `buildSampler`, `Message`, `CachedModel`, and `ChatStats`. Suspend functions and `Flow` are used throughout, and tools are declared by passing an ordinary Kotlin function reference — parameter names, types, and JSON schema are derived by reflection. Build and publishing details live in [`quaynor/kotlin/BUILD_SETUP.md`](quaynor/kotlin/BUILD_SETUP.md) and [`quaynor/kotlin/DEVELOPMENT.md`](quaynor/kotlin/DEVELOPMENT.md).
 
 ---
 
