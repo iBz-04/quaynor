@@ -39,18 +39,18 @@ Three artifacts are published to Maven Central:
 
 | Artifact | Type | Contains |
 |---|---|---|
-| `ai.quaynor:quaynor-core` | JAR | Kotlin wrappers + generated UniFFI bindings (~100KB) |
-| `ai.quaynor:quaynor-android` | AAR | Android native libs (arm64-v8a, x86_64), depends on `quaynor-core` |
-| `ai.quaynor:quaynor` | JAR | Desktop native libs (Linux, macOS, Windows), depends on `quaynor-core` |
+| `site.quaynor:quaynor-core` | JAR | Kotlin wrappers + generated UniFFI bindings (~100KB) |
+| `site.quaynor:quaynor-android` | AAR | Android native libs (arm64-v8a, x86_64), depends on `quaynor-core` |
+| `site.quaynor:quaynor` | JAR | Desktop native libs (Linux, macOS, Windows), depends on `quaynor-core` |
 
 Consumers add one dependency:
 
 ```kotlin
 // Android
-implementation("ai.quaynor:quaynor-android:0.1.0")
+implementation("site.quaynor:quaynor-android:0.1.0")
 
 // Desktop JVM
-implementation("ai.quaynor:quaynor:0.1.0")
+implementation("site.quaynor:quaynor:0.1.0")
 ```
 
 Gradle automatically pulls `quaynor-core` as a transitive dependency.
@@ -125,7 +125,7 @@ Publish to the local Maven repository (no credentials needed):
 ./gradlew publishToMavenLocal
 ```
 
-Artifacts go to `~/.m2/repository/ai/quaynor/`. Inspect the POMs to verify dependencies and metadata.
+Artifacts go to `~/.m2/repository/site/quaynor/`. Inspect the POMs to verify dependencies and metadata.
 
 ## Version management
 

@@ -57,7 +57,7 @@ val javadocJar by tasks.registering(Jar::class) {
 publishing {
     publications {
         create<MavenPublication>("release") {
-            groupId = "ai.quaynor"
+            groupId = "site.quaynor"
             artifactId = "quaynor-core"
             version = project.version.toString()
             from(components["java"])

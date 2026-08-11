@@ -34,7 +34,7 @@ val javadocJar by tasks.registering(Jar::class) {
 publishing {
     publications {
         register<MavenPublication>("release") {
-            groupId = "ai.quaynor"
+            groupId = "site.quaynor"
             artifactId = "quaynor"
             version = project.version.toString()
 

@@ -47,7 +47,7 @@ dependencies {
 publishing {
     publications {
         register<MavenPublication>("release") {
-            groupId = "ai.quaynor"
+            groupId = "site.quaynor"
             artifactId = "quaynor-android"
             version = project.version.toString()
 

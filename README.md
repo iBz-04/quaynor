@@ -159,10 +159,10 @@ Gradle package under [`quaynor/kotlin/`](quaynor/kotlin/), built with [UniFFI](h
 
 ```kotlin
 // Android
-implementation("ai.quaynor:quaynor-android:0.1.0")
+implementation("site.quaynor:quaynor-android:0.1.0")
 
 // Desktop JVM
-implementation("ai.quaynor:quaynor:0.1.0")
+implementation("site.quaynor:quaynor:0.1.0")
 ```
 
 ```kotlin
