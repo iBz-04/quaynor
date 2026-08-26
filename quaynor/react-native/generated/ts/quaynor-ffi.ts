@@ -25,6 +25,7 @@ interface NativeModuleInterface {
     ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_ask_with_prompt(ptr: bigint, parts: Uint8Array, uniffi_out_err: UniffiRustCallStatus): bigint;
     ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_get_chat_history(ptr: bigint): bigint;
     ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_get_sampler_config_json(ptr: bigint): bigint;
+    ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_get_stats(ptr: bigint): bigint;
     ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_get_system_prompt(ptr: bigint): bigint;
     ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_get_template_variables(ptr: bigint): bigint;
     ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_reset_context(ptr: bigint, systemPrompt: Uint8Array, tools: Uint8Array): bigint;
@@ -35,6 +36,7 @@ interface NativeModuleInterface {
     ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_set_template_variable(ptr: bigint, name: Uint8Array, value: number): bigint;
     ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_set_tools(ptr: bigint, tools: Uint8Array): bigint;
     ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_stop_generation(ptr: bigint, uniffi_out_err: UniffiRustCallStatus): void;
+    ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_tokenize(ptr: bigint, message: Uint8Array): bigint;
     ubrn_uniffi_quaynor_uniffi_fn_clone_rustcrossencoder(handle: bigint, uniffi_out_err: UniffiRustCallStatus): bigint;
     ubrn_uniffi_quaynor_uniffi_fn_free_rustcrossencoder(handle: bigint, uniffi_out_err: UniffiRustCallStatus): void;
     ubrn_uniffi_quaynor_uniffi_fn_constructor_rustcrossencoder_new(model: bigint, contextSize: Uint8Array, uniffi_out_err: UniffiRustCallStatus): bigint;
@@ -46,6 +48,8 @@ interface NativeModuleInterface {
     ubrn_uniffi_quaynor_uniffi_fn_method_rustencoder_encode(ptr: bigint, text: Uint8Array): bigint;
     ubrn_uniffi_quaynor_uniffi_fn_clone_rustmodel(handle: bigint, uniffi_out_err: UniffiRustCallStatus): bigint;
     ubrn_uniffi_quaynor_uniffi_fn_free_rustmodel(handle: bigint, uniffi_out_err: UniffiRustCallStatus): void;
+    ubrn_uniffi_quaynor_uniffi_fn_method_rustmodel_max_ctx(ptr: bigint, uniffi_out_err: UniffiRustCallStatus): number;
+    ubrn_uniffi_quaynor_uniffi_fn_method_rustmodel_unload(ptr: bigint, uniffi_out_err: UniffiRustCallStatus): void;
     ubrn_uniffi_quaynor_uniffi_fn_clone_rusttokenstream(handle: bigint, uniffi_out_err: UniffiRustCallStatus): bigint;
     ubrn_uniffi_quaynor_uniffi_fn_free_rusttokenstream(handle: bigint, uniffi_out_err: UniffiRustCallStatus): void;
     ubrn_uniffi_quaynor_uniffi_fn_method_rusttokenstream_completed(ptr: bigint): bigint;
@@ -77,9 +81,13 @@ interface NativeModuleInterface {
     ubrn_uniffi_quaynor_uniffi_fn_free_samplerconfig(handle: bigint, uniffi_out_err: UniffiRustCallStatus): void;
     ubrn_uniffi_quaynor_uniffi_fn_constructor_samplerconfig_from_json(jsonStr: Uint8Array, uniffi_out_err: UniffiRustCallStatus): bigint;
     ubrn_uniffi_quaynor_uniffi_fn_method_samplerconfig_to_json(ptr: bigint, uniffi_out_err: UniffiRustCallStatus): Uint8Array;
+    ubrn_uniffi_quaynor_uniffi_fn_init_callback_vtable_rustdownloadprogresscallback(vtable: UniffiVTableCallbackInterfaceRustDownloadProgressCallback): void;
     ubrn_uniffi_quaynor_uniffi_fn_init_callback_vtable_rusttoolcallback(vtable: UniffiVTableCallbackInterfaceRustToolCallback): void;
     ubrn_uniffi_quaynor_uniffi_fn_func_cosine_similarity(a: Uint8Array, b: Uint8Array, uniffi_out_err: UniffiRustCallStatus): number;
-    ubrn_uniffi_quaynor_uniffi_fn_func_load_model(modelPath: Uint8Array, useGpu: number, projectionModelPath: Uint8Array): bigint;
+    ubrn_uniffi_quaynor_uniffi_fn_func_delete_cached_model(modelPath: Uint8Array, uniffi_out_err: UniffiRustCallStatus): bigint;
+    ubrn_uniffi_quaynor_uniffi_fn_func_download_model(modelPath: Uint8Array, headers: Uint8Array, onDownloadProgress: Uint8Array): bigint;
+    ubrn_uniffi_quaynor_uniffi_fn_func_get_cached_models(uniffi_out_err: UniffiRustCallStatus): Uint8Array;
+    ubrn_uniffi_quaynor_uniffi_fn_func_load_model(modelPath: Uint8Array, useGpu: number, projectionModelPath: Uint8Array, onDownloadProgress: Uint8Array): bigint;
     ubrn_uniffi_quaynor_uniffi_fn_func_sampler_preset_default(uniffi_out_err: UniffiRustCallStatus): bigint;
     ubrn_uniffi_quaynor_uniffi_fn_func_sampler_preset_dry(uniffi_out_err: UniffiRustCallStatus): bigint;
     ubrn_uniffi_quaynor_uniffi_fn_func_sampler_preset_grammar(grammar: Uint8Array, uniffi_out_err: UniffiRustCallStatus): bigint;
@@ -137,6 +145,9 @@ interface NativeModuleInterface {
     ubrn_ffi_quaynor_uniffi_rust_future_free_void(handle: bigint): void;
     ubrn_ffi_quaynor_uniffi_rust_future_complete_void(handle: bigint, uniffi_out_err: UniffiRustCallStatus): void;
     ubrn_uniffi_quaynor_uniffi_checksum_func_cosine_similarity(): number;
+    ubrn_uniffi_quaynor_uniffi_checksum_func_delete_cached_model(): number;
+    ubrn_uniffi_quaynor_uniffi_checksum_func_download_model(): number;
+    ubrn_uniffi_quaynor_uniffi_checksum_func_get_cached_models(): number;
     ubrn_uniffi_quaynor_uniffi_checksum_func_load_model(): number;
     ubrn_uniffi_quaynor_uniffi_checksum_func_sampler_preset_default(): number;
     ubrn_uniffi_quaynor_uniffi_checksum_func_sampler_preset_dry(): number;
@@ -150,6 +161,7 @@ interface NativeModuleInterface {
     ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_ask_with_prompt(): number;
     ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_get_chat_history(): number;
     ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_get_sampler_config_json(): number;
+    ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_get_stats(): number;
     ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_get_system_prompt(): number;
     ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_get_template_variables(): number;
     ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_reset_context(): number;
@@ -160,9 +172,12 @@ interface NativeModuleInterface {
     ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_set_template_variable(): number;
     ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_set_tools(): number;
     ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_stop_generation(): number;
+    ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_tokenize(): number;
     ubrn_uniffi_quaynor_uniffi_checksum_method_rustcrossencoder_rank(): number;
     ubrn_uniffi_quaynor_uniffi_checksum_method_rustcrossencoder_rank_and_sort_json(): number;
     ubrn_uniffi_quaynor_uniffi_checksum_method_rustencoder_encode(): number;
+    ubrn_uniffi_quaynor_uniffi_checksum_method_rustmodel_max_ctx(): number;
+    ubrn_uniffi_quaynor_uniffi_checksum_method_rustmodel_unload(): number;
     ubrn_uniffi_quaynor_uniffi_checksum_method_rusttokenstream_completed(): number;
     ubrn_uniffi_quaynor_uniffi_checksum_method_rusttokenstream_next_token(): number;
     ubrn_uniffi_quaynor_uniffi_checksum_method_rusttool_get_schema_json(): number;
@@ -189,6 +204,7 @@ interface NativeModuleInterface {
     ubrn_uniffi_quaynor_uniffi_checksum_constructor_rusttool_new_async(): number;
     ubrn_uniffi_quaynor_uniffi_checksum_constructor_samplerbuilder_new(): number;
     ubrn_uniffi_quaynor_uniffi_checksum_constructor_samplerconfig_from_json(): number;
+    ubrn_uniffi_quaynor_uniffi_checksum_method_rustdownloadprogresscallback_on_download_progress(): number;
     ubrn_uniffi_quaynor_uniffi_checksum_method_rusttoolcallback_call(): number;
     ubrn_ffi_quaynor_uniffi_uniffi_contract_version(): number;
     ubrn_uniffi_internal_fn_method_rustchat_ffi__bless_pointer(pointer: bigint, uniffi_out_err: UniffiRustCallStatus): UniffiGcObject;
@@ -278,8 +294,15 @@ export type UniffiForeignFutureResultVoid = {
   callStatus: UniffiRustCallStatus;
 };
 export type UniffiForeignFutureCompleteVoid = (callbackData: bigint, result: UniffiForeignFutureResultVoid) => void;
+type UniffiCallbackInterfaceRustDownloadProgressCallbackMethod0 = (uniffiHandle: bigint, downloaded: bigint, total: bigint) => UniffiResult<void>
+;
 type UniffiCallbackInterfaceRustToolCallbackMethod0 = (uniffiHandle: bigint, argumentsJson: Uint8Array) => Uint8Array
 ;
+export type UniffiVTableCallbackInterfaceRustDownloadProgressCallback = {
+  uniffiFree: UniffiCallbackInterfaceFree;
+  uniffiClone: UniffiCallbackInterfaceClone;
+  onDownloadProgress: UniffiCallbackInterfaceRustDownloadProgressCallbackMethod0;
+};
 export type UniffiVTableCallbackInterfaceRustToolCallback = {
   uniffiFree: UniffiCallbackInterfaceFree;
   uniffiClone: UniffiCallbackInterfaceClone;

@@ -167,12 +167,14 @@ jobs:
         with:
           python-version: "3.13"
       - run: pip install maturin
-      # stripdown must stay false: ggml-vulkan calls find_package(SPIRV-Headers)
-      # at configure time, and stripdown removes those CMake config files.
+      # ggml-vulkan calls find_package(SPIRV-Headers CONFIG REQUIRED) at
+      # configure time. The Windows SDK only ships those CMake config files
+      # from ~1.4.313 onward, so the version must stay >= that, and stripdown
+      # must stay false because it removes them.
       - name: Install Vulkan SDK
-        uses: jakoch/install-vulkan-sdk-action@v1.2.5
+        uses: jakoch/install-vulkan-sdk-action@v1.6.0
         with:
-          vulkan_version: 1.4.304.0
+          vulkan_version: 1.4.328.1
           install_runtime: false
           cache: true
           stripdown: false
