@@ -84,13 +84,27 @@ jobs:
         with:
           version: "17"
 
+      # choco installs the SDK but does not export VULKAN_SDK to later steps,
+      # which llama-cpp-sys-2's build script requires. stripdown must stay
+      # false so find_package(SPIRV-Headers) resolves.
       - name: Install Vulkan SDK
-        run: choco install vulkan-sdk -y
+        uses: jakoch/install-vulkan-sdk-action@v1.2.5
+        with:
+          vulkan_version: 1.4.304.0
+          cache: true
+          install_runtime: true
+          stripdown: false
+
+      - name: Install Ninja
+        run: choco install ninja
 
       - name: cargo check
         working-directory: quaynor
         env:
           LIBCLANG_PATH: ${{ env.LLVM_PATH }}/lib
+          # Ninja avoids a CMake ExternalProject install-step failure that the
+          # Visual Studio generator hits building vulkan-shaders-gen.
+          CMAKE_GENERATOR: "Ninja"
         run: cargo check -p quaynor --locked
 
   nix:

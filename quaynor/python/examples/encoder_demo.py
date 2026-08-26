@@ -5,6 +5,7 @@ Usage: python embeddings_demo.py /path/to/embeddings/model.gguf
 """
 
 import sys
+
 import quaynor
 
 

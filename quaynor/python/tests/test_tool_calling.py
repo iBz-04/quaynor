@@ -1,9 +1,9 @@
+import logging
 import os
 
-import quaynor
 import pytest
 
-import logging
+import quaynor
 
 logging.addLevelName(5, "TRACE")
 

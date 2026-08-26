@@ -1,6 +1,7 @@
 """Tests for model downloading via the hf:// prefix."""
 
 import pytest
+
 import quaynor
 
 # The model used for all download tests.
