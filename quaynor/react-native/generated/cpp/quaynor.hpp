@@ -50,6 +50,9 @@ protected:
   cpp_uniffi_quaynor_uniffi_fn_method_rustchat_get_sampler_config_json(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
+  jsi::Value cpp_uniffi_quaynor_uniffi_fn_method_rustchat_get_stats(
+      jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+      size_t count);
   jsi::Value cpp_uniffi_quaynor_uniffi_fn_method_rustchat_get_system_prompt(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
@@ -72,14 +75,16 @@ protected:
   jsi::Value cpp_uniffi_quaynor_uniffi_fn_method_rustchat_set_system_prompt(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
-  jsi::Value
-  cpp_uniffi_quaynor_uniffi_fn_method_rustchat_set_template_variable(
+  jsi::Value cpp_uniffi_quaynor_uniffi_fn_method_rustchat_set_template_variable(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
   jsi::Value cpp_uniffi_quaynor_uniffi_fn_method_rustchat_set_tools(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
   jsi::Value cpp_uniffi_quaynor_uniffi_fn_method_rustchat_stop_generation(
+      jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+      size_t count);
+  jsi::Value cpp_uniffi_quaynor_uniffi_fn_method_rustchat_tokenize(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
   jsi::Value cpp_uniffi_quaynor_uniffi_fn_clone_rustcrossencoder(
@@ -116,6 +121,12 @@ protected:
   jsi::Value cpp_uniffi_quaynor_uniffi_fn_free_rustmodel(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
+  jsi::Value cpp_uniffi_quaynor_uniffi_fn_method_rustmodel_max_ctx(
+      jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+      size_t count);
+  jsi::Value cpp_uniffi_quaynor_uniffi_fn_method_rustmodel_unload(
+      jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+      size_t count);
   jsi::Value cpp_uniffi_quaynor_uniffi_fn_clone_rusttokenstream(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
@@ -146,8 +157,7 @@ protected:
   jsi::Value cpp_uniffi_quaynor_uniffi_fn_method_rusttool_next_pending_call(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
-  jsi::Value
-  cpp_uniffi_quaynor_uniffi_fn_method_rusttool_resolve_pending_call(
+  jsi::Value cpp_uniffi_quaynor_uniffi_fn_method_rusttool_resolve_pending_call(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
   jsi::Value cpp_uniffi_quaynor_uniffi_fn_clone_samplerbuilder(
@@ -211,10 +221,22 @@ protected:
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
   jsi::Value
-  cpp_uniffi_quaynor_uniffi_fn_init_callback_vtable_rusttoolcallback(
+  cpp_uniffi_quaynor_uniffi_fn_init_callback_vtable_rustdownloadprogresscallback(
+      jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+      size_t count);
+  jsi::Value cpp_uniffi_quaynor_uniffi_fn_init_callback_vtable_rusttoolcallback(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
   jsi::Value cpp_uniffi_quaynor_uniffi_fn_func_cosine_similarity(
+      jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+      size_t count);
+  jsi::Value cpp_uniffi_quaynor_uniffi_fn_func_delete_cached_model(
+      jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+      size_t count);
+  jsi::Value cpp_uniffi_quaynor_uniffi_fn_func_download_model(
+      jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+      size_t count);
+  jsi::Value cpp_uniffi_quaynor_uniffi_fn_func_get_cached_models(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
   jsi::Value cpp_uniffi_quaynor_uniffi_fn_func_load_model(
@@ -391,6 +413,15 @@ protected:
   jsi::Value cpp_uniffi_quaynor_uniffi_checksum_func_cosine_similarity(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
+  jsi::Value cpp_uniffi_quaynor_uniffi_checksum_func_delete_cached_model(
+      jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+      size_t count);
+  jsi::Value cpp_uniffi_quaynor_uniffi_checksum_func_download_model(
+      jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+      size_t count);
+  jsi::Value cpp_uniffi_quaynor_uniffi_checksum_func_get_cached_models(
+      jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+      size_t count);
   jsi::Value cpp_uniffi_quaynor_uniffi_checksum_func_load_model(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
@@ -409,8 +440,7 @@ protected:
   jsi::Value cpp_uniffi_quaynor_uniffi_checksum_func_sampler_preset_json(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
-  jsi::Value
-  cpp_uniffi_quaynor_uniffi_checksum_func_sampler_preset_temperature(
+  jsi::Value cpp_uniffi_quaynor_uniffi_checksum_func_sampler_preset_temperature(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
   jsi::Value cpp_uniffi_quaynor_uniffi_checksum_func_sampler_preset_top_k(
@@ -422,8 +452,7 @@ protected:
   jsi::Value cpp_uniffi_quaynor_uniffi_checksum_method_rustchat_ask(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
-  jsi::Value
-  cpp_uniffi_quaynor_uniffi_checksum_method_rustchat_ask_with_prompt(
+  jsi::Value cpp_uniffi_quaynor_uniffi_checksum_method_rustchat_ask_with_prompt(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
   jsi::Value
@@ -432,6 +461,9 @@ protected:
       size_t count);
   jsi::Value
   cpp_uniffi_quaynor_uniffi_checksum_method_rustchat_get_sampler_config_json(
+      jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+      size_t count);
+  jsi::Value cpp_uniffi_quaynor_uniffi_checksum_method_rustchat_get_stats(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
   jsi::Value
@@ -467,8 +499,10 @@ protected:
   jsi::Value cpp_uniffi_quaynor_uniffi_checksum_method_rustchat_set_tools(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
-  jsi::Value
-  cpp_uniffi_quaynor_uniffi_checksum_method_rustchat_stop_generation(
+  jsi::Value cpp_uniffi_quaynor_uniffi_checksum_method_rustchat_stop_generation(
+      jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+      size_t count);
+  jsi::Value cpp_uniffi_quaynor_uniffi_checksum_method_rustchat_tokenize(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
   jsi::Value cpp_uniffi_quaynor_uniffi_checksum_method_rustcrossencoder_rank(
@@ -481,6 +515,12 @@ protected:
   jsi::Value cpp_uniffi_quaynor_uniffi_checksum_method_rustencoder_encode(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
+  jsi::Value cpp_uniffi_quaynor_uniffi_checksum_method_rustmodel_max_ctx(
+      jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+      size_t count);
+  jsi::Value cpp_uniffi_quaynor_uniffi_checksum_method_rustmodel_unload(
+      jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+      size_t count);
   jsi::Value
   cpp_uniffi_quaynor_uniffi_checksum_method_rusttokenstream_completed(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
@@ -489,8 +529,7 @@ protected:
   cpp_uniffi_quaynor_uniffi_checksum_method_rusttokenstream_next_token(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
-  jsi::Value
-  cpp_uniffi_quaynor_uniffi_checksum_method_rusttool_get_schema_json(
+  jsi::Value cpp_uniffi_quaynor_uniffi_checksum_method_rusttool_get_schema_json(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
   jsi::Value
@@ -524,8 +563,7 @@ protected:
   cpp_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_mirostat_v2(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
-  jsi::Value
-  cpp_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_penalties(
+  jsi::Value cpp_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_penalties(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
   jsi::Value
@@ -538,8 +576,7 @@ protected:
   jsi::Value cpp_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_top_p(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
-  jsi::Value
-  cpp_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_typical_p(
+  jsi::Value cpp_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_typical_p(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
   jsi::Value cpp_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_xtc(
@@ -561,16 +598,18 @@ protected:
   jsi::Value cpp_uniffi_quaynor_uniffi_checksum_constructor_rusttool_new(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
-  jsi::Value
-  cpp_uniffi_quaynor_uniffi_checksum_constructor_rusttool_new_async(
+  jsi::Value cpp_uniffi_quaynor_uniffi_checksum_constructor_rusttool_new_async(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
-  jsi::Value
-  cpp_uniffi_quaynor_uniffi_checksum_constructor_samplerbuilder_new(
+  jsi::Value cpp_uniffi_quaynor_uniffi_checksum_constructor_samplerbuilder_new(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
   jsi::Value
   cpp_uniffi_quaynor_uniffi_checksum_constructor_samplerconfig_from_json(
+      jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+      size_t count);
+  jsi::Value
+  cpp_uniffi_quaynor_uniffi_checksum_method_rustdownloadprogresscallback_on_download_progress(
       jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
       size_t count);
   jsi::Value cpp_uniffi_quaynor_uniffi_checksum_method_rusttoolcallback_call(
@@ -605,9 +644,8 @@ protected:
       size_t count);
 
 public:
-  NativeQuaynor(
-      jsi::Runtime &rt,
-      std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker);
+  NativeQuaynor(jsi::Runtime &rt,
+                std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker);
   virtual ~NativeQuaynor();
 
   /**

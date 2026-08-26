@@ -32,6 +32,7 @@ import nativeModule, {
   type UniffiForeignFutureCompleteRustBuffer,
   type UniffiForeignFutureResultVoid,
   type UniffiForeignFutureCompleteVoid,
+  type UniffiVTableCallbackInterfaceRustDownloadProgressCallback,
   type UniffiVTableCallbackInterfaceRustToolCallback,
 } from "./quaynor-ffi";
 import {
@@ -94,6 +95,54 @@ export function cosineSimilarity(a: Array</*f32*/number>, b: Array</*f32*/number
             /*liftString:*/ FfiConverterString.lift,
     ));
     }
+export function deleteCachedModel(modelPath: string): /*u64*/bigint /*throws*/ {
+    return FfiConverterUInt64.lift(
+        uniffiCaller.rustCallWithError(
+            /*liftError:*/ FfiConverterTypeQuaynorError.lift.bind(FfiConverterTypeQuaynorError),
+            /*caller:*/ (callStatus) => {
+                return nativeModule().ubrn_uniffi_quaynor_uniffi_fn_func_delete_cached_model(
+        FfiConverterString.lower(modelPath),
+                callStatus);
+            },
+            /*liftString:*/ FfiConverterString.lift,
+    ));
+    }
+export async function downloadModel(modelPath: string, headers: Map<string, string> | undefined, onDownloadProgress: RustDownloadProgressCallback | undefined, asyncOpts_?: { signal: AbortSignal }): Promise<string> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+        return await uniffiRustCallAsync(
+            /*rustCaller:*/ uniffiCaller,
+            /*rustFutureFunc:*/ () => {
+                return nativeModule().ubrn_uniffi_quaynor_uniffi_fn_func_download_model(FfiConverterString.lower(modelPath),FfiConverterOptionalMapStringString.lower(headers),FfiConverterOptionalTypeRustDownloadProgressCallback.lower(onDownloadProgress)
+                );
+            },
+            /*pollFunc:*/ nativeModule().ubrn_ffi_quaynor_uniffi_rust_future_poll_rust_buffer,
+            /*cancelFunc:*/ nativeModule().ubrn_ffi_quaynor_uniffi_rust_future_cancel_rust_buffer,
+            /*completeFunc:*/ nativeModule().ubrn_ffi_quaynor_uniffi_rust_future_complete_rust_buffer,
+            /*freeFunc:*/ nativeModule().ubrn_ffi_quaynor_uniffi_rust_future_free_rust_buffer,
+            /*liftFunc:*/ FfiConverterString.lift.bind(FfiConverterString),
+            /*liftString:*/ FfiConverterString.lift,
+            /*asyncOpts:*/ asyncOpts_,
+            /*errorHandler:*/ FfiConverterTypeQuaynorError.lift.bind(FfiConverterTypeQuaynorError)
+        );
+    } catch (__error: any) {
+        if (uniffiIsDebug && __error instanceof Error) {
+            __error.stack = __stack;
+        }
+        throw __error;
+    }
+    }
+export function getCachedModels(): Array<CachedModel> /*throws*/ {
+    return FfiConverterArrayTypeCachedModel.lift(
+        uniffiCaller.rustCallWithError(
+            /*liftError:*/ FfiConverterTypeQuaynorError.lift.bind(FfiConverterTypeQuaynorError),
+            /*caller:*/ (callStatus) => {
+                return nativeModule().ubrn_uniffi_quaynor_uniffi_fn_func_get_cached_models(
+                callStatus);
+            },
+            /*liftString:*/ FfiConverterString.lift,
+    ));
+    }
 /**
  * Load a GGUF model from a local path or remote URL.
  *
@@ -104,13 +153,13 @@ export function cosineSimilarity(a: Array</*f32*/number>, b: Array</*f32*/number
  * uniffi-bindgen-react-native generates invalid JS (`async static` instead
  * of `static async`) for async constructors.
  */
-export async function loadModel(modelPath: string, useGpu: boolean, projectionModelPath: string | undefined, asyncOpts_?: { signal: AbortSignal }): Promise<RustModelInterface> /*throws*/ {
+export async function loadModel(modelPath: string, useGpu: boolean, projectionModelPath: string | undefined, onDownloadProgress: RustDownloadProgressCallback | undefined, asyncOpts_?: { signal: AbortSignal }): Promise<RustModelInterface> /*throws*/ {
     const __stack = uniffiIsDebug ? new Error().stack : undefined;
     try {
         return await uniffiRustCallAsync(
             /*rustCaller:*/ uniffiCaller,
             /*rustFutureFunc:*/ () => {
-                return nativeModule().ubrn_uniffi_quaynor_uniffi_fn_func_load_model(FfiConverterString.lower(modelPath),FfiConverterBool.lower(useGpu),FfiConverterOptionalString.lower(projectionModelPath)
+                return nativeModule().ubrn_uniffi_quaynor_uniffi_fn_func_load_model(FfiConverterString.lower(modelPath),FfiConverterBool.lower(useGpu),FfiConverterOptionalString.lower(projectionModelPath),FfiConverterOptionalTypeRustDownloadProgressCallback.lower(onDownloadProgress)
                 );
             },
             /*pollFunc:*/ nativeModule().ubrn_ffi_quaynor_uniffi_rust_future_poll_u64,
@@ -234,6 +283,63 @@ export function samplerPresetTopP(topP: /*f32*/number): SamplerConfigInterface {
 
 
 
+export interface RustDownloadProgressCallback {
+    
+    onDownloadProgress(downloaded: /*u64*/bigint, total: /*u64*/bigint) : void;
+}
+
+
+// Put the implementation in a struct so we don't pollute the top-level namespace
+const uniffiCallbackInterfaceRustDownloadProgressCallback: { vtable: UniffiVTableCallbackInterfaceRustDownloadProgressCallback; register: () => void; } = {
+    // Create the VTable using a series of closures.
+    // ts automatically converts these into C callback functions.
+    vtable: {
+        onDownloadProgress: (
+            uniffiHandle: bigint,
+            downloaded: bigint,
+            total: bigint,) => {
+            const uniffiMakeCall = 
+            ()
+            : void => {
+                const jsCallback = FfiConverterTypeRustDownloadProgressCallback.lift(uniffiHandle);
+                return jsCallback.onDownloadProgress(
+                    FfiConverterUInt64.lift(downloaded), 
+                    FfiConverterUInt64.lift(total)
+                )
+            };
+            const uniffiResult = UniffiResult.ready<void>();
+            const uniffiHandleSuccess = (obj: any) => {};
+            const uniffiHandleError = (code: number, errBuf: UniffiByteArray) => {
+                UniffiResult.writeError(uniffiResult, code, errBuf);
+            };
+            uniffiTraitInterfaceCall(
+                /*makeCall:*/ uniffiMakeCall,
+                /*handleSuccess:*/ uniffiHandleSuccess,
+                /*handleError:*/ uniffiHandleError,
+                /*lowerString:*/ FfiConverterString.lower
+            )
+            return uniffiResult;
+        },
+        uniffiFree: (uniffiHandle: UniffiHandle): void => {
+            // RustDownloadProgressCallback: this will throw a stale handle error if the handle isn't found.
+            FfiConverterTypeRustDownloadProgressCallback.drop(uniffiHandle);
+        },
+        uniffiClone: (uniffiHandle: UniffiHandle): UniffiHandle => {
+            return FfiConverterTypeRustDownloadProgressCallback.clone(uniffiHandle);
+        }
+    },
+    register: () => {
+        nativeModule().ubrn_uniffi_quaynor_uniffi_fn_init_callback_vtable_rustdownloadprogresscallback(
+            uniffiCallbackInterfaceRustDownloadProgressCallback.vtable
+        );
+    },
+};
+
+// FfiConverter protocol for callback interfaces
+const FfiConverterTypeRustDownloadProgressCallback = new FfiConverterCallback<RustDownloadProgressCallback>();
+
+
+
 /**
  * Callback interface for tool functions.
  * Implement this in your language to provide the tool's logic.
@@ -351,6 +457,134 @@ const FfiConverterTypeAsset = (() => {
         allocationSize(value: TypeName): number {
             return FfiConverterString.allocationSize(value.id) + 
             FfiConverterString.allocationSize(value.path);
+            
+        }
+    };
+    return new FFIConverter();
+})();
+
+
+export type CachedModel = {
+    path: string,
+    size: /*u64*/bigint
+}
+
+/**
+ * Generated factory for {@link CachedModel} record objects.
+ */
+export const CachedModel = (() => {
+    const defaults = () => ({
+    });
+    const create = (() => {
+        return uniffiCreateRecord<CachedModel, ReturnType<typeof defaults>>(defaults);
+    })();
+    return Object.freeze({
+        /**
+         * Create a frozen instance of {@link CachedModel}, with defaults specified
+         * in Rust, in the {@link quaynor} crate.
+         */
+        create,
+
+        /**
+         * Create a frozen instance of {@link CachedModel}, with defaults specified
+         * in Rust, in the {@link quaynor} crate.
+         */
+        new: create,
+
+        /**
+         * Defaults specified in the {@link quaynor} crate.
+         */
+        defaults: () => Object.freeze(defaults()) as Partial<CachedModel>,
+
+    });
+})();
+
+const FfiConverterTypeCachedModel = (() => {
+    type TypeName = CachedModel;
+    class FFIConverter extends AbstractFfiConverterByteArray<TypeName> {
+        read(from: RustBuffer): TypeName {
+            return {
+                path: FfiConverterString.read(from), 
+                size: FfiConverterUInt64.read(from)
+            };
+        }
+        write(value: TypeName, into: RustBuffer): void {
+            FfiConverterString.write(value.path, into);
+            FfiConverterUInt64.write(value.size, into);
+        }
+        allocationSize(value: TypeName): number {
+            return FfiConverterString.allocationSize(value.path) + 
+            FfiConverterUInt64.allocationSize(value.size);
+            
+        }
+    };
+    return new FFIConverter();
+})();
+
+
+export type ChatStats = {
+    contextSize: /*u32*/number,
+    contextUsed: /*u32*/number,
+    historyCount: /*u32*/number,
+    toolCount: /*u32*/number,
+    templateVariableCount: /*u32*/number
+}
+
+/**
+ * Generated factory for {@link ChatStats} record objects.
+ */
+export const ChatStats = (() => {
+    const defaults = () => ({
+    });
+    const create = (() => {
+        return uniffiCreateRecord<ChatStats, ReturnType<typeof defaults>>(defaults);
+    })();
+    return Object.freeze({
+        /**
+         * Create a frozen instance of {@link ChatStats}, with defaults specified
+         * in Rust, in the {@link quaynor} crate.
+         */
+        create,
+
+        /**
+         * Create a frozen instance of {@link ChatStats}, with defaults specified
+         * in Rust, in the {@link quaynor} crate.
+         */
+        new: create,
+
+        /**
+         * Defaults specified in the {@link quaynor} crate.
+         */
+        defaults: () => Object.freeze(defaults()) as Partial<ChatStats>,
+
+    });
+})();
+
+const FfiConverterTypeChatStats = (() => {
+    type TypeName = ChatStats;
+    class FFIConverter extends AbstractFfiConverterByteArray<TypeName> {
+        read(from: RustBuffer): TypeName {
+            return {
+                contextSize: FfiConverterUInt32.read(from), 
+                contextUsed: FfiConverterUInt32.read(from), 
+                historyCount: FfiConverterUInt32.read(from), 
+                toolCount: FfiConverterUInt32.read(from), 
+                templateVariableCount: FfiConverterUInt32.read(from)
+            };
+        }
+        write(value: TypeName, into: RustBuffer): void {
+            FfiConverterUInt32.write(value.contextSize, into);
+            FfiConverterUInt32.write(value.contextUsed, into);
+            FfiConverterUInt32.write(value.historyCount, into);
+            FfiConverterUInt32.write(value.toolCount, into);
+            FfiConverterUInt32.write(value.templateVariableCount, into);
+        }
+        allocationSize(value: TypeName): number {
+            return FfiConverterUInt32.allocationSize(value.contextSize) + 
+            FfiConverterUInt32.allocationSize(value.contextUsed) + 
+            FfiConverterUInt32.allocationSize(value.historyCount) + 
+            FfiConverterUInt32.allocationSize(value.toolCount) + 
+            FfiConverterUInt32.allocationSize(value.templateVariableCount);
             
         }
     };
@@ -758,79 +992,6 @@ const FfiConverterTypeMessage = (() => {
 
 
 
-
-// Flat error type: QuaynorError
-export enum QuaynorError_Tags {
-    Error = "Error"
-}
-export const QuaynorError = (() => {
-    class Error extends UniffiError {
-        /**
-         * @private
-         * This field is private and should not be used.
-         */
-        readonly [uniffiTypeNameSymbol]: string = "QuaynorError";
-        /**
-         * @private
-         * This field is private and should not be used.
-         */
-        readonly [variantOrdinalSymbol] = 1;
-
-        readonly tag = QuaynorError_Tags.Error;
-
-        constructor(message: string) {
-            super("QuaynorError", "Error", message);
-        }
-
-        static instanceOf(e: any): e is Error {
-            return (
-                instanceOf(e) && (e as any)[variantOrdinalSymbol] === 1
-            );
-        }
-    }
-
-    // Utility function which does not rely on instanceof.
-    function instanceOf(e: any): e is QuaynorError {
-        return (e as any)[uniffiTypeNameSymbol] === "QuaynorError";
-    }
-    return {
-        Error,
-        instanceOf,
-    };
-})();
-
-// Union type for QuaynorError error type.
-
-
-export type QuaynorError = InstanceType<
-    typeof QuaynorError[keyof Omit<typeof QuaynorError, 'instanceOf'>]
->;
-
-const FfiConverterTypeQuaynorError = (() => {
-    const intConverter = FfiConverterInt32;
-    type TypeName = QuaynorError;
-    class FfiConverter extends AbstractFfiConverterByteArray<TypeName> {
-        read(from: RustBuffer): TypeName {
-            switch (intConverter.read(from)) {
-                case 1: return new QuaynorError.Error(FfiConverterString.read(from)
-                );
-            
-                default: throw new UniffiInternalError.UnexpectedEnumCase();
-            }
-        }
-        write(value: TypeName, into: RustBuffer): void {
-            const obj = value as any;
-            const index = obj[variantOrdinalSymbol] as number;
-            intConverter.write(index, into);
-        }
-        allocationSize(value: TypeName): number {
-            return intConverter.allocationSize(0);
-        }
-    }
-    return new FfiConverter();
-})();
-
-
 // Enum: PromptPart
 export enum PromptPart_Tags {
     Text = "Text",
@@ -1030,6 +1191,79 @@ const FfiConverterTypePromptPart = (() => {
 
 
 
+
+// Flat error type: QuaynorError
+export enum QuaynorError_Tags {
+    Error = "Error"
+}
+export const QuaynorError = (() => {
+    class Error extends UniffiError {
+        /**
+         * @private
+         * This field is private and should not be used.
+         */
+        readonly [uniffiTypeNameSymbol]: string = "QuaynorError";
+        /**
+         * @private
+         * This field is private and should not be used.
+         */
+        readonly [variantOrdinalSymbol] = 1;
+
+        readonly tag = QuaynorError_Tags.Error;
+
+        constructor(message: string) {
+            super("QuaynorError", "Error", message);
+        }
+
+        static instanceOf(e: any): e is Error {
+            return (
+                instanceOf(e) && (e as any)[variantOrdinalSymbol] === 1
+            );
+        }
+    }
+
+    // Utility function which does not rely on instanceof.
+    function instanceOf(e: any): e is QuaynorError {
+        return (e as any)[uniffiTypeNameSymbol] === "QuaynorError";
+    }
+    return {
+        Error,
+        instanceOf,
+    };
+})();
+
+// Union type for QuaynorError error type.
+
+
+export type QuaynorError = InstanceType<
+    typeof QuaynorError[keyof Omit<typeof QuaynorError, 'instanceOf'>]
+>;
+
+const FfiConverterTypeQuaynorError = (() => {
+    const intConverter = FfiConverterInt32;
+    type TypeName = QuaynorError;
+    class FfiConverter extends AbstractFfiConverterByteArray<TypeName> {
+        read(from: RustBuffer): TypeName {
+            switch (intConverter.read(from)) {
+                case 1: return new QuaynorError.Error(FfiConverterString.read(from)
+                );
+            
+                default: throw new UniffiInternalError.UnexpectedEnumCase();
+            }
+        }
+        write(value: TypeName, into: RustBuffer): void {
+            const obj = value as any;
+            const index = obj[variantOrdinalSymbol] as number;
+            intConverter.write(index, into);
+        }
+        allocationSize(value: TypeName): number {
+            return intConverter.allocationSize(0);
+        }
+    }
+    return new FfiConverter();
+})();
+
+
 export enum Role {
     User,
     Assistant,
@@ -1073,6 +1307,10 @@ const FfiConverterTypeRole = (() => {
 const FfiConverterMapStringBool = new FfiConverterMap(FfiConverterString, FfiConverterBool);
 
 
+// FfiConverter for Map<string, string>
+const FfiConverterMapStringString = new FfiConverterMap(FfiConverterString, FfiConverterString);
+
+
 export interface RustChatInterface {
     
     /**
@@ -1094,6 +1332,7 @@ export interface RustChatInterface {
      * Get the current sampler configuration as a JSON string.
      */
     getSamplerConfigJson(asyncOpts_?: { signal: AbortSignal })  /*throws*/: Promise<string>;
+    getStats(asyncOpts_?: { signal: AbortSignal })  /*throws*/: Promise<ChatStats>;
     /**
      * Get the current system prompt.
      */
@@ -1134,6 +1373,7 @@ export interface RustChatInterface {
      * Stop the current generation.
      */
     stopGeneration() : void;
+    tokenize(message: string, asyncOpts_?: { signal: AbortSignal })  /*throws*/: Promise<Array</*i32*/number | undefined>>;
 }
 
 
@@ -1145,10 +1385,12 @@ export class RustChat extends UniffiAbstractObject implements RustChatInterface 
     /**
      * Create a new chat session.
      */
-    constructor(model: RustModelInterface, systemPrompt: string | undefined, contextSize: /*u32*/number, templateVariables: Map<string, boolean> | undefined, tools: Array<RustToolInterface> | undefined, sampler: SamplerConfigInterface | undefined) {
+    constructor(model: RustModelInterface, systemPrompt: string | undefined, contextSize: /*u32*/number, templateVariables: Map<string, boolean> | undefined, tools: Array<RustToolInterface> | undefined, sampler: SamplerConfigInterface | undefined) /*throws*/ {
         super();
         const pointer =
-            uniffiCaller.rustCall(
+            
+        uniffiCaller.rustCallWithError(
+            /*liftError:*/ FfiConverterTypeQuaynorError.lift.bind(FfiConverterTypeQuaynorError),
             /*caller:*/ (callStatus) => {
                 return nativeModule().ubrn_uniffi_quaynor_uniffi_fn_constructor_rustchat_new(
         FfiConverterTypeRustModel.lower(model),
@@ -1249,6 +1491,34 @@ async  getSamplerConfigJson(asyncOpts_?: { signal: AbortSignal }): Promise<strin
             /*completeFunc:*/ nativeModule().ubrn_ffi_quaynor_uniffi_rust_future_complete_rust_buffer,
             /*freeFunc:*/ nativeModule().ubrn_ffi_quaynor_uniffi_rust_future_free_rust_buffer,
             /*liftFunc:*/ FfiConverterString.lift.bind(FfiConverterString),
+            /*liftString:*/ FfiConverterString.lift,
+            /*asyncOpts:*/ asyncOpts_,
+            /*errorHandler:*/ FfiConverterTypeQuaynorError.lift.bind(FfiConverterTypeQuaynorError)
+        );
+    } catch (__error: any) {
+        if (uniffiIsDebug && __error instanceof Error) {
+            __error.stack = __stack;
+        }
+        throw __error;
+    }
+    }
+    
+async  getStats(asyncOpts_?: { signal: AbortSignal }): Promise<ChatStats> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+        return await uniffiRustCallAsync(
+            /*rustCaller:*/ uniffiCaller,
+            /*rustFutureFunc:*/ () => {
+                return nativeModule().ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_get_stats(
+                    uniffiTypeRustChatObjectFactory.clonePointer(this)
+                    
+                );
+            },
+            /*pollFunc:*/ nativeModule().ubrn_ffi_quaynor_uniffi_rust_future_poll_rust_buffer,
+            /*cancelFunc:*/ nativeModule().ubrn_ffi_quaynor_uniffi_rust_future_cancel_rust_buffer,
+            /*completeFunc:*/ nativeModule().ubrn_ffi_quaynor_uniffi_rust_future_complete_rust_buffer,
+            /*freeFunc:*/ nativeModule().ubrn_ffi_quaynor_uniffi_rust_future_free_rust_buffer,
+            /*liftFunc:*/ FfiConverterTypeChatStats.lift.bind(FfiConverterTypeChatStats),
             /*liftString:*/ FfiConverterString.lift,
             /*asyncOpts:*/ asyncOpts_,
             /*errorHandler:*/ FfiConverterTypeQuaynorError.lift.bind(FfiConverterTypeQuaynorError)
@@ -1551,6 +1821,34 @@ async  setTools(tools: Array<RustToolInterface>, asyncOpts_?: { signal: AbortSig
     );
     }
     
+async  tokenize(message: string, asyncOpts_?: { signal: AbortSignal }): Promise<Array</*i32*/number | undefined>> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+        return await uniffiRustCallAsync(
+            /*rustCaller:*/ uniffiCaller,
+            /*rustFutureFunc:*/ () => {
+                return nativeModule().ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_tokenize(
+                    uniffiTypeRustChatObjectFactory.clonePointer(this),
+                    FfiConverterString.lower(message)
+                );
+            },
+            /*pollFunc:*/ nativeModule().ubrn_ffi_quaynor_uniffi_rust_future_poll_rust_buffer,
+            /*cancelFunc:*/ nativeModule().ubrn_ffi_quaynor_uniffi_rust_future_cancel_rust_buffer,
+            /*completeFunc:*/ nativeModule().ubrn_ffi_quaynor_uniffi_rust_future_complete_rust_buffer,
+            /*freeFunc:*/ nativeModule().ubrn_ffi_quaynor_uniffi_rust_future_free_rust_buffer,
+            /*liftFunc:*/ FfiConverterArrayOptionalInt32.lift.bind(FfiConverterArrayOptionalInt32),
+            /*liftString:*/ FfiConverterString.lift,
+            /*asyncOpts:*/ asyncOpts_,
+            /*errorHandler:*/ FfiConverterTypeQuaynorError.lift.bind(FfiConverterTypeQuaynorError)
+        );
+    } catch (__error: any) {
+        if (uniffiIsDebug && __error instanceof Error) {
+            __error.stack = __stack;
+        }
+        throw __error;
+    }
+    }
+    
 
     /**
      * {@inheritDoc uniffi-bindgen-react-native#UniffiAbstractObject.uniffiDestroy}
@@ -1649,10 +1947,12 @@ export class RustCrossEncoder extends UniffiAbstractObject implements RustCrossE
     /**
      * Create a new cross-encoder for ranking documents by relevance.
      */
-    constructor(model: RustModelInterface, contextSize: /*u32*/number | undefined) {
+    constructor(model: RustModelInterface, contextSize: /*u32*/number | undefined) /*throws*/ {
         super();
         const pointer =
-            uniffiCaller.rustCall(
+            
+        uniffiCaller.rustCallWithError(
+            /*liftError:*/ FfiConverterTypeQuaynorError.lift.bind(FfiConverterTypeQuaynorError),
             /*caller:*/ (callStatus) => {
                 return nativeModule().ubrn_uniffi_quaynor_uniffi_fn_constructor_rustcrossencoder_new(
         FfiConverterTypeRustModel.lower(model),
@@ -1824,10 +2124,12 @@ export class RustEncoder extends UniffiAbstractObject implements RustEncoderInte
     /**
      * Create a new encoder for generating text embeddings.
      */
-    constructor(model: RustModelInterface, contextSize: /*u32*/number | undefined) {
+    constructor(model: RustModelInterface, contextSize: /*u32*/number | undefined) /*throws*/ {
         super();
         const pointer =
-            uniffiCaller.rustCall(
+            
+        uniffiCaller.rustCallWithError(
+            /*liftError:*/ FfiConverterTypeQuaynorError.lift.bind(FfiConverterTypeQuaynorError),
             /*caller:*/ (callStatus) => {
                 return nativeModule().ubrn_uniffi_quaynor_uniffi_fn_constructor_rustencoder_new(
         FfiConverterTypeRustModel.lower(model),
@@ -1951,6 +2253,8 @@ const FfiConverterTypeRustEncoder =  new FfiConverterObject(uniffiTypeRustEncode
 
 export interface RustModelInterface {
     
+    maxCtx()  /*throws*/: /*u32*/number;
+    unload()  /*throws*/: void;
 }
 
 
@@ -1968,6 +2272,28 @@ private constructor(pointer: UniffiHandle) {
 
     
 
+    
+ maxCtx(): /*u32*/number /*throws*/ {
+    return FfiConverterUInt32.lift(
+        uniffiCaller.rustCallWithError(
+            /*liftError:*/ FfiConverterTypeQuaynorError.lift.bind(FfiConverterTypeQuaynorError),
+            /*caller:*/ (callStatus) => {
+                return nativeModule().ubrn_uniffi_quaynor_uniffi_fn_method_rustmodel_max_ctx(uniffiTypeRustModelObjectFactory.clonePointer(this), 
+                callStatus);
+            },
+            /*liftString:*/ FfiConverterString.lift,
+    ));
+    }
+    
+ unload(): void /*throws*/ {
+        uniffiCaller.rustCallWithError(
+            /*liftError:*/ FfiConverterTypeQuaynorError.lift.bind(FfiConverterTypeQuaynorError),
+            /*caller:*/ (callStatus) => { nativeModule().ubrn_uniffi_quaynor_uniffi_fn_method_rustmodel_unload(uniffiTypeRustModelObjectFactory.clonePointer(this), 
+                callStatus);
+            },
+            /*liftString:*/ FfiConverterString.lift,
+    );
+    }
     
 
     /**
@@ -2891,6 +3217,14 @@ const uniffiTypeSamplerConfigObjectFactory: UniffiObjectFactory<SamplerConfigInt
 const FfiConverterTypeSamplerConfig =  new FfiConverterObject(uniffiTypeSamplerConfigObjectFactory);
 
 
+// FfiConverter for RustDownloadProgressCallback | undefined
+const FfiConverterOptionalTypeRustDownloadProgressCallback = new FfiConverterOptional(FfiConverterTypeRustDownloadProgressCallback);
+
+
+// FfiConverter for /*i32*/number | undefined
+const FfiConverterOptionalInt32 = new FfiConverterOptional(FfiConverterInt32);
+
+
 // FfiConverter for PendingToolCall | undefined
 const FfiConverterOptionalTypePendingToolCall = new FfiConverterOptional(FfiConverterTypePendingToolCall);
 
@@ -2911,6 +3245,10 @@ const FfiConverterArrayFloat32 = new FfiConverterArray(FfiConverterFloat32);
 const FfiConverterArrayTypeAsset = new FfiConverterArray(FfiConverterTypeAsset);
 
 
+// FfiConverter for Array<CachedModel>
+const FfiConverterArrayTypeCachedModel = new FfiConverterArray(FfiConverterTypeCachedModel);
+
+
 // FfiConverter for Array<ToolCall>
 const FfiConverterArrayTypeToolCall = new FfiConverterArray(FfiConverterTypeToolCall);
 
@@ -2927,6 +3265,10 @@ const FfiConverterArrayString = new FfiConverterArray(FfiConverterString);
 const FfiConverterOptionalMapStringBool = new FfiConverterOptional(FfiConverterMapStringBool);
 
 
+// FfiConverter for Map<string, string> | undefined
+const FfiConverterOptionalMapStringString = new FfiConverterOptional(FfiConverterMapStringString);
+
+
 // FfiConverter for SamplerConfigInterface | undefined
 const FfiConverterOptionalTypeSamplerConfig = new FfiConverterOptional(FfiConverterTypeSamplerConfig);
 
@@ -2941,6 +3283,10 @@ const FfiConverterArrayTypePromptPart = new FfiConverterArray(FfiConverterTypePr
 
 // FfiConverter for Array<RustToolInterface>
 const FfiConverterArrayTypeRustTool = new FfiConverterArray(FfiConverterTypeRustTool);
+
+
+// FfiConverter for Array</*i32*/number | undefined>
+const FfiConverterArrayOptionalInt32 = new FfiConverterArray(FfiConverterOptionalInt32);
 
 
 // FfiConverter for Array<RustToolInterface> | undefined
@@ -2964,169 +3310,194 @@ function uniffiEnsureInitialized() {
     if (bindingsContractVersion !== scaffoldingContractVersion) {
         throw new UniffiInternalError.ContractVersionMismatch(scaffoldingContractVersion, bindingsContractVersion);
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_func_cosine_similarity() !== 63439) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_func_cosine_similarity() !== 45661) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_func_cosine_similarity");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_func_load_model() !== 63144) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_func_delete_cached_model() !== 28357) {
+        throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_func_delete_cached_model");
+    }
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_func_download_model() !== 39262) {
+        throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_func_download_model");
+    }
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_func_get_cached_models() !== 5846) {
+        throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_func_get_cached_models");
+    }
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_func_load_model() !== 54145) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_func_load_model");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_func_sampler_preset_default() !== 10834) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_func_sampler_preset_default() !== 36783) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_func_sampler_preset_default");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_func_sampler_preset_dry() !== 55378) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_func_sampler_preset_dry() !== 15463) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_func_sampler_preset_dry");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_func_sampler_preset_grammar() !== 29288) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_func_sampler_preset_grammar() !== 23570) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_func_sampler_preset_grammar");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_func_sampler_preset_greedy() !== 13219) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_func_sampler_preset_greedy() !== 5933) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_func_sampler_preset_greedy");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_func_sampler_preset_json() !== 40006) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_func_sampler_preset_json() !== 60102) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_func_sampler_preset_json");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_func_sampler_preset_temperature() !== 64803) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_func_sampler_preset_temperature() !== 22785) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_func_sampler_preset_temperature");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_func_sampler_preset_top_k() !== 44137) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_func_sampler_preset_top_k() !== 12670) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_func_sampler_preset_top_k");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_func_sampler_preset_top_p() !== 54893) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_func_sampler_preset_top_p() !== 52041) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_func_sampler_preset_top_p");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_ask() !== 53575) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_ask() !== 35577) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_rustchat_ask");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_ask_with_prompt() !== 65089) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_ask_with_prompt() !== 57788) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_rustchat_ask_with_prompt");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_get_chat_history() !== 12722) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_get_chat_history() !== 20300) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_rustchat_get_chat_history");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_get_sampler_config_json() !== 33078) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_get_sampler_config_json() !== 39075) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_rustchat_get_sampler_config_json");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_get_system_prompt() !== 57727) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_get_stats() !== 46175) {
+        throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_rustchat_get_stats");
+    }
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_get_system_prompt() !== 9666) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_rustchat_get_system_prompt");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_get_template_variables() !== 19616) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_get_template_variables() !== 1092) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_rustchat_get_template_variables");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_reset_context() !== 47191) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_reset_context() !== 33907) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_rustchat_reset_context");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_reset_history() !== 12058) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_reset_history() !== 30902) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_rustchat_reset_history");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_set_chat_history() !== 6058) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_set_chat_history() !== 7701) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_rustchat_set_chat_history");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_set_sampler_config() !== 28012) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_set_sampler_config() !== 42014) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_rustchat_set_sampler_config");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_set_system_prompt() !== 31690) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_set_system_prompt() !== 23253) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_rustchat_set_system_prompt");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_set_template_variable() !== 64000) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_set_template_variable() !== 6787) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_rustchat_set_template_variable");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_set_tools() !== 55680) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_set_tools() !== 57379) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_rustchat_set_tools");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_stop_generation() !== 24711) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_stop_generation() !== 65399) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_rustchat_stop_generation");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustcrossencoder_rank() !== 55500) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_tokenize() !== 44194) {
+        throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_rustchat_tokenize");
+    }
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustcrossencoder_rank() !== 43543) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_rustcrossencoder_rank");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustcrossencoder_rank_and_sort_json() !== 24587) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustcrossencoder_rank_and_sort_json() !== 39936) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_rustcrossencoder_rank_and_sort_json");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustencoder_encode() !== 52601) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustencoder_encode() !== 12637) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_rustencoder_encode");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rusttokenstream_completed() !== 26060) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustmodel_max_ctx() !== 26782) {
+        throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_rustmodel_max_ctx");
+    }
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustmodel_unload() !== 51114) {
+        throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_rustmodel_unload");
+    }
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rusttokenstream_completed() !== 60570) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_rusttokenstream_completed");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rusttokenstream_next_token() !== 44770) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rusttokenstream_next_token() !== 63916) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_rusttokenstream_next_token");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rusttool_get_schema_json() !== 4679) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rusttool_get_schema_json() !== 33044) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_rusttool_get_schema_json");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rusttool_next_pending_call() !== 52020) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rusttool_next_pending_call() !== 43580) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_rusttool_next_pending_call");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rusttool_resolve_pending_call() !== 10096) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rusttool_resolve_pending_call() !== 12521) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_rusttool_resolve_pending_call");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_dist() !== 23376) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_dist() !== 9165) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_samplerbuilder_dist");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_dry() !== 35315) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_dry() !== 46243) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_samplerbuilder_dry");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_grammar() !== 24369) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_grammar() !== 59568) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_samplerbuilder_grammar");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_greedy() !== 32898) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_greedy() !== 28820) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_samplerbuilder_greedy");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_min_p() !== 33705) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_min_p() !== 27860) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_samplerbuilder_min_p");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_mirostat_v1() !== 58563) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_mirostat_v1() !== 8947) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_samplerbuilder_mirostat_v1");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_mirostat_v2() !== 41682) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_mirostat_v2() !== 49669) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_samplerbuilder_mirostat_v2");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_penalties() !== 40767) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_penalties() !== 12656) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_samplerbuilder_penalties");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_temperature() !== 8456) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_temperature() !== 32019) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_samplerbuilder_temperature");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_top_k() !== 26600) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_top_k() !== 2059) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_samplerbuilder_top_k");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_top_p() !== 54577) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_top_p() !== 19167) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_samplerbuilder_top_p");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_typical_p() !== 28727) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_typical_p() !== 53696) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_samplerbuilder_typical_p");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_xtc() !== 22853) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_xtc() !== 43477) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_samplerbuilder_xtc");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_samplerconfig_to_json() !== 51798) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_samplerconfig_to_json() !== 22965) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_samplerconfig_to_json");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_constructor_rustchat_new() !== 38902) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_constructor_rustchat_new() !== 35636) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_constructor_rustchat_new");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_constructor_rustcrossencoder_new() !== 9022) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_constructor_rustcrossencoder_new() !== 32789) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_constructor_rustcrossencoder_new");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_constructor_rustencoder_new() !== 27902) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_constructor_rustencoder_new() !== 49994) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_constructor_rustencoder_new");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_constructor_rusttool_new() !== 9431) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_constructor_rusttool_new() !== 56826) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_constructor_rusttool_new");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_constructor_rusttool_new_async() !== 54521) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_constructor_rusttool_new_async() !== 35229) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_constructor_rusttool_new_async");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_constructor_samplerbuilder_new() !== 50214) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_constructor_samplerbuilder_new() !== 45133) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_constructor_samplerbuilder_new");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_constructor_samplerconfig_from_json() !== 6867) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_constructor_samplerconfig_from_json() !== 19789) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_constructor_samplerconfig_from_json");
     }
-    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rusttoolcallback_call() !== 43958) {
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rustdownloadprogresscallback_on_download_progress() !== 41893) {
+        throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_rustdownloadprogresscallback_on_download_progress");
+    }
+    if (nativeModule().ubrn_uniffi_quaynor_uniffi_checksum_method_rusttoolcallback_call() !== 48075) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_quaynor_uniffi_checksum_method_rusttoolcallback_call");
     }
 
+    uniffiCallbackInterfaceRustDownloadProgressCallback.register();
     uniffiCallbackInterfaceRustToolCallback.register();
     }
 
@@ -3134,10 +3505,12 @@ export default Object.freeze({
   initialize: uniffiEnsureInitialized,
   converters: {
     FfiConverterTypeAsset,
+    FfiConverterTypeCachedModel,
+    FfiConverterTypeChatStats,
     FfiConverterTypeMessage,
-    FfiConverterTypeQuaynorError,
     FfiConverterTypePendingToolCall,
     FfiConverterTypePromptPart,
+    FfiConverterTypeQuaynorError,
     FfiConverterTypeRole,
     FfiConverterTypeRustChat,
     FfiConverterTypeRustCrossEncoder,

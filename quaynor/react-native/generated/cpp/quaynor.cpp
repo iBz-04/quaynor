@@ -95,9 +95,18 @@ typedef struct UniffiForeignFutureResultVoid {
 } UniffiForeignFutureResultVoid;
 typedef void (*UniffiForeignFutureCompleteVoid)(
     uint64_t callback_data, UniffiForeignFutureResultVoid result);
+typedef void (*UniffiCallbackInterfaceRustDownloadProgressCallbackMethod0)(
+    uint64_t uniffi_handle, uint64_t downloaded, uint64_t total,
+    void *uniffi_out_return, RustCallStatus *rust_call_status);
 typedef void (*UniffiCallbackInterfaceRustToolCallbackMethod0)(
     uint64_t uniffi_handle, RustBuffer arguments_json,
     RustBuffer *uniffi_out_return, RustCallStatus *rust_call_status);
+typedef struct UniffiVTableCallbackInterfaceRustDownloadProgressCallback {
+  UniffiCallbackInterfaceFree uniffi_free;
+  UniffiCallbackInterfaceClone uniffi_clone;
+  UniffiCallbackInterfaceRustDownloadProgressCallbackMethod0
+      on_download_progress;
+} UniffiVTableCallbackInterfaceRustDownloadProgressCallback;
 typedef struct UniffiVTableCallbackInterfaceRustToolCallback {
   UniffiCallbackInterfaceFree uniffi_free;
   UniffiCallbackInterfaceClone uniffi_clone;
@@ -121,8 +130,9 @@ void uniffi_quaynor_uniffi_fn_free_rustchat(
 /*handle*/ uint64_t
 uniffi_quaynor_uniffi_fn_method_rustchat_get_sampler_config_json(
     /*handle*/ uint64_t ptr);
-/*handle*/ uint64_t
-uniffi_quaynor_uniffi_fn_method_rustchat_get_system_prompt(
+/*handle*/ uint64_t uniffi_quaynor_uniffi_fn_method_rustchat_get_stats(
+    /*handle*/ uint64_t ptr);
+/*handle*/ uint64_t uniffi_quaynor_uniffi_fn_method_rustchat_get_system_prompt(
     /*handle*/ uint64_t ptr);
 /*handle*/ uint64_t
 uniffi_quaynor_uniffi_fn_method_rustchat_get_template_variables(
@@ -133,12 +143,10 @@ uniffi_quaynor_uniffi_fn_method_rustchat_get_template_variables(
     /*handle*/ uint64_t ptr);
 /*handle*/ uint64_t uniffi_quaynor_uniffi_fn_method_rustchat_set_chat_history(
     /*handle*/ uint64_t ptr, RustBuffer messages);
-/*handle*/ uint64_t
-uniffi_quaynor_uniffi_fn_method_rustchat_set_sampler_config(
+/*handle*/ uint64_t uniffi_quaynor_uniffi_fn_method_rustchat_set_sampler_config(
     /*handle*/ uint64_t ptr,
     /*handle*/ uint64_t sampler);
-/*handle*/ uint64_t
-uniffi_quaynor_uniffi_fn_method_rustchat_set_system_prompt(
+/*handle*/ uint64_t uniffi_quaynor_uniffi_fn_method_rustchat_set_system_prompt(
     /*handle*/ uint64_t ptr, RustBuffer system_prompt);
 /*handle*/ uint64_t
 uniffi_quaynor_uniffi_fn_method_rustchat_set_template_variable(
@@ -147,6 +155,8 @@ uniffi_quaynor_uniffi_fn_method_rustchat_set_template_variable(
     /*handle*/ uint64_t ptr, RustBuffer tools);
 void uniffi_quaynor_uniffi_fn_method_rustchat_stop_generation(
     /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t uniffi_quaynor_uniffi_fn_method_rustchat_tokenize(
+    /*handle*/ uint64_t ptr, RustBuffer message);
 /*handle*/ uint64_t uniffi_quaynor_uniffi_fn_clone_rustcrossencoder(
     /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
 void uniffi_quaynor_uniffi_fn_free_rustcrossencoder(
@@ -172,14 +182,17 @@ void uniffi_quaynor_uniffi_fn_free_rustencoder(
     /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
 void uniffi_quaynor_uniffi_fn_free_rustmodel(
     /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
+uint32_t uniffi_quaynor_uniffi_fn_method_rustmodel_max_ctx(
+    /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
+void uniffi_quaynor_uniffi_fn_method_rustmodel_unload(
+    /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t uniffi_quaynor_uniffi_fn_clone_rusttokenstream(
     /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
 void uniffi_quaynor_uniffi_fn_free_rusttokenstream(
     /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t uniffi_quaynor_uniffi_fn_method_rusttokenstream_completed(
     /*handle*/ uint64_t ptr);
-/*handle*/ uint64_t
-uniffi_quaynor_uniffi_fn_method_rusttokenstream_next_token(
+/*handle*/ uint64_t uniffi_quaynor_uniffi_fn_method_rusttokenstream_next_token(
     /*handle*/ uint64_t ptr);
 /*handle*/ uint64_t uniffi_quaynor_uniffi_fn_clone_rusttool(
     /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
@@ -193,8 +206,7 @@ void uniffi_quaynor_uniffi_fn_free_rusttool(
     RustCallStatus *uniffi_out_err);
 RustBuffer uniffi_quaynor_uniffi_fn_method_rusttool_get_schema_json(
     /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
-/*handle*/ uint64_t
-uniffi_quaynor_uniffi_fn_method_rusttool_next_pending_call(
+/*handle*/ uint64_t uniffi_quaynor_uniffi_fn_method_rusttool_next_pending_call(
     /*handle*/ uint64_t ptr);
 void uniffi_quaynor_uniffi_fn_method_rusttool_resolve_pending_call(
     /*handle*/ uint64_t ptr, RustBuffer call_id, RustBuffer result,
@@ -219,19 +231,16 @@ void uniffi_quaynor_uniffi_fn_free_samplerbuilder(
 /*handle*/ uint64_t uniffi_quaynor_uniffi_fn_method_samplerbuilder_min_p(
     /*handle*/ uint64_t ptr, float min_p, uint32_t min_keep,
     RustCallStatus *uniffi_out_err);
-/*handle*/ uint64_t
-uniffi_quaynor_uniffi_fn_method_samplerbuilder_mirostat_v1(
+/*handle*/ uint64_t uniffi_quaynor_uniffi_fn_method_samplerbuilder_mirostat_v1(
     /*handle*/ uint64_t ptr, float tau, float eta, int32_t m,
     RustCallStatus *uniffi_out_err);
-/*handle*/ uint64_t
-uniffi_quaynor_uniffi_fn_method_samplerbuilder_mirostat_v2(
+/*handle*/ uint64_t uniffi_quaynor_uniffi_fn_method_samplerbuilder_mirostat_v2(
     /*handle*/ uint64_t ptr, float tau, float eta,
     RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t uniffi_quaynor_uniffi_fn_method_samplerbuilder_penalties(
     /*handle*/ uint64_t ptr, int32_t penalty_last_n, float penalty_repeat,
     float penalty_freq, float penalty_present, RustCallStatus *uniffi_out_err);
-/*handle*/ uint64_t
-uniffi_quaynor_uniffi_fn_method_samplerbuilder_temperature(
+/*handle*/ uint64_t uniffi_quaynor_uniffi_fn_method_samplerbuilder_temperature(
     /*handle*/ uint64_t ptr, float temperature, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t uniffi_quaynor_uniffi_fn_method_samplerbuilder_top_k(
     /*handle*/ uint64_t ptr, int32_t top_k, RustCallStatus *uniffi_out_err);
@@ -253,12 +262,22 @@ uniffi_quaynor_uniffi_fn_constructor_samplerconfig_from_json(
     RustBuffer json_str, RustCallStatus *uniffi_out_err);
 RustBuffer uniffi_quaynor_uniffi_fn_method_samplerconfig_to_json(
     /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
+void uniffi_quaynor_uniffi_fn_init_callback_vtable_rustdownloadprogresscallback(
+    UniffiVTableCallbackInterfaceRustDownloadProgressCallback *vtable);
 void uniffi_quaynor_uniffi_fn_init_callback_vtable_rusttoolcallback(
     UniffiVTableCallbackInterfaceRustToolCallback *vtable);
 float uniffi_quaynor_uniffi_fn_func_cosine_similarity(
     RustBuffer a, RustBuffer b, RustCallStatus *uniffi_out_err);
-/*handle*/ uint64_t uniffi_quaynor_uniffi_fn_func_load_model(
-    RustBuffer model_path, int8_t use_gpu, RustBuffer projection_model_path);
+uint64_t uniffi_quaynor_uniffi_fn_func_delete_cached_model(
+    RustBuffer model_path, RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t uniffi_quaynor_uniffi_fn_func_download_model(
+    RustBuffer model_path, RustBuffer headers, RustBuffer on_download_progress);
+RustBuffer
+uniffi_quaynor_uniffi_fn_func_get_cached_models(RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t
+uniffi_quaynor_uniffi_fn_func_load_model(RustBuffer model_path, int8_t use_gpu,
+                                         RustBuffer projection_model_path,
+                                         RustBuffer on_download_progress);
 /*handle*/ uint64_t uniffi_quaynor_uniffi_fn_func_sampler_preset_default(
     RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t uniffi_quaynor_uniffi_fn_func_sampler_preset_dry(
@@ -275,17 +294,16 @@ float uniffi_quaynor_uniffi_fn_func_cosine_similarity(
     int32_t top_k, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t uniffi_quaynor_uniffi_fn_func_sampler_preset_top_p(
     float top_p, RustCallStatus *uniffi_out_err);
-RustBuffer
-ffi_quaynor_uniffi_rustbuffer_alloc(uint64_t size,
-                                      RustCallStatus *uniffi_out_err);
+RustBuffer ffi_quaynor_uniffi_rustbuffer_alloc(uint64_t size,
+                                               RustCallStatus *uniffi_out_err);
 RustBuffer
 ffi_quaynor_uniffi_rustbuffer_from_bytes(ForeignBytes bytes,
-                                           RustCallStatus *uniffi_out_err);
+                                         RustCallStatus *uniffi_out_err);
 void ffi_quaynor_uniffi_rustbuffer_free(RustBuffer buf,
-                                          RustCallStatus *uniffi_out_err);
+                                        RustCallStatus *uniffi_out_err);
 RustBuffer
 ffi_quaynor_uniffi_rustbuffer_reserve(RustBuffer buf, uint64_t additional,
-                                        RustCallStatus *uniffi_out_err);
+                                      RustCallStatus *uniffi_out_err);
 void ffi_quaynor_uniffi_rust_future_poll_u8(
     /*handle*/ uint64_t handle, UniffiRustFutureContinuationCallback callback,
     /*handle*/ uint64_t callback_data);
@@ -395,6 +413,9 @@ void ffi_quaynor_uniffi_rust_future_free_void(
 void ffi_quaynor_uniffi_rust_future_complete_void(
     /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
 uint16_t uniffi_quaynor_uniffi_checksum_func_cosine_similarity();
+uint16_t uniffi_quaynor_uniffi_checksum_func_delete_cached_model();
+uint16_t uniffi_quaynor_uniffi_checksum_func_download_model();
+uint16_t uniffi_quaynor_uniffi_checksum_func_get_cached_models();
 uint16_t uniffi_quaynor_uniffi_checksum_func_load_model();
 uint16_t uniffi_quaynor_uniffi_checksum_func_sampler_preset_default();
 uint16_t uniffi_quaynor_uniffi_checksum_func_sampler_preset_dry();
@@ -409,6 +430,7 @@ uint16_t uniffi_quaynor_uniffi_checksum_method_rustchat_ask_with_prompt();
 uint16_t uniffi_quaynor_uniffi_checksum_method_rustchat_get_chat_history();
 uint16_t
 uniffi_quaynor_uniffi_checksum_method_rustchat_get_sampler_config_json();
+uint16_t uniffi_quaynor_uniffi_checksum_method_rustchat_get_stats();
 uint16_t uniffi_quaynor_uniffi_checksum_method_rustchat_get_system_prompt();
 uint16_t
 uniffi_quaynor_uniffi_checksum_method_rustchat_get_template_variables();
@@ -417,20 +439,21 @@ uint16_t uniffi_quaynor_uniffi_checksum_method_rustchat_reset_history();
 uint16_t uniffi_quaynor_uniffi_checksum_method_rustchat_set_chat_history();
 uint16_t uniffi_quaynor_uniffi_checksum_method_rustchat_set_sampler_config();
 uint16_t uniffi_quaynor_uniffi_checksum_method_rustchat_set_system_prompt();
-uint16_t
-uniffi_quaynor_uniffi_checksum_method_rustchat_set_template_variable();
+uint16_t uniffi_quaynor_uniffi_checksum_method_rustchat_set_template_variable();
 uint16_t uniffi_quaynor_uniffi_checksum_method_rustchat_set_tools();
 uint16_t uniffi_quaynor_uniffi_checksum_method_rustchat_stop_generation();
+uint16_t uniffi_quaynor_uniffi_checksum_method_rustchat_tokenize();
 uint16_t uniffi_quaynor_uniffi_checksum_method_rustcrossencoder_rank();
 uint16_t
 uniffi_quaynor_uniffi_checksum_method_rustcrossencoder_rank_and_sort_json();
 uint16_t uniffi_quaynor_uniffi_checksum_method_rustencoder_encode();
+uint16_t uniffi_quaynor_uniffi_checksum_method_rustmodel_max_ctx();
+uint16_t uniffi_quaynor_uniffi_checksum_method_rustmodel_unload();
 uint16_t uniffi_quaynor_uniffi_checksum_method_rusttokenstream_completed();
 uint16_t uniffi_quaynor_uniffi_checksum_method_rusttokenstream_next_token();
 uint16_t uniffi_quaynor_uniffi_checksum_method_rusttool_get_schema_json();
 uint16_t uniffi_quaynor_uniffi_checksum_method_rusttool_next_pending_call();
-uint16_t
-uniffi_quaynor_uniffi_checksum_method_rusttool_resolve_pending_call();
+uint16_t uniffi_quaynor_uniffi_checksum_method_rusttool_resolve_pending_call();
 uint16_t uniffi_quaynor_uniffi_checksum_method_samplerbuilder_dist();
 uint16_t uniffi_quaynor_uniffi_checksum_method_samplerbuilder_dry();
 uint16_t uniffi_quaynor_uniffi_checksum_method_samplerbuilder_grammar();
@@ -452,6 +475,8 @@ uint16_t uniffi_quaynor_uniffi_checksum_constructor_rusttool_new();
 uint16_t uniffi_quaynor_uniffi_checksum_constructor_rusttool_new_async();
 uint16_t uniffi_quaynor_uniffi_checksum_constructor_samplerbuilder_new();
 uint16_t uniffi_quaynor_uniffi_checksum_constructor_samplerconfig_from_json();
+uint16_t
+uniffi_quaynor_uniffi_checksum_method_rustdownloadprogresscallback_on_download_progress();
 uint16_t uniffi_quaynor_uniffi_checksum_method_rusttoolcallback_call();
 uint32_t ffi_quaynor_uniffi_uniffi_contract_version();
 }
@@ -891,6 +916,119 @@ static void cleanup() {
   // Implementation of free callback function CallbackInterfaceFree
 
 // Callback function:
+// uniffi::quaynor::st::vtablecallbackinterfacerustdownloadprogresscallback::vtablecallbackinterfacerustdownloadprogresscallback::free::UniffiCallbackInterfaceFree
+//
+// We have the following constraints:
+// - we need to pass a function pointer to Rust.
+// - we need a jsi::Runtime and jsi::Function to call into JS.
+// - function pointers can't store state, so we can't use a lamda.
+//
+// For this, we store a lambda as a global, as `rsLambda`. The `callback`
+// function calls the lambda, which itself calls the `body` which then calls
+// into JS.
+//
+// We then give the `callback` function pointer to Rust which will call the
+// lambda sometime in the future.
+namespace uniffi::quaynor::st::
+    vtablecallbackinterfacerustdownloadprogresscallback::
+        vtablecallbackinterfacerustdownloadprogresscallback::free {
+using namespace facebook;
+
+// We need to store a lambda in a global so we can call it from
+// a function pointer. The function pointer is passed to Rust.
+static std::function<void(uint64_t)> rsLambda = nullptr;
+
+// This is the main body of the callback. It's called from the lambda,
+// which itself is called from the callback function which is passed to Rust.
+static void body(jsi::Runtime &rt,
+                 std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
+                 std::shared_ptr<jsi::Value> callbackValue,
+                 uint64_t rs_handle) {
+
+  // Convert the arguments from Rust, into jsi::Values.
+  // We'll use the Bridging class to do this…
+  auto js_handle =
+      uniffi_jsi::Bridging<uint64_t>::toJs(rt, callInvoker, rs_handle);
+
+  // Now we are ready to call the callback.
+  // We are already on the JS thread, because this `body` function was
+  // invoked from the CallInvoker.
+  try {
+    // Getting the callback function
+    auto cb = callbackValue->asObject(rt).asFunction(rt);
+    auto uniffiResult = cb.call(rt, js_handle);
+
+  } catch (const jsi::JSError &error) {
+    std::cout << "Error in callback UniffiCallbackInterfaceFree: "
+              << error.what() << std::endl;
+    throw error;
+  }
+}
+
+static void callback(uint64_t rs_handle) {
+  // If the runtime has shutdown, then there is no point in trying to
+  // call into Javascript. BUT how do we tell if the runtime has shutdown?
+  //
+  // Answer: the module destructor calls into callback `cleanup` method,
+  // which nulls out the rsLamda.
+  //
+  // If rsLamda is null, then there is no runtime to call into.
+  if (rsLambda == nullptr) {
+    // This only occurs when destructors are calling into Rust free/drop,
+    // which causes the JS callback to be dropped.
+    return;
+  }
+
+  // The runtime, the actual callback jsi::funtion, and the callInvoker
+  // are all in the lambda.
+  rsLambda(rs_handle);
+}
+
+[[maybe_unused]] static UniffiCallbackInterfaceFree
+makeCallbackFunction( // uniffi::quaynor::st::vtablecallbackinterfacerustdownloadprogresscallback::vtablecallbackinterfacerustdownloadprogresscallback::free
+    jsi::Runtime &rt,
+    std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
+    const jsi::Value &value) {
+  if (rsLambda != nullptr) {
+    // `makeCallbackFunction` is called in two circumstances:
+    //
+    // 1. at startup, when initializing callback interface vtables.
+    // 2. when polling futures. This happens at least once per future that is
+    //    exposed to Javascript. We know that this is always the same function,
+    //    `uniffiFutureContinuationCallback` in `async-rust-calls.ts`.
+    //
+    // We can therefore return the callback function without making anything
+    // new if we've been initialized already.
+    return callback;
+  }
+  auto callbackFunction = value.asObject(rt).asFunction(rt);
+  auto callbackValue = std::make_shared<jsi::Value>(rt, callbackFunction);
+  rsLambda = [&rt, callInvoker, callbackValue](uint64_t rs_handle) {
+    // We immediately make a lambda which will do the work of transforming the
+    // arguments into JSI values and calling the callback.
+    uniffi_runtime::UniffiCallFunc jsLambda =
+        [callInvoker, callbackValue, rs_handle](jsi::Runtime &rt) mutable {
+          body(rt, callInvoker, callbackValue, rs_handle);
+        };
+    // We'll then call that lambda from the callInvoker which will
+    // look after calling it on the correct thread.
+
+    callInvoker->invokeNonBlocking(rt, jsLambda);
+  };
+  return callback;
+}
+
+// This method is called from the destructor of NativeQuaynor, which only
+// happens when the jsi::Runtime is being destroyed.
+static void cleanup() {
+  // The lambda holds a reference to the the Runtime, so when this is nulled
+  // out, then the pointer will no longer be left dangling.
+  rsLambda = nullptr;
+}
+} // namespace
+  // uniffi::quaynor::st::vtablecallbackinterfacerustdownloadprogresscallback::vtablecallbackinterfacerustdownloadprogresscallback::free
+
+// Callback function:
 // uniffi::quaynor::st::vtablecallbackinterfacerusttoolcallback::vtablecallbackinterfacerusttoolcallback::free::UniffiCallbackInterfaceFree
 //
 // We have the following constraints:
@@ -1025,8 +1163,9 @@ template <> struct Bridging<UniffiForeignFutureDroppedCallbackStruct> {
     // Create the vtable from the js callbacks.
     rsObject.handle = uniffi_jsi::Bridging<uint64_t>::fromJs(
         rt, callInvoker, jsObject.getProperty(rt, "handle"));
-    rsObject.free = uniffi::quaynor::cb::foreignfuturedroppedcallback::
-        makeCallbackFunction(rt, callInvoker, jsObject.getProperty(rt, "free"));
+    rsObject.free =
+        uniffi::quaynor::cb::foreignfuturedroppedcallback::makeCallbackFunction(
+            rt, callInvoker, jsObject.getProperty(rt, "free"));
 
     return rsObject;
   }
@@ -1751,9 +1890,8 @@ template <> struct Bridging<UniffiForeignFutureCompleteRustBuffer> {
     // Convert the arguments into the Rust, with Bridging<T>::fromJs,
     // then call the rs_callback with those arguments.
     func(uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, args[0]),
-         uniffi::quaynor::Bridging<
-             UniffiForeignFutureResultRustBuffer>::fromJs(rt, callInvoker,
-                                                          args[1]));
+         uniffi::quaynor::Bridging<UniffiForeignFutureResultRustBuffer>::fromJs(
+             rt, callInvoker, args[1]));
 
     return jsi::Value::undefined();
   }
@@ -1822,6 +1960,314 @@ template <> struct Bridging<UniffiForeignFutureCompleteVoid> {
     return jsi::Value::undefined();
   }
 };
+} // namespace uniffi::quaynor
+  // Implementation of CallbackInterfaceClone for vtable field uniffi_clone in
+  // VTableCallbackInterfaceRustDownloadProgressCallback
+
+// Callback function:
+// uniffi::quaynor::cb::callbackinterfaceclone::vtablecallbackinterfacerustdownloadprogresscallback::UniffiCallbackInterfaceClone
+//
+// We have the following constraints:
+// - we need to pass a function pointer to Rust.
+// - we need a jsi::Runtime and jsi::Function to call into JS.
+// - function pointers can't store state, so we can't use a lamda.
+//
+// For this, we store a lambda as a global, as `rsLambda`. The `callback`
+// function calls the lambda, which itself calls the `body` which then calls
+// into JS.
+//
+// We then give the `callback` function pointer to Rust which will call the
+// lambda sometime in the future.
+namespace uniffi::quaynor::cb::callbackinterfaceclone::
+    vtablecallbackinterfacerustdownloadprogresscallback {
+using namespace facebook;
+
+// We need to store a lambda in a global so we can call it from
+// a function pointer. The function pointer is passed to Rust.
+static std::function<void(uint64_t, uint64_t *)> rsLambda = nullptr;
+
+// This is the main body of the callback. It's called from the lambda,
+// which itself is called from the callback function which is passed to Rust.
+static void body(jsi::Runtime &rt,
+                 std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
+                 std::shared_ptr<jsi::Value> callbackValue, uint64_t rs_handle,
+                 uint64_t *uniffi_direct_return) {
+
+  // Convert the arguments from Rust, into jsi::Values.
+  // We'll use the Bridging class to do this…
+  auto js_handle =
+      uniffi_jsi::Bridging<uint64_t>::toJs(rt, callInvoker, rs_handle);
+
+  // Now we are ready to call the callback.
+  // We are already on the JS thread, because this `body` function was
+  // invoked from the CallInvoker.
+  try {
+    // Getting the callback function
+    auto cb = callbackValue->asObject(rt).asFunction(rt);
+    auto uniffiResult = cb.call(rt, js_handle);
+
+    // Write the direct return value back to the caller.
+    if (uniffi_direct_return != nullptr) {
+      *uniffi_direct_return =
+          uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, uniffiResult);
+    }
+  } catch (const jsi::JSError &error) {
+    std::cout << "Error in callback UniffiCallbackInterfaceClone: "
+              << error.what() << std::endl;
+    throw error;
+  }
+}
+
+static uint64_t callback(uint64_t rs_handle) {
+  // If the runtime has shutdown, then there is no point in trying to
+  // call into Javascript. BUT how do we tell if the runtime has shutdown?
+  //
+  // Answer: the module destructor calls into callback `cleanup` method,
+  // which nulls out the rsLamda.
+  //
+  // If rsLamda is null, then there is no runtime to call into.
+  if (rsLambda == nullptr) {
+    // This only occurs when destructors are calling into Rust free/drop,
+    // which causes the JS callback to be dropped.
+    return 0;
+  }
+  uint64_t uniffi_result = 0;
+
+  // The runtime, the actual callback jsi::funtion, and the callInvoker
+  // are all in the lambda.
+  rsLambda(rs_handle, &uniffi_result);
+  return uniffi_result;
+}
+
+[[maybe_unused]] static UniffiCallbackInterfaceClone
+makeCallbackFunction( // uniffi::quaynor::cb::callbackinterfaceclone::vtablecallbackinterfacerustdownloadprogresscallback
+    jsi::Runtime &rt,
+    std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
+    const jsi::Value &value) {
+  if (rsLambda != nullptr) {
+    // `makeCallbackFunction` is called in two circumstances:
+    //
+    // 1. at startup, when initializing callback interface vtables.
+    // 2. when polling futures. This happens at least once per future that is
+    //    exposed to Javascript. We know that this is always the same function,
+    //    `uniffiFutureContinuationCallback` in `async-rust-calls.ts`.
+    //
+    // We can therefore return the callback function without making anything
+    // new if we've been initialized already.
+    return callback;
+  }
+  auto callbackFunction = value.asObject(rt).asFunction(rt);
+  auto callbackValue = std::make_shared<jsi::Value>(rt, callbackFunction);
+  rsLambda = [&rt, callInvoker, callbackValue](uint64_t rs_handle,
+                                               uint64_t *uniffi_direct_return) {
+    // We immediately make a lambda which will do the work of transforming the
+    // arguments into JSI values and calling the callback.
+    uniffi_runtime::UniffiCallFunc jsLambda =
+        [callInvoker, callbackValue, rs_handle,
+         uniffi_direct_return](jsi::Runtime &rt) mutable {
+          body(rt, callInvoker, callbackValue, rs_handle, uniffi_direct_return);
+        };
+    // We'll then call that lambda from the callInvoker which will
+    // look after calling it on the correct thread.
+    callInvoker->invokeBlocking(rt, jsLambda);
+  };
+  return callback;
+}
+
+// This method is called from the destructor of NativeQuaynor, which only
+// happens when the jsi::Runtime is being destroyed.
+static void cleanup() {
+  // The lambda holds a reference to the the Runtime, so when this is nulled
+  // out, then the pointer will no longer be left dangling.
+  rsLambda = nullptr;
+}
+} // namespace
+  // uniffi::quaynor::cb::callbackinterfaceclone::vtablecallbackinterfacerustdownloadprogresscallback
+  // Implementation of CallbackInterfaceRustDownloadProgressCallbackMethod0 for
+  // vtable field on_download_progress in
+  // VTableCallbackInterfaceRustDownloadProgressCallback
+
+// Callback function:
+// uniffi::quaynor::cb::callbackinterfacerustdownloadprogresscallbackmethod0::vtablecallbackinterfacerustdownloadprogresscallback::UniffiCallbackInterfaceRustDownloadProgressCallbackMethod0
+//
+// We have the following constraints:
+// - we need to pass a function pointer to Rust.
+// - we need a jsi::Runtime and jsi::Function to call into JS.
+// - function pointers can't store state, so we can't use a lamda.
+//
+// For this, we store a lambda as a global, as `rsLambda`. The `callback`
+// function calls the lambda, which itself calls the `body` which then calls
+// into JS.
+//
+// We then give the `callback` function pointer to Rust which will call the
+// lambda sometime in the future.
+namespace uniffi::quaynor::cb::
+    callbackinterfacerustdownloadprogresscallbackmethod0::
+        vtablecallbackinterfacerustdownloadprogresscallback {
+using namespace facebook;
+
+// We need to store a lambda in a global so we can call it from
+// a function pointer. The function pointer is passed to Rust.
+static std::function<void(uint64_t, uint64_t, uint64_t, void *,
+                          RustCallStatus *)>
+    rsLambda = nullptr;
+
+// This is the main body of the callback. It's called from the lambda,
+// which itself is called from the callback function which is passed to Rust.
+static void body(jsi::Runtime &rt,
+                 std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
+                 std::shared_ptr<jsi::Value> callbackValue,
+                 uint64_t rs_uniffiHandle, uint64_t rs_downloaded,
+                 uint64_t rs_total, void *rs_uniffiOutReturn,
+                 RustCallStatus *uniffi_call_status) {
+
+  // Convert the arguments from Rust, into jsi::Values.
+  // We'll use the Bridging class to do this…
+  auto js_uniffiHandle =
+      uniffi_jsi::Bridging<uint64_t>::toJs(rt, callInvoker, rs_uniffiHandle);
+  auto js_downloaded =
+      uniffi_jsi::Bridging<uint64_t>::toJs(rt, callInvoker, rs_downloaded);
+  auto js_total =
+      uniffi_jsi::Bridging<uint64_t>::toJs(rt, callInvoker, rs_total);
+
+  // Now we are ready to call the callback.
+  // We are already on the JS thread, because this `body` function was
+  // invoked from the CallInvoker.
+  try {
+    // Getting the callback function
+    auto cb = callbackValue->asObject(rt).asFunction(rt);
+    auto uniffiResult = cb.call(rt, js_uniffiHandle, js_downloaded, js_total);
+
+    // Now copy the result back from JS into the RustCallStatus object.
+    uniffi::quaynor::Bridging<RustCallStatus>::copyFromJs(
+        rt, callInvoker, uniffiResult, uniffi_call_status);
+
+    if (uniffi_call_status->code != UNIFFI_CALL_STATUS_OK) {
+      // The JS callback finished abnormally, so we cannot retrieve the return
+      // value.
+      return;
+    }
+
+  } catch (const jsi::JSError &error) {
+    std::cout << "Error in callback "
+                 "UniffiCallbackInterfaceRustDownloadProgressCallbackMethod0: "
+              << error.what() << std::endl;
+    throw error;
+  }
+}
+
+static void callback(uint64_t rs_uniffiHandle, uint64_t rs_downloaded,
+                     uint64_t rs_total, void *rs_uniffiOutReturn,
+                     RustCallStatus *uniffi_call_status) {
+  // If the runtime has shutdown, then there is no point in trying to
+  // call into Javascript. BUT how do we tell if the runtime has shutdown?
+  //
+  // Answer: the module destructor calls into callback `cleanup` method,
+  // which nulls out the rsLamda.
+  //
+  // If rsLamda is null, then there is no runtime to call into.
+  if (rsLambda == nullptr) {
+    // This only occurs when destructors are calling into Rust free/drop,
+    // which causes the JS callback to be dropped.
+    return;
+  }
+
+  // The runtime, the actual callback jsi::funtion, and the callInvoker
+  // are all in the lambda.
+  rsLambda(rs_uniffiHandle, rs_downloaded, rs_total, rs_uniffiOutReturn,
+           uniffi_call_status);
+}
+
+[[maybe_unused]] static UniffiCallbackInterfaceRustDownloadProgressCallbackMethod0
+makeCallbackFunction( // uniffi::quaynor::cb::callbackinterfacerustdownloadprogresscallbackmethod0::vtablecallbackinterfacerustdownloadprogresscallback
+    jsi::Runtime &rt,
+    std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
+    const jsi::Value &value) {
+  if (rsLambda != nullptr) {
+    // `makeCallbackFunction` is called in two circumstances:
+    //
+    // 1. at startup, when initializing callback interface vtables.
+    // 2. when polling futures. This happens at least once per future that is
+    //    exposed to Javascript. We know that this is always the same function,
+    //    `uniffiFutureContinuationCallback` in `async-rust-calls.ts`.
+    //
+    // We can therefore return the callback function without making anything
+    // new if we've been initialized already.
+    return callback;
+  }
+  auto callbackFunction = value.asObject(rt).asFunction(rt);
+  auto callbackValue = std::make_shared<jsi::Value>(rt, callbackFunction);
+  rsLambda = [&rt, callInvoker,
+              callbackValue](uint64_t rs_uniffiHandle, uint64_t rs_downloaded,
+                             uint64_t rs_total, void *rs_uniffiOutReturn,
+                             RustCallStatus *uniffi_call_status) {
+    // We immediately make a lambda which will do the work of transforming the
+    // arguments into JSI values and calling the callback.
+    uniffi_runtime::UniffiCallFunc jsLambda =
+        [callInvoker, callbackValue, rs_uniffiHandle, rs_downloaded, rs_total,
+         rs_uniffiOutReturn, uniffi_call_status](jsi::Runtime &rt) mutable {
+          body(rt, callInvoker, callbackValue, rs_uniffiHandle, rs_downloaded,
+               rs_total, rs_uniffiOutReturn, uniffi_call_status);
+        };
+    // We'll then call that lambda from the callInvoker which will
+    // look after calling it on the correct thread.
+    callInvoker->invokeBlocking(rt, jsLambda);
+  };
+  return callback;
+}
+
+// This method is called from the destructor of NativeQuaynor, which only
+// happens when the jsi::Runtime is being destroyed.
+static void cleanup() {
+  // The lambda holds a reference to the the Runtime, so when this is nulled
+  // out, then the pointer will no longer be left dangling.
+  rsLambda = nullptr;
+}
+} // namespace
+  // uniffi::quaynor::cb::callbackinterfacerustdownloadprogresscallbackmethod0::vtablecallbackinterfacerustdownloadprogresscallback
+namespace uniffi::quaynor {
+using namespace facebook;
+using CallInvoker = uniffi_runtime::UniffiCallInvoker;
+
+template <>
+struct Bridging<UniffiVTableCallbackInterfaceRustDownloadProgressCallback> {
+  static UniffiVTableCallbackInterfaceRustDownloadProgressCallback
+  fromJs(jsi::Runtime &rt, std::shared_ptr<CallInvoker> callInvoker,
+         const jsi::Value &jsValue) {
+    // Check if the input is an object
+    if (!jsValue.isObject()) {
+      throw jsi::JSError(
+          rt, "Expected an object for "
+              "UniffiVTableCallbackInterfaceRustDownloadProgressCallback");
+    }
+
+    // Get the object from the jsi::Value
+    auto jsObject = jsValue.getObject(rt);
+
+    // Create the vtable struct
+    UniffiVTableCallbackInterfaceRustDownloadProgressCallback rsObject;
+
+    // Create the vtable from the js callbacks.
+    rsObject.uniffi_free = uniffi::quaynor::st::
+        vtablecallbackinterfacerustdownloadprogresscallback::
+            vtablecallbackinterfacerustdownloadprogresscallback::free::
+                makeCallbackFunction(rt, callInvoker,
+                                     jsObject.getProperty(rt, "uniffiFree"));
+    rsObject.uniffi_clone = uniffi::quaynor::cb::callbackinterfaceclone::
+        vtablecallbackinterfacerustdownloadprogresscallback::
+            makeCallbackFunction(rt, callInvoker,
+                                 jsObject.getProperty(rt, "uniffiClone"));
+    rsObject.on_download_progress = uniffi::quaynor::cb::
+        callbackinterfacerustdownloadprogresscallbackmethod0::
+            vtablecallbackinterfacerustdownloadprogresscallback::
+                makeCallbackFunction(
+                    rt, callInvoker,
+                    jsObject.getProperty(rt, "onDownloadProgress"));
+
+    return rsObject;
+  }
+};
+
 } // namespace uniffi::quaynor
   // Implementation of CallbackInterfaceClone for vtable field uniffi_clone in
   // VTableCallbackInterfaceRustToolCallback
@@ -2213,9 +2659,8 @@ NativeQuaynor::NativeQuaynor(
           6,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
-            return this
-                ->cpp_uniffi_quaynor_uniffi_fn_constructor_rustchat_new(
-                    rt, thisVal, args, count);
+            return this->cpp_uniffi_quaynor_uniffi_fn_constructor_rustchat_new(
+                rt, thisVal, args, count);
           });
   props["ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_ask"] =
       jsi::Function::createFromHostFunction(
@@ -2231,8 +2676,9 @@ NativeQuaynor::NativeQuaynor(
   props["ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_ask_with_prompt"] =
       jsi::Function::createFromHostFunction(
           rt,
-          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_"
-                                        "method_rustchat_ask_with_prompt"),
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_ask_with_prompt"),
           2,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -2243,8 +2689,9 @@ NativeQuaynor::NativeQuaynor(
   props["ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_get_chat_history"] =
       jsi::Function::createFromHostFunction(
           rt,
-          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_"
-                                        "method_rustchat_get_chat_history"),
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_get_chat_history"),
           1,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -2264,11 +2711,22 @@ NativeQuaynor::NativeQuaynor(
             ->cpp_uniffi_quaynor_uniffi_fn_method_rustchat_get_sampler_config_json(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_get_stats"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt, "ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_get_stats"),
+          1,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_quaynor_uniffi_fn_method_rustchat_get_stats(
+                rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_get_system_prompt"] =
       jsi::Function::createFromHostFunction(
           rt,
-          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_"
-                                        "method_rustchat_get_system_prompt"),
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_method_"
+                                        "rustchat_get_system_prompt"),
           1,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -2317,8 +2775,9 @@ NativeQuaynor::NativeQuaynor(
   props["ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_set_chat_history"] =
       jsi::Function::createFromHostFunction(
           rt,
-          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_"
-                                        "method_rustchat_set_chat_history"),
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_set_chat_history"),
           2,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -2329,8 +2788,8 @@ NativeQuaynor::NativeQuaynor(
   props["ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_set_sampler_config"] =
       jsi::Function::createFromHostFunction(
           rt,
-          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_"
-                                        "method_rustchat_set_sampler_config"),
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_method_"
+                                        "rustchat_set_sampler_config"),
           2,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -2341,8 +2800,8 @@ NativeQuaynor::NativeQuaynor(
   props["ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_set_system_prompt"] =
       jsi::Function::createFromHostFunction(
           rt,
-          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_"
-                                        "method_rustchat_set_system_prompt"),
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_method_"
+                                        "rustchat_set_system_prompt"),
           2,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -2350,18 +2809,18 @@ NativeQuaynor::NativeQuaynor(
                 ->cpp_uniffi_quaynor_uniffi_fn_method_rustchat_set_system_prompt(
                     rt, thisVal, args, count);
           });
-  props["ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_set_template_"
-        "variable"] = jsi::Function::createFromHostFunction(
-      rt,
-      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_method_"
-                                    "rustchat_set_template_variable"),
-      3,
-      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-             const jsi::Value *args, size_t count) -> jsi::Value {
-        return this
-            ->cpp_uniffi_quaynor_uniffi_fn_method_rustchat_set_template_variable(
-                rt, thisVal, args, count);
-      });
+  props["ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_set_template_variable"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_method_"
+                                        "rustchat_set_template_variable"),
+          3,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_quaynor_uniffi_fn_method_rustchat_set_template_variable(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_set_tools"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -2370,21 +2829,32 @@ NativeQuaynor::NativeQuaynor(
           2,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
-            return this
-                ->cpp_uniffi_quaynor_uniffi_fn_method_rustchat_set_tools(
-                    rt, thisVal, args, count);
+            return this->cpp_uniffi_quaynor_uniffi_fn_method_rustchat_set_tools(
+                rt, thisVal, args, count);
           });
   props["ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_stop_generation"] =
       jsi::Function::createFromHostFunction(
           rt,
-          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_"
-                                        "method_rustchat_stop_generation"),
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_stop_generation"),
           1,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
             return this
                 ->cpp_uniffi_quaynor_uniffi_fn_method_rustchat_stop_generation(
                     rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_tokenize"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt, "ubrn_uniffi_quaynor_uniffi_fn_method_rustchat_tokenize"),
+          2,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_quaynor_uniffi_fn_method_rustchat_tokenize(
+                rt, thisVal, args, count);
           });
   props["ubrn_uniffi_quaynor_uniffi_fn_clone_rustcrossencoder"] =
       jsi::Function::createFromHostFunction(
@@ -2411,8 +2881,9 @@ NativeQuaynor::NativeQuaynor(
   props["ubrn_uniffi_quaynor_uniffi_fn_constructor_rustcrossencoder_new"] =
       jsi::Function::createFromHostFunction(
           rt,
-          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_"
-                                        "constructor_rustcrossencoder_new"),
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_quaynor_uniffi_fn_constructor_rustcrossencoder_new"),
           2,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -2424,8 +2895,7 @@ NativeQuaynor::NativeQuaynor(
       jsi::Function::createFromHostFunction(
           rt,
           jsi::PropNameID::forAscii(
-              rt,
-              "ubrn_uniffi_quaynor_uniffi_fn_method_rustcrossencoder_rank"),
+              rt, "ubrn_uniffi_quaynor_uniffi_fn_method_rustcrossencoder_rank"),
           3,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -2471,8 +2941,7 @@ NativeQuaynor::NativeQuaynor(
       jsi::Function::createFromHostFunction(
           rt,
           jsi::PropNameID::forAscii(
-              rt,
-              "ubrn_uniffi_quaynor_uniffi_fn_constructor_rustencoder_new"),
+              rt, "ubrn_uniffi_quaynor_uniffi_fn_constructor_rustencoder_new"),
           2,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -2488,9 +2957,8 @@ NativeQuaynor::NativeQuaynor(
           2,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
-            return this
-                ->cpp_uniffi_quaynor_uniffi_fn_method_rustencoder_encode(
-                    rt, thisVal, args, count);
+            return this->cpp_uniffi_quaynor_uniffi_fn_method_rustencoder_encode(
+                rt, thisVal, args, count);
           });
   props["ubrn_uniffi_quaynor_uniffi_fn_clone_rustmodel"] =
       jsi::Function::createFromHostFunction(
@@ -2512,6 +2980,28 @@ NativeQuaynor::NativeQuaynor(
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
             return this->cpp_uniffi_quaynor_uniffi_fn_free_rustmodel(
+                rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_quaynor_uniffi_fn_method_rustmodel_max_ctx"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt, "ubrn_uniffi_quaynor_uniffi_fn_method_rustmodel_max_ctx"),
+          1,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_quaynor_uniffi_fn_method_rustmodel_max_ctx(
+                rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_quaynor_uniffi_fn_method_rustmodel_unload"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt, "ubrn_uniffi_quaynor_uniffi_fn_method_rustmodel_unload"),
+          1,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_quaynor_uniffi_fn_method_rustmodel_unload(
                 rt, thisVal, args, count);
           });
   props["ubrn_uniffi_quaynor_uniffi_fn_clone_rusttokenstream"] =
@@ -2539,8 +3029,9 @@ NativeQuaynor::NativeQuaynor(
   props["ubrn_uniffi_quaynor_uniffi_fn_method_rusttokenstream_completed"] =
       jsi::Function::createFromHostFunction(
           rt,
-          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_"
-                                        "method_rusttokenstream_completed"),
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_quaynor_uniffi_fn_method_rusttokenstream_completed"),
           1,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -2551,8 +3042,8 @@ NativeQuaynor::NativeQuaynor(
   props["ubrn_uniffi_quaynor_uniffi_fn_method_rusttokenstream_next_token"] =
       jsi::Function::createFromHostFunction(
           rt,
-          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_"
-                                        "method_rusttokenstream_next_token"),
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_method_"
+                                        "rusttokenstream_next_token"),
           1,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -2590,9 +3081,8 @@ NativeQuaynor::NativeQuaynor(
           4,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
-            return this
-                ->cpp_uniffi_quaynor_uniffi_fn_constructor_rusttool_new(
-                    rt, thisVal, args, count);
+            return this->cpp_uniffi_quaynor_uniffi_fn_constructor_rusttool_new(
+                rt, thisVal, args, count);
           });
   props["ubrn_uniffi_quaynor_uniffi_fn_constructor_rusttool_new_async"] =
       jsi::Function::createFromHostFunction(
@@ -2610,8 +3100,9 @@ NativeQuaynor::NativeQuaynor(
   props["ubrn_uniffi_quaynor_uniffi_fn_method_rusttool_get_schema_json"] =
       jsi::Function::createFromHostFunction(
           rt,
-          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_"
-                                        "method_rusttool_get_schema_json"),
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_quaynor_uniffi_fn_method_rusttool_get_schema_json"),
           1,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -2622,8 +3113,8 @@ NativeQuaynor::NativeQuaynor(
   props["ubrn_uniffi_quaynor_uniffi_fn_method_rusttool_next_pending_call"] =
       jsi::Function::createFromHostFunction(
           rt,
-          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_"
-                                        "method_rusttool_next_pending_call"),
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_method_"
+                                        "rusttool_next_pending_call"),
           1,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -2631,18 +3122,18 @@ NativeQuaynor::NativeQuaynor(
                 ->cpp_uniffi_quaynor_uniffi_fn_method_rusttool_next_pending_call(
                     rt, thisVal, args, count);
           });
-  props["ubrn_uniffi_quaynor_uniffi_fn_method_rusttool_resolve_pending_"
-        "call"] = jsi::Function::createFromHostFunction(
-      rt,
-      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_method_"
-                                    "rusttool_resolve_pending_call"),
-      3,
-      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-             const jsi::Value *args, size_t count) -> jsi::Value {
-        return this
-            ->cpp_uniffi_quaynor_uniffi_fn_method_rusttool_resolve_pending_call(
-                rt, thisVal, args, count);
-      });
+  props["ubrn_uniffi_quaynor_uniffi_fn_method_rusttool_resolve_pending_call"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_method_"
+                                        "rusttool_resolve_pending_call"),
+          3,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_quaynor_uniffi_fn_method_rusttool_resolve_pending_call(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_quaynor_uniffi_fn_clone_samplerbuilder"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -2698,9 +3189,8 @@ NativeQuaynor::NativeQuaynor(
           6,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
-            return this
-                ->cpp_uniffi_quaynor_uniffi_fn_method_samplerbuilder_dry(
-                    rt, thisVal, args, count);
+            return this->cpp_uniffi_quaynor_uniffi_fn_method_samplerbuilder_dry(
+                rt, thisVal, args, count);
           });
   props["ubrn_uniffi_quaynor_uniffi_fn_method_samplerbuilder_grammar"] =
       jsi::Function::createFromHostFunction(
@@ -2719,8 +3209,7 @@ NativeQuaynor::NativeQuaynor(
       jsi::Function::createFromHostFunction(
           rt,
           jsi::PropNameID::forAscii(
-              rt,
-              "ubrn_uniffi_quaynor_uniffi_fn_method_samplerbuilder_greedy"),
+              rt, "ubrn_uniffi_quaynor_uniffi_fn_method_samplerbuilder_greedy"),
           1,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -2732,8 +3221,7 @@ NativeQuaynor::NativeQuaynor(
       jsi::Function::createFromHostFunction(
           rt,
           jsi::PropNameID::forAscii(
-              rt,
-              "ubrn_uniffi_quaynor_uniffi_fn_method_samplerbuilder_min_p"),
+              rt, "ubrn_uniffi_quaynor_uniffi_fn_method_samplerbuilder_min_p"),
           3,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -2744,8 +3232,8 @@ NativeQuaynor::NativeQuaynor(
   props["ubrn_uniffi_quaynor_uniffi_fn_method_samplerbuilder_mirostat_v1"] =
       jsi::Function::createFromHostFunction(
           rt,
-          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_"
-                                        "method_samplerbuilder_mirostat_v1"),
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_method_"
+                                        "samplerbuilder_mirostat_v1"),
           4,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -2756,8 +3244,8 @@ NativeQuaynor::NativeQuaynor(
   props["ubrn_uniffi_quaynor_uniffi_fn_method_samplerbuilder_mirostat_v2"] =
       jsi::Function::createFromHostFunction(
           rt,
-          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_"
-                                        "method_samplerbuilder_mirostat_v2"),
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_method_"
+                                        "samplerbuilder_mirostat_v2"),
           3,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -2768,8 +3256,9 @@ NativeQuaynor::NativeQuaynor(
   props["ubrn_uniffi_quaynor_uniffi_fn_method_samplerbuilder_penalties"] =
       jsi::Function::createFromHostFunction(
           rt,
-          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_"
-                                        "method_samplerbuilder_penalties"),
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_quaynor_uniffi_fn_method_samplerbuilder_penalties"),
           5,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -2780,8 +3269,8 @@ NativeQuaynor::NativeQuaynor(
   props["ubrn_uniffi_quaynor_uniffi_fn_method_samplerbuilder_temperature"] =
       jsi::Function::createFromHostFunction(
           rt,
-          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_"
-                                        "method_samplerbuilder_temperature"),
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_method_"
+                                        "samplerbuilder_temperature"),
           2,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -2793,8 +3282,7 @@ NativeQuaynor::NativeQuaynor(
       jsi::Function::createFromHostFunction(
           rt,
           jsi::PropNameID::forAscii(
-              rt,
-              "ubrn_uniffi_quaynor_uniffi_fn_method_samplerbuilder_top_k"),
+              rt, "ubrn_uniffi_quaynor_uniffi_fn_method_samplerbuilder_top_k"),
           2,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -2806,8 +3294,7 @@ NativeQuaynor::NativeQuaynor(
       jsi::Function::createFromHostFunction(
           rt,
           jsi::PropNameID::forAscii(
-              rt,
-              "ubrn_uniffi_quaynor_uniffi_fn_method_samplerbuilder_top_p"),
+              rt, "ubrn_uniffi_quaynor_uniffi_fn_method_samplerbuilder_top_p"),
           3,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -2818,8 +3305,9 @@ NativeQuaynor::NativeQuaynor(
   props["ubrn_uniffi_quaynor_uniffi_fn_method_samplerbuilder_typical_p"] =
       jsi::Function::createFromHostFunction(
           rt,
-          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_"
-                                        "method_samplerbuilder_typical_p"),
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_quaynor_uniffi_fn_method_samplerbuilder_typical_p"),
           3,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -2835,9 +3323,8 @@ NativeQuaynor::NativeQuaynor(
           4,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
-            return this
-                ->cpp_uniffi_quaynor_uniffi_fn_method_samplerbuilder_xtc(
-                    rt, thisVal, args, count);
+            return this->cpp_uniffi_quaynor_uniffi_fn_method_samplerbuilder_xtc(
+                rt, thisVal, args, count);
           });
   props["ubrn_uniffi_quaynor_uniffi_fn_clone_samplerconfig"] =
       jsi::Function::createFromHostFunction(
@@ -2877,8 +3364,7 @@ NativeQuaynor::NativeQuaynor(
       jsi::Function::createFromHostFunction(
           rt,
           jsi::PropNameID::forAscii(
-              rt,
-              "ubrn_uniffi_quaynor_uniffi_fn_method_samplerconfig_to_json"),
+              rt, "ubrn_uniffi_quaynor_uniffi_fn_method_samplerconfig_to_json"),
           1,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -2887,17 +3373,30 @@ NativeQuaynor::NativeQuaynor(
                     rt, thisVal, args, count);
           });
   props["ubrn_uniffi_quaynor_uniffi_fn_init_callback_vtable_"
-        "rusttoolcallback"] = jsi::Function::createFromHostFunction(
+        "rustdownloadprogresscallback"] = jsi::Function::createFromHostFunction(
       rt,
-      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_init_"
-                                    "callback_vtable_rusttoolcallback"),
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_quaynor_uniffi_fn_init_callback_"
+                                "vtable_rustdownloadprogresscallback"),
       1,
       [this](jsi::Runtime &rt, const jsi::Value &thisVal,
              const jsi::Value *args, size_t count) -> jsi::Value {
         return this
-            ->cpp_uniffi_quaynor_uniffi_fn_init_callback_vtable_rusttoolcallback(
+            ->cpp_uniffi_quaynor_uniffi_fn_init_callback_vtable_rustdownloadprogresscallback(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_quaynor_uniffi_fn_init_callback_vtable_rusttoolcallback"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_init_"
+                                        "callback_vtable_rusttoolcallback"),
+          1,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_quaynor_uniffi_fn_init_callback_vtable_rusttoolcallback(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_quaynor_uniffi_fn_func_cosine_similarity"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -2909,12 +3408,45 @@ NativeQuaynor::NativeQuaynor(
             return this->cpp_uniffi_quaynor_uniffi_fn_func_cosine_similarity(
                 rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_quaynor_uniffi_fn_func_delete_cached_model"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt, "ubrn_uniffi_quaynor_uniffi_fn_func_delete_cached_model"),
+          1,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_quaynor_uniffi_fn_func_delete_cached_model(
+                rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_quaynor_uniffi_fn_func_download_model"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt, "ubrn_uniffi_quaynor_uniffi_fn_func_download_model"),
+          3,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_quaynor_uniffi_fn_func_download_model(
+                rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_quaynor_uniffi_fn_func_get_cached_models"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt, "ubrn_uniffi_quaynor_uniffi_fn_func_get_cached_models"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_quaynor_uniffi_fn_func_get_cached_models(
+                rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_quaynor_uniffi_fn_func_load_model"] =
       jsi::Function::createFromHostFunction(
           rt,
           jsi::PropNameID::forAscii(
               rt, "ubrn_uniffi_quaynor_uniffi_fn_func_load_model"),
-          3,
+          4,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
             return this->cpp_uniffi_quaynor_uniffi_fn_func_load_model(
@@ -2924,8 +3456,7 @@ NativeQuaynor::NativeQuaynor(
       jsi::Function::createFromHostFunction(
           rt,
           jsi::PropNameID::forAscii(
-              rt,
-              "ubrn_uniffi_quaynor_uniffi_fn_func_sampler_preset_default"),
+              rt, "ubrn_uniffi_quaynor_uniffi_fn_func_sampler_preset_default"),
           0,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -2948,8 +3479,7 @@ NativeQuaynor::NativeQuaynor(
       jsi::Function::createFromHostFunction(
           rt,
           jsi::PropNameID::forAscii(
-              rt,
-              "ubrn_uniffi_quaynor_uniffi_fn_func_sampler_preset_grammar"),
+              rt, "ubrn_uniffi_quaynor_uniffi_fn_func_sampler_preset_grammar"),
           1,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -2977,15 +3507,15 @@ NativeQuaynor::NativeQuaynor(
           0,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
-            return this
-                ->cpp_uniffi_quaynor_uniffi_fn_func_sampler_preset_json(
-                    rt, thisVal, args, count);
+            return this->cpp_uniffi_quaynor_uniffi_fn_func_sampler_preset_json(
+                rt, thisVal, args, count);
           });
   props["ubrn_uniffi_quaynor_uniffi_fn_func_sampler_preset_temperature"] =
       jsi::Function::createFromHostFunction(
           rt,
-          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_fn_func_"
-                                        "sampler_preset_temperature"),
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_quaynor_uniffi_fn_func_sampler_preset_temperature"),
           1,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -3001,9 +3531,8 @@ NativeQuaynor::NativeQuaynor(
           1,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
-            return this
-                ->cpp_uniffi_quaynor_uniffi_fn_func_sampler_preset_top_k(
-                    rt, thisVal, args, count);
+            return this->cpp_uniffi_quaynor_uniffi_fn_func_sampler_preset_top_k(
+                rt, thisVal, args, count);
           });
   props["ubrn_uniffi_quaynor_uniffi_fn_func_sampler_preset_top_p"] =
       jsi::Function::createFromHostFunction(
@@ -3013,9 +3542,8 @@ NativeQuaynor::NativeQuaynor(
           1,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
-            return this
-                ->cpp_uniffi_quaynor_uniffi_fn_func_sampler_preset_top_p(
-                    rt, thisVal, args, count);
+            return this->cpp_uniffi_quaynor_uniffi_fn_func_sampler_preset_top_p(
+                rt, thisVal, args, count);
           });
   props["ubrn_ffi_quaynor_uniffi_rust_future_poll_u8"] =
       jsi::Function::createFromHostFunction(
@@ -3476,9 +4004,8 @@ NativeQuaynor::NativeQuaynor(
           1,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
-            return this
-                ->cpp_ffi_quaynor_uniffi_rust_future_cancel_rust_buffer(
-                    rt, thisVal, args, count);
+            return this->cpp_ffi_quaynor_uniffi_rust_future_cancel_rust_buffer(
+                rt, thisVal, args, count);
           });
   props["ubrn_ffi_quaynor_uniffi_rust_future_free_rust_buffer"] =
       jsi::Function::createFromHostFunction(
@@ -3551,13 +4078,48 @@ NativeQuaynor::NativeQuaynor(
       jsi::Function::createFromHostFunction(
           rt,
           jsi::PropNameID::forAscii(
-              rt,
-              "ubrn_uniffi_quaynor_uniffi_checksum_func_cosine_similarity"),
+              rt, "ubrn_uniffi_quaynor_uniffi_checksum_func_cosine_similarity"),
           0,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
             return this
                 ->cpp_uniffi_quaynor_uniffi_checksum_func_cosine_similarity(
+                    rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_quaynor_uniffi_checksum_func_delete_cached_model"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_quaynor_uniffi_checksum_func_delete_cached_model"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_quaynor_uniffi_checksum_func_delete_cached_model(
+                    rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_quaynor_uniffi_checksum_func_download_model"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt, "ubrn_uniffi_quaynor_uniffi_checksum_func_download_model"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_quaynor_uniffi_checksum_func_download_model(
+                rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_quaynor_uniffi_checksum_func_get_cached_models"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt, "ubrn_uniffi_quaynor_uniffi_checksum_func_get_cached_models"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_quaynor_uniffi_checksum_func_get_cached_models(
                     rt, thisVal, args, count);
           });
   props["ubrn_uniffi_quaynor_uniffi_checksum_func_load_model"] =
@@ -3611,8 +4173,9 @@ NativeQuaynor::NativeQuaynor(
   props["ubrn_uniffi_quaynor_uniffi_checksum_func_sampler_preset_greedy"] =
       jsi::Function::createFromHostFunction(
           rt,
-          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_checksum_"
-                                        "func_sampler_preset_greedy"),
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_quaynor_uniffi_checksum_func_sampler_preset_greedy"),
           0,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -3633,23 +4196,24 @@ NativeQuaynor::NativeQuaynor(
                 ->cpp_uniffi_quaynor_uniffi_checksum_func_sampler_preset_json(
                     rt, thisVal, args, count);
           });
-  props["ubrn_uniffi_quaynor_uniffi_checksum_func_sampler_preset_"
-        "temperature"] = jsi::Function::createFromHostFunction(
-      rt,
-      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_checksum_"
-                                    "func_sampler_preset_temperature"),
-      0,
-      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-             const jsi::Value *args, size_t count) -> jsi::Value {
-        return this
-            ->cpp_uniffi_quaynor_uniffi_checksum_func_sampler_preset_temperature(
-                rt, thisVal, args, count);
-      });
-  props["ubrn_uniffi_quaynor_uniffi_checksum_func_sampler_preset_top_k"] =
+  props["ubrn_uniffi_quaynor_uniffi_checksum_func_sampler_preset_temperature"] =
       jsi::Function::createFromHostFunction(
           rt,
           jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_checksum_"
-                                        "func_sampler_preset_top_k"),
+                                        "func_sampler_preset_temperature"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_quaynor_uniffi_checksum_func_sampler_preset_temperature(
+                    rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_quaynor_uniffi_checksum_func_sampler_preset_top_k"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_quaynor_uniffi_checksum_func_sampler_preset_top_k"),
           0,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -3660,8 +4224,9 @@ NativeQuaynor::NativeQuaynor(
   props["ubrn_uniffi_quaynor_uniffi_checksum_func_sampler_preset_top_p"] =
       jsi::Function::createFromHostFunction(
           rt,
-          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_checksum_"
-                                        "func_sampler_preset_top_p"),
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_quaynor_uniffi_checksum_func_sampler_preset_top_p"),
           0,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -3677,22 +4242,21 @@ NativeQuaynor::NativeQuaynor(
           0,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_quaynor_uniffi_checksum_method_rustchat_ask(
+                rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_ask_with_prompt"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_checksum_"
+                                        "method_rustchat_ask_with_prompt"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
             return this
-                ->cpp_uniffi_quaynor_uniffi_checksum_method_rustchat_ask(
+                ->cpp_uniffi_quaynor_uniffi_checksum_method_rustchat_ask_with_prompt(
                     rt, thisVal, args, count);
           });
-  props["ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_ask_with_"
-        "prompt"] = jsi::Function::createFromHostFunction(
-      rt,
-      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_checksum_"
-                                    "method_rustchat_ask_with_prompt"),
-      0,
-      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-             const jsi::Value *args, size_t count) -> jsi::Value {
-        return this
-            ->cpp_uniffi_quaynor_uniffi_checksum_method_rustchat_ask_with_prompt(
-                rt, thisVal, args, count);
-      });
   props["ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_get_chat_"
         "history"] = jsi::Function::createFromHostFunction(
       rt,
@@ -3717,6 +4281,19 @@ NativeQuaynor::NativeQuaynor(
             ->cpp_uniffi_quaynor_uniffi_checksum_method_rustchat_get_sampler_config_json(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_get_stats"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_get_stats"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_quaynor_uniffi_checksum_method_rustchat_get_stats(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_get_system_"
         "prompt"] = jsi::Function::createFromHostFunction(
       rt,
@@ -3816,8 +4393,9 @@ NativeQuaynor::NativeQuaynor(
   props["ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_set_tools"] =
       jsi::Function::createFromHostFunction(
           rt,
-          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_checksum_"
-                                        "method_rustchat_set_tools"),
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_set_tools"),
           0,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -3825,18 +4403,31 @@ NativeQuaynor::NativeQuaynor(
                 ->cpp_uniffi_quaynor_uniffi_checksum_method_rustchat_set_tools(
                     rt, thisVal, args, count);
           });
-  props["ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_stop_"
-        "generation"] = jsi::Function::createFromHostFunction(
-      rt,
-      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_checksum_"
-                                    "method_rustchat_stop_generation"),
-      0,
-      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-             const jsi::Value *args, size_t count) -> jsi::Value {
-        return this
-            ->cpp_uniffi_quaynor_uniffi_checksum_method_rustchat_stop_generation(
-                rt, thisVal, args, count);
-      });
+  props["ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_stop_generation"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_checksum_"
+                                        "method_rustchat_stop_generation"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_quaynor_uniffi_checksum_method_rustchat_stop_generation(
+                    rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_tokenize"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_quaynor_uniffi_checksum_method_rustchat_tokenize"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_quaynor_uniffi_checksum_method_rustchat_tokenize(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_quaynor_uniffi_checksum_method_rustcrossencoder_rank"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -3849,8 +4440,8 @@ NativeQuaynor::NativeQuaynor(
                 ->cpp_uniffi_quaynor_uniffi_checksum_method_rustcrossencoder_rank(
                     rt, thisVal, args, count);
           });
-  props["ubrn_uniffi_quaynor_uniffi_checksum_method_rustcrossencoder_rank_"
-        "and_sort_json"] = jsi::Function::createFromHostFunction(
+  props["ubrn_uniffi_quaynor_uniffi_checksum_method_rustcrossencoder_rank_and_"
+        "sort_json"] = jsi::Function::createFromHostFunction(
       rt,
       jsi::PropNameID::forAscii(rt,
                                 "ubrn_uniffi_quaynor_uniffi_checksum_method_"
@@ -3865,13 +4456,40 @@ NativeQuaynor::NativeQuaynor(
   props["ubrn_uniffi_quaynor_uniffi_checksum_method_rustencoder_encode"] =
       jsi::Function::createFromHostFunction(
           rt,
-          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_checksum_"
-                                        "method_rustencoder_encode"),
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_quaynor_uniffi_checksum_method_rustencoder_encode"),
           0,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
             return this
                 ->cpp_uniffi_quaynor_uniffi_checksum_method_rustencoder_encode(
+                    rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_quaynor_uniffi_checksum_method_rustmodel_max_ctx"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_quaynor_uniffi_checksum_method_rustmodel_max_ctx"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_quaynor_uniffi_checksum_method_rustmodel_max_ctx(
+                    rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_quaynor_uniffi_checksum_method_rustmodel_unload"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_quaynor_uniffi_checksum_method_rustmodel_unload"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_quaynor_uniffi_checksum_method_rustmodel_unload(
                     rt, thisVal, args, count);
           });
   props["ubrn_uniffi_quaynor_uniffi_checksum_method_rusttokenstream_"
@@ -3898,18 +4516,18 @@ NativeQuaynor::NativeQuaynor(
             ->cpp_uniffi_quaynor_uniffi_checksum_method_rusttokenstream_next_token(
                 rt, thisVal, args, count);
       });
-  props["ubrn_uniffi_quaynor_uniffi_checksum_method_rusttool_get_schema_"
-        "json"] = jsi::Function::createFromHostFunction(
-      rt,
-      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_checksum_"
-                                    "method_rusttool_get_schema_json"),
-      0,
-      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-             const jsi::Value *args, size_t count) -> jsi::Value {
-        return this
-            ->cpp_uniffi_quaynor_uniffi_checksum_method_rusttool_get_schema_json(
-                rt, thisVal, args, count);
-      });
+  props["ubrn_uniffi_quaynor_uniffi_checksum_method_rusttool_get_schema_json"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_checksum_"
+                                        "method_rusttool_get_schema_json"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_quaynor_uniffi_checksum_method_rusttool_get_schema_json(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_quaynor_uniffi_checksum_method_rusttool_next_pending_"
         "call"] = jsi::Function::createFromHostFunction(
       rt,
@@ -3937,8 +4555,9 @@ NativeQuaynor::NativeQuaynor(
   props["ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_dist"] =
       jsi::Function::createFromHostFunction(
           rt,
-          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_checksum_"
-                                        "method_samplerbuilder_dist"),
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_dist"),
           0,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -3949,8 +4568,9 @@ NativeQuaynor::NativeQuaynor(
   props["ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_dry"] =
       jsi::Function::createFromHostFunction(
           rt,
-          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_checksum_"
-                                        "method_samplerbuilder_dry"),
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_dry"),
           0,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -4018,18 +4638,18 @@ NativeQuaynor::NativeQuaynor(
             ->cpp_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_mirostat_v2(
                 rt, thisVal, args, count);
       });
-  props["ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_"
-        "penalties"] = jsi::Function::createFromHostFunction(
-      rt,
-      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_checksum_"
-                                    "method_samplerbuilder_penalties"),
-      0,
-      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-             const jsi::Value *args, size_t count) -> jsi::Value {
-        return this
-            ->cpp_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_penalties(
-                rt, thisVal, args, count);
-      });
+  props["ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_penalties"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_checksum_"
+                                        "method_samplerbuilder_penalties"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_penalties(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_"
         "temperature"] = jsi::Function::createFromHostFunction(
       rt,
@@ -4066,23 +4686,24 @@ NativeQuaynor::NativeQuaynor(
                 ->cpp_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_top_p(
                     rt, thisVal, args, count);
           });
-  props["ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_typical_"
-        "p"] = jsi::Function::createFromHostFunction(
-      rt,
-      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_checksum_"
-                                    "method_samplerbuilder_typical_p"),
-      0,
-      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-             const jsi::Value *args, size_t count) -> jsi::Value {
-        return this
-            ->cpp_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_typical_p(
-                rt, thisVal, args, count);
-      });
-  props["ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_xtc"] =
+  props["ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_typical_p"] =
       jsi::Function::createFromHostFunction(
           rt,
           jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_checksum_"
-                                        "method_samplerbuilder_xtc"),
+                                        "method_samplerbuilder_typical_p"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_typical_p(
+                    rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_xtc"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_xtc"),
           0,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
@@ -4152,30 +4773,30 @@ NativeQuaynor::NativeQuaynor(
                 ->cpp_uniffi_quaynor_uniffi_checksum_constructor_rusttool_new(
                     rt, thisVal, args, count);
           });
-  props["ubrn_uniffi_quaynor_uniffi_checksum_constructor_rusttool_new_"
-        "async"] = jsi::Function::createFromHostFunction(
-      rt,
-      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_checksum_"
-                                    "constructor_rusttool_new_async"),
-      0,
-      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-             const jsi::Value *args, size_t count) -> jsi::Value {
-        return this
-            ->cpp_uniffi_quaynor_uniffi_checksum_constructor_rusttool_new_async(
-                rt, thisVal, args, count);
-      });
-  props["ubrn_uniffi_quaynor_uniffi_checksum_constructor_samplerbuilder_"
-        "new"] = jsi::Function::createFromHostFunction(
-      rt,
-      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_checksum_"
-                                    "constructor_samplerbuilder_new"),
-      0,
-      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-             const jsi::Value *args, size_t count) -> jsi::Value {
-        return this
-            ->cpp_uniffi_quaynor_uniffi_checksum_constructor_samplerbuilder_new(
-                rt, thisVal, args, count);
-      });
+  props["ubrn_uniffi_quaynor_uniffi_checksum_constructor_rusttool_new_async"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_checksum_"
+                                        "constructor_rusttool_new_async"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_quaynor_uniffi_checksum_constructor_rusttool_new_async(
+                    rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_quaynor_uniffi_checksum_constructor_samplerbuilder_new"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_quaynor_uniffi_checksum_"
+                                        "constructor_samplerbuilder_new"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_quaynor_uniffi_checksum_constructor_samplerbuilder_new(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_quaynor_uniffi_checksum_constructor_samplerconfig_from_"
         "json"] = jsi::Function::createFromHostFunction(
       rt,
@@ -4188,6 +4809,20 @@ NativeQuaynor::NativeQuaynor(
             ->cpp_uniffi_quaynor_uniffi_checksum_constructor_samplerconfig_from_json(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_quaynor_uniffi_checksum_method_"
+        "rustdownloadprogresscallback_on_download_progress"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt, "ubrn_uniffi_quaynor_uniffi_checksum_method_"
+                  "rustdownloadprogresscallback_on_download_progress"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_quaynor_uniffi_checksum_method_rustdownloadprogresscallback_on_download_progress(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_quaynor_uniffi_checksum_method_rusttoolcallback_call"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -4332,8 +4967,7 @@ jsi::Value NativeQuaynor::get(jsi::Runtime &rt, const jsi::PropNameID &name) {
   }
 }
 
-std::vector<jsi::PropNameID>
-NativeQuaynor::getPropertyNames(jsi::Runtime &rt) {
+std::vector<jsi::PropNameID> NativeQuaynor::getPropertyNames(jsi::Runtime &rt) {
   std::vector<jsi::PropNameID> rval;
   for (auto &[key, value] : props) {
     rval.push_back(jsi::PropNameID::forUtf8(rt, key));
@@ -4342,7 +4976,7 @@ NativeQuaynor::getPropertyNames(jsi::Runtime &rt) {
 }
 
 void NativeQuaynor::set(jsi::Runtime &rt, const jsi::PropNameID &name,
-                          const jsi::Value &value) {
+                        const jsi::Value &value) {
   props.insert_or_assign(name.utf8(rt), &value);
 }
 
@@ -4352,8 +4986,14 @@ NativeQuaynor::~NativeQuaynor() {
   // Cleanup for callback function ForeignFutureDroppedCallback
   uniffi::quaynor::cb::foreignfuturedroppedcallback::cleanup();
   // Cleanup for "free" callback function CallbackInterfaceFree
+  uniffi::quaynor::st::vtablecallbackinterfacerustdownloadprogresscallback::
+      vtablecallbackinterfacerustdownloadprogresscallback::free::cleanup();
   uniffi::quaynor::st::vtablecallbackinterfacerusttoolcallback::
       vtablecallbackinterfacerusttoolcallback::free::cleanup();
+  uniffi::quaynor::cb::callbackinterfaceclone::
+      vtablecallbackinterfacerustdownloadprogresscallback::cleanup();
+  uniffi::quaynor::cb::callbackinterfacerustdownloadprogresscallbackmethod0::
+      vtablecallbackinterfacerustdownloadprogresscallback::cleanup();
   uniffi::quaynor::cb::callbackinterfaceclone::
       vtablecallbackinterfacerusttoolcallback::cleanup();
   uniffi::quaynor::cb::callbackinterfacerusttoolcallbackmethod0::
@@ -4441,10 +5081,10 @@ NativeQuaynor::cpp_uniffi_internal_fn_method_rustmodel_ffi__bless_pointer(
   auto obj = jsi::Object::createFromHostObject(rt, ptrObj);
   return jsi::Value(rt, obj);
 }
-jsi::Value NativeQuaynor::
-    cpp_uniffi_internal_fn_method_rusttokenstream_ffi__bless_pointer(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
+jsi::Value
+NativeQuaynor::cpp_uniffi_internal_fn_method_rusttokenstream_ffi__bless_pointer(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
   auto pointer =
       uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, args[0]);
   auto static destructor = [](uint64_t p) {
@@ -4471,10 +5111,10 @@ NativeQuaynor::cpp_uniffi_internal_fn_method_rusttool_ffi__bless_pointer(
   auto obj = jsi::Object::createFromHostObject(rt, ptrObj);
   return jsi::Value(rt, obj);
 }
-jsi::Value NativeQuaynor::
-    cpp_uniffi_internal_fn_method_samplerbuilder_ffi__bless_pointer(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
+jsi::Value
+NativeQuaynor::cpp_uniffi_internal_fn_method_samplerbuilder_ffi__bless_pointer(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
   auto pointer =
       uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, args[0]);
   auto static destructor = [](uint64_t p) {
@@ -4512,8 +5152,8 @@ jsi::Value NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_clone_rustchat(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -4527,13 +5167,12 @@ jsi::Value NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_free_rustchat(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return jsi::Value::undefined();
 }
-jsi::Value
-NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_constructor_rustchat_new(
+jsi::Value NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_constructor_rustchat_new(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
     size_t count) {
   RustCallStatus status =
@@ -4547,8 +5186,8 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_constructor_rustchat_new(
       uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[4]),
       uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[5]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -4563,8 +5202,8 @@ jsi::Value NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_rustchat_ask(
                                                         args[0]),
       uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -4580,16 +5219,16 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_rustchat_ask_with_prompt(
                                                         args[0]),
       uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
 }
-jsi::Value NativeQuaynor::
-    cpp_uniffi_quaynor_uniffi_fn_method_rustchat_get_chat_history(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_rustchat_get_chat_history(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
   auto value = uniffi_quaynor_uniffi_fn_method_rustchat_get_chat_history(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]));
@@ -4601,18 +5240,28 @@ jsi::Value NativeQuaynor::
     cpp_uniffi_quaynor_uniffi_fn_method_rustchat_get_sampler_config_json(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
-  auto value =
-      uniffi_quaynor_uniffi_fn_method_rustchat_get_sampler_config_json(
-          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
-                                                            args[0]));
+  auto value = uniffi_quaynor_uniffi_fn_method_rustchat_get_sampler_config_json(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]));
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
 }
-jsi::Value NativeQuaynor::
-    cpp_uniffi_quaynor_uniffi_fn_method_rustchat_get_system_prompt(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_rustchat_get_stats(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  auto value = uniffi_quaynor_uniffi_fn_method_rustchat_get_stats(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_rustchat_get_system_prompt(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
   auto value = uniffi_quaynor_uniffi_fn_method_rustchat_get_system_prompt(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]));
@@ -4624,10 +5273,9 @@ jsi::Value NativeQuaynor::
     cpp_uniffi_quaynor_uniffi_fn_method_rustchat_get_template_variables(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
-  auto value =
-      uniffi_quaynor_uniffi_fn_method_rustchat_get_template_variables(
-          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
-                                                            args[0]));
+  auto value = uniffi_quaynor_uniffi_fn_method_rustchat_get_template_variables(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]));
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -4640,8 +5288,7 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_rustchat_reset_context(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]),
-      uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker,
-                                                      args[2]));
+      uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[2]));
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -4657,23 +5304,22 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_rustchat_reset_history(
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
 }
-jsi::Value NativeQuaynor::
-    cpp_uniffi_quaynor_uniffi_fn_method_rustchat_set_chat_history(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_rustchat_set_chat_history(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
   auto value = uniffi_quaynor_uniffi_fn_method_rustchat_set_chat_history(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
-      uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker,
-                                                      args[1]));
+      uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]));
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
 }
-jsi::Value NativeQuaynor::
-    cpp_uniffi_quaynor_uniffi_fn_method_rustchat_set_sampler_config(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_rustchat_set_sampler_config(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
   auto value = uniffi_quaynor_uniffi_fn_method_rustchat_set_sampler_config(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
@@ -4683,15 +5329,14 @@ jsi::Value NativeQuaynor::
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
 }
-jsi::Value NativeQuaynor::
-    cpp_uniffi_quaynor_uniffi_fn_method_rustchat_set_system_prompt(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_rustchat_set_system_prompt(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
   auto value = uniffi_quaynor_uniffi_fn_method_rustchat_set_system_prompt(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
-      uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker,
-                                                      args[1]));
+      uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]));
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -4716,8 +5361,7 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_rustchat_set_tools(
   auto value = uniffi_quaynor_uniffi_fn_method_rustchat_set_tools(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
-      uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker,
-                                                      args[1]));
+      uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]));
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -4732,13 +5376,23 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_rustchat_stop_generation(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return jsi::Value::undefined();
 }
-jsi::Value
-NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_clone_rustcrossencoder(
+jsi::Value NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_rustchat_tokenize(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  auto value = uniffi_quaynor_uniffi_fn_method_rustchat_tokenize(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]),
+      uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_clone_rustcrossencoder(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
     size_t count) {
   RustCallStatus status =
@@ -4747,14 +5401,13 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_clone_rustcrossencoder(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
 }
-jsi::Value
-NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_free_rustcrossencoder(
+jsi::Value NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_free_rustcrossencoder(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
     size_t count) {
   RustCallStatus status =
@@ -4763,15 +5416,15 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_free_rustcrossencoder(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return jsi::Value::undefined();
 }
-jsi::Value NativeQuaynor::
-    cpp_uniffi_quaynor_uniffi_fn_constructor_rustcrossencoder_new(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_constructor_rustcrossencoder_new(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
   RustCallStatus status =
       uniffi::quaynor::Bridging<RustCallStatus>::rustSuccess(rt);
   auto value = uniffi_quaynor_uniffi_fn_constructor_rustcrossencoder_new(
@@ -4779,8 +5432,8 @@ jsi::Value NativeQuaynor::
                                                         args[0]),
       uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -4793,8 +5446,7 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_rustcrossencoder_rank(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]),
-      uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker,
-                                                      args[2]));
+      uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[2]));
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -4808,9 +5460,9 @@ jsi::Value NativeQuaynor::
           uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                             args[0]),
           uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker,
-                                                          args[1]),
+                                                        args[1]),
           uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker,
-                                                          args[2]));
+                                                        args[2]));
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -4824,8 +5476,8 @@ jsi::Value NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_clone_rustencoder(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -4839,8 +5491,8 @@ jsi::Value NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_free_rustencoder(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return jsi::Value::undefined();
 }
@@ -4855,8 +5507,8 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_constructor_rustencoder_new(
                                                         args[0]),
       uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -4868,8 +5520,7 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_rustencoder_encode(
   auto value = uniffi_quaynor_uniffi_fn_method_rustencoder_encode(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
-      uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker,
-                                                      args[1]));
+      uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]));
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -4883,8 +5534,8 @@ jsi::Value NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_clone_rustmodel(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -4898,13 +5549,40 @@ jsi::Value NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_free_rustmodel(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return jsi::Value::undefined();
 }
-jsi::Value
-NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_clone_rusttokenstream(
+jsi::Value NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_rustmodel_max_ctx(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  RustCallStatus status =
+      uniffi::quaynor::Bridging<RustCallStatus>::rustSuccess(rt);
+  auto value = uniffi_quaynor_uniffi_fn_method_rustmodel_max_ctx(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]),
+      &status);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
+
+  return uniffi_jsi::Bridging<uint32_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_rustmodel_unload(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  RustCallStatus status =
+      uniffi::quaynor::Bridging<RustCallStatus>::rustSuccess(rt);
+  uniffi_quaynor_uniffi_fn_method_rustmodel_unload(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]),
+      &status);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
+
+  return jsi::Value::undefined();
+}
+jsi::Value NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_clone_rusttokenstream(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
     size_t count) {
   RustCallStatus status =
@@ -4913,8 +5591,8 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_clone_rusttokenstream(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -4928,15 +5606,15 @@ jsi::Value NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_free_rusttokenstream(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return jsi::Value::undefined();
 }
-jsi::Value NativeQuaynor::
-    cpp_uniffi_quaynor_uniffi_fn_method_rusttokenstream_completed(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_rusttokenstream_completed(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
   auto value = uniffi_quaynor_uniffi_fn_method_rusttokenstream_completed(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]));
@@ -4944,10 +5622,10 @@ jsi::Value NativeQuaynor::
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
 }
-jsi::Value NativeQuaynor::
-    cpp_uniffi_quaynor_uniffi_fn_method_rusttokenstream_next_token(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_rusttokenstream_next_token(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
   auto value = uniffi_quaynor_uniffi_fn_method_rusttokenstream_next_token(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]));
@@ -4964,8 +5642,8 @@ jsi::Value NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_clone_rusttool(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -4979,13 +5657,12 @@ jsi::Value NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_free_rusttool(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return jsi::Value::undefined();
 }
-jsi::Value
-NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_constructor_rusttool_new(
+jsi::Value NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_constructor_rusttool_new(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
     size_t count) {
   RustCallStatus status =
@@ -4996,8 +5673,8 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_constructor_rusttool_new(
       uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[2]),
       uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, args[3]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -5013,8 +5690,8 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_constructor_rusttool_new_async(
       uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]),
       uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[2]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -5029,15 +5706,15 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_rusttool_get_schema_json(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi::quaynor::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeQuaynor::
-    cpp_uniffi_quaynor_uniffi_fn_method_rusttool_next_pending_call(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_rusttool_next_pending_call(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
   auto value = uniffi_quaynor_uniffi_fn_method_rusttool_next_pending_call(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]));
@@ -5057,8 +5734,8 @@ jsi::Value NativeQuaynor::
       uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]),
       uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[2]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return jsi::Value::undefined();
 }
@@ -5071,8 +5748,8 @@ jsi::Value NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_clone_samplerbuilder(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -5086,8 +5763,8 @@ jsi::Value NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_free_samplerbuilder(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return jsi::Value::undefined();
 }
@@ -5097,10 +5774,9 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_constructor_samplerbuilder_new(
     size_t count) {
   RustCallStatus status =
       uniffi::quaynor::Bridging<RustCallStatus>::rustSuccess(rt);
-  auto value =
-      uniffi_quaynor_uniffi_fn_constructor_samplerbuilder_new(&status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  auto value = uniffi_quaynor_uniffi_fn_constructor_samplerbuilder_new(&status);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -5115,8 +5791,8 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_samplerbuilder_dist(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -5136,8 +5812,8 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_samplerbuilder_dry(
       uniffi_jsi::Bridging<int32_t>::fromJs(rt, callInvoker, args[4]),
       uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[5]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -5155,8 +5831,8 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_samplerbuilder_grammar(
       uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[2]),
       uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[3]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -5171,8 +5847,8 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_samplerbuilder_greedy(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -5189,16 +5865,16 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_samplerbuilder_min_p(
       uniffi_jsi::Bridging<float>::fromJs(rt, callInvoker, args[1]),
       uniffi_jsi::Bridging<uint32_t>::fromJs(rt, callInvoker, args[2]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
 }
-jsi::Value NativeQuaynor::
-    cpp_uniffi_quaynor_uniffi_fn_method_samplerbuilder_mirostat_v1(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_samplerbuilder_mirostat_v1(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
   RustCallStatus status =
       uniffi::quaynor::Bridging<RustCallStatus>::rustSuccess(rt);
   auto value = uniffi_quaynor_uniffi_fn_method_samplerbuilder_mirostat_v1(
@@ -5207,16 +5883,16 @@ jsi::Value NativeQuaynor::
       uniffi_jsi::Bridging<float>::fromJs(rt, callInvoker, args[1]),
       uniffi_jsi::Bridging<float>::fromJs(rt, callInvoker, args[2]),
       uniffi_jsi::Bridging<int32_t>::fromJs(rt, callInvoker, args[3]), &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
 }
-jsi::Value NativeQuaynor::
-    cpp_uniffi_quaynor_uniffi_fn_method_samplerbuilder_mirostat_v2(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_samplerbuilder_mirostat_v2(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
   RustCallStatus status =
       uniffi::quaynor::Bridging<RustCallStatus>::rustSuccess(rt);
   auto value = uniffi_quaynor_uniffi_fn_method_samplerbuilder_mirostat_v2(
@@ -5224,8 +5900,8 @@ jsi::Value NativeQuaynor::
                                                         args[0]),
       uniffi_jsi::Bridging<float>::fromJs(rt, callInvoker, args[1]),
       uniffi_jsi::Bridging<float>::fromJs(rt, callInvoker, args[2]), &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -5243,24 +5919,24 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_samplerbuilder_penalties(
       uniffi_jsi::Bridging<float>::fromJs(rt, callInvoker, args[2]),
       uniffi_jsi::Bridging<float>::fromJs(rt, callInvoker, args[3]),
       uniffi_jsi::Bridging<float>::fromJs(rt, callInvoker, args[4]), &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
 }
-jsi::Value NativeQuaynor::
-    cpp_uniffi_quaynor_uniffi_fn_method_samplerbuilder_temperature(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_samplerbuilder_temperature(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
   RustCallStatus status =
       uniffi::quaynor::Bridging<RustCallStatus>::rustSuccess(rt);
   auto value = uniffi_quaynor_uniffi_fn_method_samplerbuilder_temperature(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       uniffi_jsi::Bridging<float>::fromJs(rt, callInvoker, args[1]), &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -5275,8 +5951,8 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_samplerbuilder_top_k(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       uniffi_jsi::Bridging<int32_t>::fromJs(rt, callInvoker, args[1]), &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -5293,8 +5969,8 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_samplerbuilder_top_p(
       uniffi_jsi::Bridging<float>::fromJs(rt, callInvoker, args[1]),
       uniffi_jsi::Bridging<uint32_t>::fromJs(rt, callInvoker, args[2]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -5311,8 +5987,8 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_samplerbuilder_typical_p(
       uniffi_jsi::Bridging<float>::fromJs(rt, callInvoker, args[1]),
       uniffi_jsi::Bridging<uint32_t>::fromJs(rt, callInvoker, args[2]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -5330,8 +6006,8 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_samplerbuilder_xtc(
       uniffi_jsi::Bridging<float>::fromJs(rt, callInvoker, args[2]),
       uniffi_jsi::Bridging<uint32_t>::fromJs(rt, callInvoker, args[3]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -5345,8 +6021,8 @@ jsi::Value NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_clone_samplerconfig(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -5360,22 +6036,22 @@ jsi::Value NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_free_samplerconfig(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return jsi::Value::undefined();
 }
-jsi::Value NativeQuaynor::
-    cpp_uniffi_quaynor_uniffi_fn_constructor_samplerconfig_from_json(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_constructor_samplerconfig_from_json(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
   RustCallStatus status =
       uniffi::quaynor::Bridging<RustCallStatus>::rustSuccess(rt);
   auto value = uniffi_quaynor_uniffi_fn_constructor_samplerconfig_from_json(
       uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -5390,10 +6066,25 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_method_samplerconfig_to_json(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi::quaynor::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeQuaynor::
+    cpp_uniffi_quaynor_uniffi_fn_init_callback_vtable_rustdownloadprogresscallback(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto vtableInstance = uniffi::quaynor::Bridging<
+      UniffiVTableCallbackInterfaceRustDownloadProgressCallback>::
+      fromJs(rt, callInvoker, args[0]);
+
+  std::lock_guard<std::mutex> lock(uniffi::quaynor::registry::vtableMutex);
+  uniffi_quaynor_uniffi_fn_init_callback_vtable_rustdownloadprogresscallback(
+      uniffi::quaynor::registry::putTable(
+          "UniffiVTableCallbackInterfaceRustDownloadProgressCallback",
+          vtableInstance));
+  return jsi::Value::undefined();
 }
 jsi::Value NativeQuaynor::
     cpp_uniffi_quaynor_uniffi_fn_init_callback_vtable_rusttoolcallback(
@@ -5409,8 +6100,7 @@ jsi::Value NativeQuaynor::
           "UniffiVTableCallbackInterfaceRustToolCallback", vtableInstance));
   return jsi::Value::undefined();
 }
-jsi::Value
-NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_func_cosine_similarity(
+jsi::Value NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_func_cosine_similarity(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
     size_t count) {
   RustCallStatus status =
@@ -5419,10 +6109,45 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_func_cosine_similarity(
       uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[0]),
       uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging<float>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_func_delete_cached_model(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  RustCallStatus status =
+      uniffi::quaynor::Bridging<RustCallStatus>::rustSuccess(rt);
+  auto value = uniffi_quaynor_uniffi_fn_func_delete_cached_model(
+      uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[0]),
+      &status);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
+
+  return uniffi_jsi::Bridging<uint64_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_func_download_model(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  auto value = uniffi_quaynor_uniffi_fn_func_download_model(
+      uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[0]),
+      uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]),
+      uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[2]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_func_get_cached_models(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  RustCallStatus status =
+      uniffi::quaynor::Bridging<RustCallStatus>::rustSuccess(rt);
+  auto value = uniffi_quaynor_uniffi_fn_func_get_cached_models(&status);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
+
+  return uniffi::quaynor::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_func_load_model(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
@@ -5430,8 +6155,8 @@ jsi::Value NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_func_load_model(
   auto value = uniffi_quaynor_uniffi_fn_func_load_model(
       uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[0]),
       uniffi_jsi::Bridging<int8_t>::fromJs(rt, callInvoker, args[1]),
-      uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker,
-                                                      args[2]));
+      uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[2]),
+      uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[3]));
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -5443,21 +6168,20 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_func_sampler_preset_default(
   RustCallStatus status =
       uniffi::quaynor::Bridging<RustCallStatus>::rustSuccess(rt);
   auto value = uniffi_quaynor_uniffi_fn_func_sampler_preset_default(&status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
 }
-jsi::Value
-NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_func_sampler_preset_dry(
+jsi::Value NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_func_sampler_preset_dry(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
     size_t count) {
   RustCallStatus status =
       uniffi::quaynor::Bridging<RustCallStatus>::rustSuccess(rt);
   auto value = uniffi_quaynor_uniffi_fn_func_sampler_preset_dry(&status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -5471,8 +6195,8 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_func_sampler_preset_grammar(
   auto value = uniffi_quaynor_uniffi_fn_func_sampler_preset_grammar(
       uniffi::quaynor::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -5484,21 +6208,20 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_func_sampler_preset_greedy(
   RustCallStatus status =
       uniffi::quaynor::Bridging<RustCallStatus>::rustSuccess(rt);
   auto value = uniffi_quaynor_uniffi_fn_func_sampler_preset_greedy(&status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
 }
-jsi::Value
-NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_func_sampler_preset_json(
+jsi::Value NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_func_sampler_preset_json(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
     size_t count) {
   RustCallStatus status =
       uniffi::quaynor::Bridging<RustCallStatus>::rustSuccess(rt);
   auto value = uniffi_quaynor_uniffi_fn_func_sampler_preset_json(&status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -5511,8 +6234,8 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_func_sampler_preset_temperature(
       uniffi::quaynor::Bridging<RustCallStatus>::rustSuccess(rt);
   auto value = uniffi_quaynor_uniffi_fn_func_sampler_preset_temperature(
       uniffi_jsi::Bridging<float>::fromJs(rt, callInvoker, args[0]), &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -5525,8 +6248,8 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_func_sampler_preset_top_k(
       uniffi::quaynor::Bridging<RustCallStatus>::rustSuccess(rt);
   auto value = uniffi_quaynor_uniffi_fn_func_sampler_preset_top_k(
       uniffi_jsi::Bridging<int32_t>::fromJs(rt, callInvoker, args[0]), &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -5539,8 +6262,8 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_fn_func_sampler_preset_top_p(
       uniffi::quaynor::Bridging<RustCallStatus>::rustSuccess(rt);
   auto value = uniffi_quaynor_uniffi_fn_func_sampler_preset_top_p(
       uniffi_jsi::Bridging<float>::fromJs(rt, callInvoker, args[0]), &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -5585,8 +6308,8 @@ jsi::Value NativeQuaynor::cpp_ffi_quaynor_uniffi_rust_future_complete_u8(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging<uint8_t>::toJs(rt, callInvoker, value);
 }
@@ -5630,8 +6353,8 @@ jsi::Value NativeQuaynor::cpp_ffi_quaynor_uniffi_rust_future_complete_i8(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging<int8_t>::toJs(rt, callInvoker, value);
 }
@@ -5675,8 +6398,8 @@ jsi::Value NativeQuaynor::cpp_ffi_quaynor_uniffi_rust_future_complete_u16(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -5720,8 +6443,8 @@ jsi::Value NativeQuaynor::cpp_ffi_quaynor_uniffi_rust_future_complete_i16(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging<int16_t>::toJs(rt, callInvoker, value);
 }
@@ -5765,8 +6488,8 @@ jsi::Value NativeQuaynor::cpp_ffi_quaynor_uniffi_rust_future_complete_u32(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging<uint32_t>::toJs(rt, callInvoker, value);
 }
@@ -5810,8 +6533,8 @@ jsi::Value NativeQuaynor::cpp_ffi_quaynor_uniffi_rust_future_complete_i32(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging<int32_t>::toJs(rt, callInvoker, value);
 }
@@ -5855,8 +6578,8 @@ jsi::Value NativeQuaynor::cpp_ffi_quaynor_uniffi_rust_future_complete_u64(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging<uint64_t>::toJs(rt, callInvoker, value);
 }
@@ -5900,8 +6623,8 @@ jsi::Value NativeQuaynor::cpp_ffi_quaynor_uniffi_rust_future_complete_i64(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging<int64_t>::toJs(rt, callInvoker, value);
 }
@@ -5945,8 +6668,8 @@ jsi::Value NativeQuaynor::cpp_ffi_quaynor_uniffi_rust_future_complete_f32(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging<float>::toJs(rt, callInvoker, value);
 }
@@ -5990,13 +6713,12 @@ jsi::Value NativeQuaynor::cpp_ffi_quaynor_uniffi_rust_future_complete_f64(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi_jsi::Bridging<double>::toJs(rt, callInvoker, value);
 }
-jsi::Value
-NativeQuaynor::cpp_ffi_quaynor_uniffi_rust_future_poll_rust_buffer(
+jsi::Value NativeQuaynor::cpp_ffi_quaynor_uniffi_rust_future_poll_rust_buffer(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
     size_t count) {
   ffi_quaynor_uniffi_rust_future_poll_rust_buffer(
@@ -6009,8 +6731,7 @@ NativeQuaynor::cpp_ffi_quaynor_uniffi_rust_future_poll_rust_buffer(
 
   return jsi::Value::undefined();
 }
-jsi::Value
-NativeQuaynor::cpp_ffi_quaynor_uniffi_rust_future_cancel_rust_buffer(
+jsi::Value NativeQuaynor::cpp_ffi_quaynor_uniffi_rust_future_cancel_rust_buffer(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
     size_t count) {
   ffi_quaynor_uniffi_rust_future_cancel_rust_buffer(
@@ -6019,8 +6740,7 @@ NativeQuaynor::cpp_ffi_quaynor_uniffi_rust_future_cancel_rust_buffer(
 
   return jsi::Value::undefined();
 }
-jsi::Value
-NativeQuaynor::cpp_ffi_quaynor_uniffi_rust_future_free_rust_buffer(
+jsi::Value NativeQuaynor::cpp_ffi_quaynor_uniffi_rust_future_free_rust_buffer(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
     size_t count) {
   ffi_quaynor_uniffi_rust_future_free_rust_buffer(
@@ -6039,8 +6759,8 @@ NativeQuaynor::cpp_ffi_quaynor_uniffi_rust_future_complete_rust_buffer(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return uniffi::quaynor::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
 }
@@ -6084,8 +6804,8 @@ jsi::Value NativeQuaynor::cpp_ffi_quaynor_uniffi_rust_future_complete_void(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
-  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+  uniffi::quaynor::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status,
+                                                        args[count - 1]);
 
   return jsi::Value::undefined();
 }
@@ -6098,17 +6818,40 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_checksum_func_cosine_similarity(
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value
-NativeQuaynor::cpp_uniffi_quaynor_uniffi_checksum_func_load_model(
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_checksum_func_delete_cached_model(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  auto value = uniffi_quaynor_uniffi_checksum_func_delete_cached_model();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_checksum_func_download_model(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  auto value = uniffi_quaynor_uniffi_checksum_func_download_model();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_checksum_func_get_cached_models(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  auto value = uniffi_quaynor_uniffi_checksum_func_get_cached_models();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeQuaynor::cpp_uniffi_quaynor_uniffi_checksum_func_load_model(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
     size_t count) {
   auto value = uniffi_quaynor_uniffi_checksum_func_load_model();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeQuaynor::
-    cpp_uniffi_quaynor_uniffi_checksum_func_sampler_preset_default(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_checksum_func_sampler_preset_default(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
   auto value = uniffi_quaynor_uniffi_checksum_func_sampler_preset_default();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
@@ -6121,18 +6864,18 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_checksum_func_sampler_preset_dry(
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeQuaynor::
-    cpp_uniffi_quaynor_uniffi_checksum_func_sampler_preset_grammar(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_checksum_func_sampler_preset_grammar(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
   auto value = uniffi_quaynor_uniffi_checksum_func_sampler_preset_grammar();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeQuaynor::
-    cpp_uniffi_quaynor_uniffi_checksum_func_sampler_preset_greedy(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_checksum_func_sampler_preset_greedy(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
   auto value = uniffi_quaynor_uniffi_checksum_func_sampler_preset_greedy();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
@@ -6149,8 +6892,7 @@ jsi::Value NativeQuaynor::
     cpp_uniffi_quaynor_uniffi_checksum_func_sampler_preset_temperature(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
-  auto value =
-      uniffi_quaynor_uniffi_checksum_func_sampler_preset_temperature();
+  auto value = uniffi_quaynor_uniffi_checksum_func_sampler_preset_temperature();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -6182,8 +6924,7 @@ jsi::Value NativeQuaynor::
     cpp_uniffi_quaynor_uniffi_checksum_method_rustchat_ask_with_prompt(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
-  auto value =
-      uniffi_quaynor_uniffi_checksum_method_rustchat_ask_with_prompt();
+  auto value = uniffi_quaynor_uniffi_checksum_method_rustchat_ask_with_prompt();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -6205,6 +6946,14 @@ jsi::Value NativeQuaynor::
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_checksum_method_rustchat_get_stats(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  auto value = uniffi_quaynor_uniffi_checksum_method_rustchat_get_stats();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
 jsi::Value NativeQuaynor::
     cpp_uniffi_quaynor_uniffi_checksum_method_rustchat_get_system_prompt(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
@@ -6223,18 +6972,18 @@ jsi::Value NativeQuaynor::
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeQuaynor::
-    cpp_uniffi_quaynor_uniffi_checksum_method_rustchat_reset_context(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_checksum_method_rustchat_reset_context(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
   auto value = uniffi_quaynor_uniffi_checksum_method_rustchat_reset_context();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeQuaynor::
-    cpp_uniffi_quaynor_uniffi_checksum_method_rustchat_reset_history(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_checksum_method_rustchat_reset_history(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
   auto value = uniffi_quaynor_uniffi_checksum_method_rustchat_reset_history();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
@@ -6287,15 +7036,22 @@ jsi::Value NativeQuaynor::
     cpp_uniffi_quaynor_uniffi_checksum_method_rustchat_stop_generation(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
-  auto value =
-      uniffi_quaynor_uniffi_checksum_method_rustchat_stop_generation();
+  auto value = uniffi_quaynor_uniffi_checksum_method_rustchat_stop_generation();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeQuaynor::
-    cpp_uniffi_quaynor_uniffi_checksum_method_rustcrossencoder_rank(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_checksum_method_rustchat_tokenize(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  auto value = uniffi_quaynor_uniffi_checksum_method_rustchat_tokenize();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_checksum_method_rustcrossencoder_rank(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
   auto value = uniffi_quaynor_uniffi_checksum_method_rustcrossencoder_rank();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
@@ -6314,6 +7070,22 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_checksum_method_rustencoder_encode(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
     size_t count) {
   auto value = uniffi_quaynor_uniffi_checksum_method_rustencoder_encode();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_checksum_method_rustmodel_max_ctx(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  auto value = uniffi_quaynor_uniffi_checksum_method_rustmodel_max_ctx();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_checksum_method_rustmodel_unload(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  auto value = uniffi_quaynor_uniffi_checksum_method_rustmodel_unload();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -6339,8 +7111,7 @@ jsi::Value NativeQuaynor::
     cpp_uniffi_quaynor_uniffi_checksum_method_rusttool_get_schema_json(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
-  auto value =
-      uniffi_quaynor_uniffi_checksum_method_rusttool_get_schema_json();
+  auto value = uniffi_quaynor_uniffi_checksum_method_rusttool_get_schema_json();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -6362,10 +7133,10 @@ jsi::Value NativeQuaynor::
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeQuaynor::
-    cpp_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_dist(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_dist(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
   auto value = uniffi_quaynor_uniffi_checksum_method_samplerbuilder_dist();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
@@ -6378,26 +7149,26 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_dry(
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeQuaynor::
-    cpp_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_grammar(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_grammar(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
   auto value = uniffi_quaynor_uniffi_checksum_method_samplerbuilder_grammar();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeQuaynor::
-    cpp_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_greedy(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_greedy(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
   auto value = uniffi_quaynor_uniffi_checksum_method_samplerbuilder_greedy();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeQuaynor::
-    cpp_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_min_p(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_min_p(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
   auto value = uniffi_quaynor_uniffi_checksum_method_samplerbuilder_min_p();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
@@ -6424,8 +7195,7 @@ jsi::Value NativeQuaynor::
     cpp_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_penalties(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
-  auto value =
-      uniffi_quaynor_uniffi_checksum_method_samplerbuilder_penalties();
+  auto value = uniffi_quaynor_uniffi_checksum_method_samplerbuilder_penalties();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -6438,18 +7208,18 @@ jsi::Value NativeQuaynor::
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeQuaynor::
-    cpp_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_top_k(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_top_k(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
   auto value = uniffi_quaynor_uniffi_checksum_method_samplerbuilder_top_k();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeQuaynor::
-    cpp_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_top_p(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_top_p(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
   auto value = uniffi_quaynor_uniffi_checksum_method_samplerbuilder_top_p();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
@@ -6458,8 +7228,7 @@ jsi::Value NativeQuaynor::
     cpp_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_typical_p(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
-  auto value =
-      uniffi_quaynor_uniffi_checksum_method_samplerbuilder_typical_p();
+  auto value = uniffi_quaynor_uniffi_checksum_method_samplerbuilder_typical_p();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -6471,10 +7240,10 @@ NativeQuaynor::cpp_uniffi_quaynor_uniffi_checksum_method_samplerbuilder_xtc(
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeQuaynor::
-    cpp_uniffi_quaynor_uniffi_checksum_method_samplerconfig_to_json(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_checksum_method_samplerconfig_to_json(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
   auto value = uniffi_quaynor_uniffi_checksum_method_samplerconfig_to_json();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
@@ -6496,10 +7265,10 @@ jsi::Value NativeQuaynor::
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
-jsi::Value NativeQuaynor::
-    cpp_uniffi_quaynor_uniffi_checksum_constructor_rustencoder_new(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_checksum_constructor_rustencoder_new(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
   auto value = uniffi_quaynor_uniffi_checksum_constructor_rustencoder_new();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
@@ -6516,8 +7285,7 @@ jsi::Value NativeQuaynor::
     cpp_uniffi_quaynor_uniffi_checksum_constructor_rusttool_new_async(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
-  auto value =
-      uniffi_quaynor_uniffi_checksum_constructor_rusttool_new_async();
+  auto value = uniffi_quaynor_uniffi_checksum_constructor_rusttool_new_async();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -6525,8 +7293,7 @@ jsi::Value NativeQuaynor::
     cpp_uniffi_quaynor_uniffi_checksum_constructor_samplerbuilder_new(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
-  auto value =
-      uniffi_quaynor_uniffi_checksum_constructor_samplerbuilder_new();
+  auto value = uniffi_quaynor_uniffi_checksum_constructor_samplerbuilder_new();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -6540,9 +7307,18 @@ jsi::Value NativeQuaynor::
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeQuaynor::
-    cpp_uniffi_quaynor_uniffi_checksum_method_rusttoolcallback_call(
+    cpp_uniffi_quaynor_uniffi_checksum_method_rustdownloadprogresscallback_on_download_progress(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
+  auto value =
+      uniffi_quaynor_uniffi_checksum_method_rustdownloadprogresscallback_on_download_progress();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value
+NativeQuaynor::cpp_uniffi_quaynor_uniffi_checksum_method_rusttoolcallback_call(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
   auto value = uniffi_quaynor_uniffi_checksum_method_rusttoolcallback_call();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
