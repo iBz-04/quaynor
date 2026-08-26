@@ -1,9 +1,9 @@
+import logging
 import os
 
-import quaynor
 import pytest
 
-import logging
+import quaynor
 
 logging.addLevelName(5, "TRACE")
 
@@ -365,9 +365,7 @@ def test_stop_generation(chat):
             break
 
     # Try to get more tokens - should stop quickly
-    remaining_tokens = []
-    for token in stream:
-        remaining_tokens.append(token)
+    remaining_tokens = list(stream)
 
     # The generation should have stopped, so we shouldn't get many more tokens
     full_response = "".join(tokens + remaining_tokens)

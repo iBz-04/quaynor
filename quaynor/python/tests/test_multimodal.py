@@ -1,7 +1,8 @@
 import os
 
-import quaynor
 import pytest
+
+import quaynor
 
 
 @pytest.fixture(scope="module")

@@ -32,9 +32,11 @@ jobs:
         working-directory: ./quaynor/python
         run: cargo build && cargo run --bin make_stubs
 
+      # Pinned: bare `uvx ruff` installs the latest release, so a new default
+      # rule turns a green CI red on an unrelated commit.
       - name: Lint check
         working-directory: ./quaynor/python
-        run: uvx ruff check
+        run: uvx ruff@0.16.4 check
 
       - name: Check for uncommitted changes
         working-directory: ./quaynor/python
@@ -47,9 +49,10 @@ jobs:
             exit 1
           fi
 
+      # Pinned for the same reason; ty is pre-1.0 and changes fast.
       - name: Type check
         working-directory: ./quaynor/python
-        run: uvx ty check
+        run: uvx ty@0.0.74 check
 
   linux-build:
     if: inputs.full_ci
@@ -164,13 +167,15 @@ jobs:
         with:
           python-version: "3.13"
       - run: pip install maturin
+      # stripdown must stay false: ggml-vulkan calls find_package(SPIRV-Headers)
+      # at configure time, and stripdown removes those CMake config files.
       - name: Install Vulkan SDK
         uses: jakoch/install-vulkan-sdk-action@v1.2.5
         with:
           vulkan_version: 1.4.304.0
           install_runtime: false
           cache: true
-          stripdown: true
+          stripdown: false
       - name: Install Ninja
         run: choco install ninja
 

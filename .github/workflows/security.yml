@@ -61,7 +61,11 @@ jobs:
     if: github.event_name == 'pull_request'
     steps:
       - uses: actions/checkout@v4
+      # Non-blocking until the Dependency graph is switched on for the repo at
+      # Settings > Code security; without it the action errors out. Drop
+      # continue-on-error once it is enabled.
       - uses: actions/dependency-review-action@v4
+        continue-on-error: true
         with:
           fail-on-severity: high
 
