@@ -1,19 +1,27 @@
 name: "Rust crate install test"
 
+# Cross-platform build check for the published crate. This is what catches a
+# `quaynor` release that does not compile on a consumer's machine, so it guards
+# the manual crates.io publish.
+
 on:
-  # Just to test it in the first place, will be replaced later
   workflow_dispatch:
-        
-  # push:
-  #   paths:
-  #     - "quaynor/rust/**"
-  #     - "quaynor/core/**"
-  #     - ".github/workflows/rust-install-test.yml"
-  # pull_request:
-  #   paths:
-  #     - "quaynor/rust/**"
-  #     - "quaynor/core/**"
-  #     - ".github/workflows/rust-install-test.yml"
+  push:
+    branches: [main]
+    paths:
+      - "quaynor/core/**"
+      - "quaynor/grammar/**"
+      - "quaynor/Cargo.lock"
+      - ".github/workflows/rust-install-test.yml"
+  pull_request:
+    paths:
+      - "quaynor/core/**"
+      - "quaynor/grammar/**"
+      - "quaynor/Cargo.lock"
+      - ".github/workflows/rust-install-test.yml"
+
+permissions:
+  contents: read
 
 jobs:
   ubuntu:
@@ -35,7 +43,7 @@ jobs:
 
       - name: cargo check
         working-directory: quaynor
-        run: cargo check -p quaynor-rust
+        run: cargo check -p quaynor --locked
 
   macos:
     name: "macOS"
@@ -58,7 +66,7 @@ jobs:
           export CXX=/usr/bin/clang++
           export LDFLAGS="-L$(brew --prefix libomp)/lib"
           export CPPFLAGS="-I$(brew --prefix libomp)/include"
-          cargo check -p quaynor-rust
+          cargo check -p quaynor --locked
 
   windows:
     name: "Windows"
@@ -83,7 +91,7 @@ jobs:
         working-directory: quaynor
         env:
           LIBCLANG_PATH: ${{ env.LLVM_PATH }}/lib
-        run: cargo check -p quaynor-rust
+        run: cargo check -p quaynor --locked
 
   nix:
     name: "Nix"
@@ -97,4 +105,4 @@ jobs:
 
       - name: cargo check inside nix shell
         run: |
-          nix-shell quaynor/shell.nix --run "cd quaynor && cargo check -p quaynor-rust"
+          nix-shell quaynor/shell.nix --run "cd quaynor && cargo check -p quaynor --locked"
