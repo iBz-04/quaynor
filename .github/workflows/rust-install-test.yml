@@ -3,22 +3,13 @@ name: "Rust crate install test"
 # Cross-platform build check for the published crate. This is what catches a
 # `quaynor` release that does not compile on a consumer's machine, so it guards
 # the manual crates.io publish.
+#
+# Manual-only: every job compiles llama.cpp from scratch (~20 min on Windows),
+# which is far too heavy for every PR. Run it from the Actions tab before a
+# crates.io publish (see quaynor/core/RELEASING.md).
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - "quaynor/core/**"
-      - "quaynor/grammar/**"
-      - "quaynor/Cargo.lock"
-      - ".github/workflows/rust-install-test.yml"
-  pull_request:
-    paths:
-      - "quaynor/core/**"
-      - "quaynor/grammar/**"
-      - "quaynor/Cargo.lock"
-      - ".github/workflows/rust-install-test.yml"
 
 permissions:
   contents: read

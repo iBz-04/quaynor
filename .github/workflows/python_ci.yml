@@ -21,6 +21,18 @@ jobs:
         with:
           version: "latest"
 
+      # The stub check rebuilds the whole python crate (including llama.cpp);
+      # without a cache that is ~12 minutes on every PR.
+      - name: "Cache Cargo Home"
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo
+            quaynor/target
+          key: ${{ runner.os }}-cargo-python-static-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-python-static-
+
       - name: Install dependencies
         working-directory: ./quaynor/python
         run: |

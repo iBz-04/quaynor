@@ -9,6 +9,13 @@ support crates. Three packages go to crates.io:
 | `quaynor-gbnf-macro` | `quaynor/grammar/gbnf-macro/` | `gbnf_macro` (via `[lib] name`) |
 | `quaynor` | `quaynor/core/` | `quaynor` |
 
+## 0. Run the install test
+
+The "Rust crate install test" workflow (Actions tab → Run workflow) builds the
+crate on Ubuntu, macOS, Windows, and Nix the way a consumer would. It is
+manual-only because each job compiles llama.cpp from scratch — run it before
+publishing and wait for green.
+
 ## 1. Log in once
 
 Create an API token at https://crates.io/settings/tokens (scope: `publish-new`
