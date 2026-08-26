@@ -263,12 +263,12 @@ pub async fn load_model(
         projection_model_path,
         progress,
     )
-        .await
-        .map_err(|e| {
-            let msg = format!("Failed to load model '{}': {}", model_path, e);
-            log::error!("{}", msg);
-            QuaynorError::Error { message: msg }
-        })?;
+    .await
+    .map_err(|e| {
+        let msg = format!("Failed to load model '{}': {}", model_path, e);
+        log::error!("{}", msg);
+        QuaynorError::Error { message: msg }
+    })?;
 
     log::info!("load_model SUCCESS for {}", model_path);
     Ok(Arc::new(RustModel {
@@ -286,11 +286,12 @@ pub async fn download_model(
     let progress = on_download_progress.map(wrap_progress);
     let (tx, mut rx) = tokio::sync::mpsc::channel(1);
     std::thread::spawn(move || {
-        let result = quaynor::llm::download_model(&model_path, headers.as_ref(), progress.as_deref())
-            .map(|p| p.to_string_lossy().into_owned())
-            .map_err(|e| QuaynorError::Error {
-                message: e.to_string(),
-            });
+        let result =
+            quaynor::llm::download_model(&model_path, headers.as_ref(), progress.as_deref())
+                .map(|p| p.to_string_lossy().into_owned())
+                .map_err(|e| QuaynorError::Error {
+                    message: e.to_string(),
+                });
         let _ = tx.blocking_send(result);
     });
     rx.recv().await.ok_or_else(|| QuaynorError::Error {
@@ -653,9 +654,7 @@ pub trait RustDownloadProgressCallback: Send + Sync {
     fn on_download_progress(&self, downloaded: u64, total: u64);
 }
 
-fn wrap_progress(
-    cb: Box<dyn RustDownloadProgressCallback>,
-) -> Arc<dyn Fn(u64, u64) + Send + Sync> {
+fn wrap_progress(cb: Box<dyn RustDownloadProgressCallback>) -> Arc<dyn Fn(u64, u64) + Send + Sync> {
     let cb: Arc<dyn RustDownloadProgressCallback> = Arc::from(cb);
     Arc::new(move |downloaded, total| {
         cb.on_download_progress(downloaded, total);
@@ -687,6 +686,9 @@ static CALL_ID_COUNTER: std::sync::atomic::AtomicU64 = std::sync::atomic::Atomic
 pub struct RustTool {
     inner: quaynor::tool_calling::Tool,
     pending_rx: Option<tokio::sync::Mutex<tokio::sync::mpsc::UnboundedReceiver<PendingToolCall>>>,
+    // Nested by necessity: a per-call-id map of reply channels, shared across
+    // threads and only present for foreign-implemented tools.
+    #[allow(clippy::type_complexity)]
     resolvers: Option<Arc<std::sync::Mutex<HashMap<String, std::sync::mpsc::Sender<String>>>>>,
 }
 

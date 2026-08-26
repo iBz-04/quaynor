@@ -10,9 +10,7 @@ fn main() {
     }
 
     if std::env::var("QUAYNOR_SKIP_CODEGEN").is_ok() {
-        println!(
-            "cargo:warning=Skipping codegen due to QUAYNOR_SKIP_CODEGEN environment variable"
-        );
+        println!("cargo:warning=Skipping codegen due to QUAYNOR_SKIP_CODEGEN environment variable");
         return;
     }
 
