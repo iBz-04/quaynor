@@ -616,6 +616,9 @@ impl Chat {
 
     #[new]
     #[pyo3(signature = (model: "Model | os.PathLike | str", n_ctx = 4096, system_prompt = None, template_variables: "dict[str, bool]" = std::collections::HashMap::<String, bool>::new(), tools: "list[Tool]" = Vec::<Tool>::new(), sampler = SamplerConfig::default(), allow_thinking: "bool | None" = None) -> "Chat")]
+    // Mirrors the Python keyword-argument API; each argument is a documented
+    // constructor option rather than something to bundle into a struct.
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         model: ModelOrPath,
         n_ctx: u32,
@@ -961,6 +964,8 @@ impl ChatAsync {
 
     #[new]
     #[pyo3(signature = (model: "Model | os.PathLike | str", n_ctx = 4096, system_prompt = None, template_variables: "dict[str, bool]" = std::collections::HashMap::<String, bool>::new(), tools: "list[Tool]" = vec![], sampler = SamplerConfig::default(), allow_thinking: "bool | None" = None) -> "ChatAsync")]
+    // Mirrors the Python keyword-argument API; see Chat::new.
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         model: ModelOrPath,
         n_ctx: u32,
@@ -1311,9 +1316,8 @@ impl SamplerConfig {
     ///     ValueError: If the JSON is invalid or doesn't represent a valid sampler configuration
     #[staticmethod]
     pub fn from_json(json_str: &str) -> PyResult<Self> {
-        let sampler_config: quaynor::sampler_config::SamplerConfig =
-            serde_json::from_str(json_str)
-                .map_err(|e| pyo3::exceptions::PyValueError::new_err(e.to_string()))?;
+        let sampler_config: quaynor::sampler_config::SamplerConfig = serde_json::from_str(json_str)
+            .map_err(|e| pyo3::exceptions::PyValueError::new_err(e.to_string()))?;
         Ok(Self { sampler_config })
     }
 
@@ -1552,10 +1556,7 @@ impl SamplerBuilder {
     }
 }
 
-fn shift_step(
-    builder: SamplerBuilder,
-    step: quaynor::sampler_config::ShiftStep,
-) -> SamplerBuilder {
+fn shift_step(builder: SamplerBuilder, step: quaynor::sampler_config::ShiftStep) -> SamplerBuilder {
     SamplerBuilder {
         sampler_config: builder.sampler_config.shift(step),
     }

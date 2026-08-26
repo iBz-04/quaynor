@@ -10,6 +10,8 @@ nav:
   - Home: ./index.md
   - LLM Basics: ./llm-basics.md
   - Model Selection: ./model-selection.md
+  - Rust:
+      - Getting started with Rust: rust/index.md
   - Python:
       - Getting started with Python: python/index.md
       - Chat: python/chat.md

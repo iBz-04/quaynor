@@ -11,7 +11,9 @@ After any change to the repo (including small doc or config edits), **commit and
 - **Repository:** https://github.com/iBz-04/quaynor
 - **Issues:** https://github.com/iBz-04/quaynor/issues — bugs and regressions
 - **Discussions:** https://github.com/iBz-04/quaynor/discussions — questions and feature discussion
-- **CI:** [`main.yml`](.github/workflows/main.yml) composes reusable workflows such as [`build.yml`](.github/workflows/build.yml), [`python_ci.yml`](.github/workflows/python_ci.yml), and [`react_native_ci.yml`](.github/workflows/react_native_ci.yml). Pull requests can trigger a broader matrix when labeled **`full-ci`** (see `full_ci` inputs in `main.yml`).
+- **CI:** [`main.yml`](.github/workflows/main.yml) composes reusable workflows: [`rust_quality.yml`](.github/workflows/rust_quality.yml) (rustfmt, clippy, grammar tests, crates.io packaging dry run), [`security.yml`](.github/workflows/security.yml) (cargo audit, pip-audit, dependency review, secret scan), [`build.yml`](.github/workflows/build.yml), [`python_ci.yml`](.github/workflows/python_ci.yml), and [`react_native_ci.yml`](.github/workflows/react_native_ci.yml). Pull requests can trigger a broader matrix when labeled **`full-ci`** (see `full_ci` inputs in `main.yml`).
+
+  **CI never publishes.** It runs code-quality and security checks only, and holds no write permissions or registry tokens. Every release — crates.io, PyPI, npm, pub.dev, Maven — is published manually; see [`quaynor/core/RELEASING.md`](quaynor/core/RELEASING.md) and the per-binding release guides.
 
 Prefer pull requests for non-trivial changes; follow [`CONTRIBUTING.md`](CONTRIBUTING.md) for local setup and conventions.
 

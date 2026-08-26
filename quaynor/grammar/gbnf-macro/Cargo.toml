@@ -1,14 +1,22 @@
 [package]
-name = "gbnf-macro"
+name = "quaynor-gbnf-macro"
 version = "0.1.0"
 edition = "2024"
 license = "MIT"
+description = "Compile-time GBNF grammar macro for the quaynor inference engine"
+repository = "https://github.com/iBz-04/quaynor"
+homepage = "https://www.quaynor.site"
+keywords = ["gbnf", "grammar", "llm", "macro", "quaynor"]
+categories = ["parser-implementations"]
 
+# Keep the historical crate name `gbnf_macro` so `use gbnf_macro::gbnf;`
+# keeps working in dependents.
 [lib]
+name = "gbnf_macro"
 proc-macro = true
 
 [dependencies]
-gbnf = { path = "../gbnf" }
+quaynor-gbnf = { path = "../gbnf", version = "0.1.0" }
 syn = { version = "2.0", features = ["full"] }
 quote = "1.0"
 proc-macro2 = "1.0"

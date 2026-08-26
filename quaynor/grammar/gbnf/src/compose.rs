@@ -81,12 +81,6 @@ pub fn uniquify(grammar: &GbnfGrammar) -> GbnfGrammar {
     GbnfGrammar::new(new_declarations, new_root)
 }
 
-/// Reset the grammar counter (for testing only).
-#[cfg(test)]
-pub fn reset_counter() {
-    GRAMMAR_COUNTER.store(0, Ordering::Relaxed);
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -160,8 +154,6 @@ mod tests {
 
     #[test]
     fn test_uniquify() {
-        reset_counter();
-
         let grammar = GbnfGrammar::new(
             vec![
                 GbnfDeclaration::new("root".to_string(), Expr::NonTerminal("value".to_string())),
@@ -173,21 +165,27 @@ mod tests {
         let uniquified = uniquify(&grammar);
 
         assert_eq!(uniquified.declarations.len(), 2);
-        assert_eq!(uniquified.declarations[0].name, "root-g0");
-        assert_eq!(uniquified.declarations[1].name, "value-g0");
-        assert_eq!(uniquified.root_name, "root-g0");
+
+        // The counter is process-global, so assert on the suffix every rule in
+        // this grammar shares rather than on a specific counter value.
+        let suffix = uniquified.declarations[0]
+            .name
+            .strip_prefix("root")
+            .expect("root rule keeps its base name");
+        assert!(suffix.starts_with("-g"), "unexpected suffix: {suffix}");
+
+        assert_eq!(uniquified.declarations[1].name, format!("value{suffix}"));
+        assert_eq!(uniquified.root_name, format!("root{suffix}"));
 
         // The root rule should reference the uniquified value rule
         assert_eq!(
             uniquified.declarations[0].expr,
-            Expr::NonTerminal("value-g0".to_string())
+            Expr::NonTerminal(format!("value{suffix}"))
         );
     }
 
     #[test]
     fn test_uniquify_increments_counter() {
-        reset_counter();
-
         let grammar = GbnfGrammar::new(
             vec![GbnfDeclaration::new(
                 "root".to_string(),
@@ -199,7 +197,10 @@ mod tests {
         let u1 = uniquify(&grammar);
         let u2 = uniquify(&grammar);
 
-        assert_eq!(u1.declarations[0].name, "root-g0");
-        assert_eq!(u2.declarations[0].name, "root-g1");
+        // What matters is that two uniquifications never collide, not which
+        // counter values they happen to draw.
+        assert!(u1.declarations[0].name.starts_with("root-g"));
+        assert!(u2.declarations[0].name.starts_with("root-g"));
+        assert_ne!(u1.declarations[0].name, u2.declarations[0].name);
     }
 }

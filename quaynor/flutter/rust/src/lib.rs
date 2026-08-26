@@ -71,9 +71,8 @@ impl Model {
         #[frb(default = true)] use_gpu: bool,
         #[frb(default = "null")] projection_model_path: Option<String>,
     ) -> Result<Self, String> {
-        let model =
-            quaynor::llm::get_model(model_path, use_gpu, projection_model_path.as_deref())
-                .map_err(|e| e.to_string())?;
+        let model = quaynor::llm::get_model(model_path, use_gpu, projection_model_path.as_deref())
+            .map_err(|e| e.to_string())?;
         Ok(Self {
             model: Arc::new(model),
         })
@@ -156,9 +155,8 @@ impl RustChat {
         #[frb(default = "null")] sampler: Option<SamplerConfig>,
         #[frb(default = true)] use_gpu: bool,
     ) -> Result<Self, String> {
-        let model =
-            quaynor::llm::get_model(model_path, use_gpu, projection_model_path.as_deref())
-                .map_err(|e| e.to_string())?;
+        let model = quaynor::llm::get_model(model_path, use_gpu, projection_model_path.as_deref())
+            .map_err(|e| e.to_string())?;
         let sampler_config = sampler.map(|s| s.sampler_config).unwrap_or_default();
 
         // Handle deprecated allow_thinking parameter
@@ -228,9 +226,7 @@ impl RustChat {
             .await
     }
 
-    pub async fn get_sampler_config(
-        &self,
-    ) -> Result<SamplerConfig, quaynor::errors::GetterError> {
+    pub async fn get_sampler_config(&self) -> Result<SamplerConfig, quaynor::errors::GetterError> {
         self.chat
             .get_sampler_config()
             .await
@@ -268,9 +264,7 @@ impl RustChat {
         self.chat.set_system_prompt(system_prompt).await
     }
 
-    pub async fn get_system_prompt(
-        &self,
-    ) -> Result<Option<String>, quaynor::errors::GetterError> {
+    pub async fn get_system_prompt(&self) -> Result<Option<String>, quaynor::errors::GetterError> {
         self.chat.get_system_prompt().await
     }
 
@@ -376,8 +370,7 @@ pub struct CrossEncoder {
 impl CrossEncoder {
     #[flutter_rust_bridge::frb(sync)]
     pub fn new(model: &Model, #[frb(default = 4096)] n_ctx: u32) -> Self {
-        let handle =
-            quaynor::crossencoder::CrossEncoderAsync::new(Arc::clone(&model.model), n_ctx);
+        let handle = quaynor::crossencoder::CrossEncoderAsync::new(Arc::clone(&model.model), n_ctx);
         Self { handle }
     }
 
@@ -590,10 +583,7 @@ impl SamplerConfig {
     }
 }
 
-fn shift_step(
-    builder: SamplerBuilder,
-    step: quaynor::sampler_config::ShiftStep,
-) -> SamplerBuilder {
+fn shift_step(builder: SamplerBuilder, step: quaynor::sampler_config::ShiftStep) -> SamplerBuilder {
     SamplerBuilder {
         sampler_config: builder.sampler_config.shift(step),
     }

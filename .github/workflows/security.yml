@@ -1,0 +1,80 @@
+name: "security"
+
+on:
+  workflow_call:
+  workflow_dispatch:
+  schedule:
+    # Advisories land against dependencies we have not touched, so re-run
+    # weekly rather than only on push. Mondays, 06:00 UTC.
+    - cron: "0 6 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  # RustSec advisories against the committed Cargo.lock. No build needed.
+  cargo-audit:
+    name: "cargo audit"
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "Setup rust toolchain"
+        run: |
+          rustup update stable
+          rustup default stable
+
+      - name: "Install cargo-audit"
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-audit
+
+      - name: "Audit Rust dependencies"
+        working-directory: ./quaynor
+        run: cargo audit
+
+  # Python dependency advisories for the binding's locked environment.
+  python-audit:
+    name: "pip audit"
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "Install uv"
+        uses: astral-sh/setup-uv@v2
+        with:
+          version: "latest"
+
+      # Export the locked environment, minus the local project itself, which
+      # pip-audit cannot resolve from an index.
+      - name: "Audit Python dependencies"
+        working-directory: ./quaynor/python
+        run: |
+          uv export --format requirements-txt --no-emit-project --no-hashes -o requirements.audit.txt
+          uvx pip-audit --requirement requirements.audit.txt
+
+  # Fails a PR that introduces a dependency with a known vulnerability.
+  # Pull-request only: the action needs a base and head to diff.
+  dependency-review:
+    name: "dependency review"
+    runs-on: ubuntu-24.04
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+
+  secret-scan:
+    name: "secret scan"
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # gitleaks diffs history, so a shallow clone hides older commits.
+          fetch-depth: 0
+
+      - name: "Scan for committed secrets"
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

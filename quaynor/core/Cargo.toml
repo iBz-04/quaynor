@@ -2,21 +2,40 @@
 name = "quaynor"
 version = "2.2.0"
 edition = "2021"
+rust-version = "1.95"
 license = "MIT"
+description = "Lightweight local AI inference engine: load GGUF models and chat on-device with streaming, tool calling, embeddings, and reranking"
+repository = "https://github.com/iBz-04/quaynor"
+homepage = "https://www.quaynor.site"
+documentation = "https://docs.rs/quaynor"
+readme = "README.md"
+keywords = ["llm", "llama", "gguf", "inference", "ai"]
+categories = ["science", "api-bindings", "text-processing"]
 
 [dependencies]
 encoding_rs = "0.8.34"
 thiserror = "2.0.3"
 minijinja = { version = "2.11.0", features = ["builtins", "json", "loader"] }
 minijinja-contrib = { version = "2.11.0", features = ["pycompat"] }
-monty = { git = "https://github.com/pydantic/monty", tag = "v0.0.7" }
-bashkit = { git = "https://github.com/everruns/bashkit", tag = "v0.1.10" }
+monty = "0.0.21"
+monty-types = "0.0.21"
+# Constraint only (already in the tree via monty -> ruff_python_ast): ruff's
+# GetSize derive needs a get-size2 built against compact_str ^0.9, which
+# get-size2 dropped in 0.10.2. Without this bound, fresh resolutions pick
+# 0.10.3+ and the build fails. Drop this once monty/ruff update upstream.
+get-size2 = ">=0.10, <0.10.2"
+bashkit = "0.1.10"
 serde = { version = "1.0.215", features = ["derive"] }
 chrono = "0.4.39"
-llama-cpp-2 = { git = "https://github.com/marek-hradil/llama-cpp-rs", branch = "main", default-features = false, features = [
+# Pinned exactly: llama-cpp-2 routinely ships breaking changes in patch
+# releases, so a caret requirement could break fresh builds of a published
+# quaynor version.
+llama-cpp-2 = { version = "=0.1.154", default-features = false, features = [
     "openmp",
     "android-static-stdcxx",
     "mtmd",
+    # llama.cpp's common library; gates LlamaSampler::grammar_lazy.
+    "common",
 ] }
 lazy_static = "1.5.0"
 tokio = { version = "1.43.0", features = [
@@ -30,8 +49,9 @@ tracing = { version = "0.1.41", features = ["log"] }
 tracing-subscriber = "0.3.19"
 regex = "1.11.1"
 serde_json = "1.0.140"
-gbnf = { path = "../grammar/gbnf" }
-gbnf-macro = { path = "../grammar/gbnf-macro" }
+# These expose the crate names `gbnf` / `gbnf_macro` via their [lib] names.
+quaynor-gbnf = { path = "../grammar/gbnf", version = "0.1.0" }
+quaynor-gbnf-macro = { path = "../grammar/gbnf-macro", version = "0.1.0" }
 nom = "8.0.0"
 rand = "0.9.3"
 futures = "0.3.31"
@@ -47,9 +67,10 @@ dirs = "6"
 
 # Enable Vulkan for x86_64, x86, and aarch64 targets (excluding macOS, iOS, Android)
 [target.'cfg(all(not(target_os = "macos"), not(target_os = "ios"), not(target_os = "android"), any(target_arch = "x86_64", target_arch = "x86", target_arch = "aarch64")))'.dependencies]
-llama-cpp-2 = { git = "https://github.com/marek-hradil/llama-cpp-rs", branch = "main", default-features = false, features = [
+llama-cpp-2 = { version = "=0.1.154", default-features = false, features = [
     "openmp",
     "vulkan",
     "mtmd",
     "android-static-stdcxx",
+    "common",
 ] }

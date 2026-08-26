@@ -574,7 +574,10 @@ impl ChatHandle {
             .ok_or(crate::errors::GetterError::GetterError("get_stats".into()))
     }
 
-    pub fn tokenize(&self, message: String) -> Result<Vec<Option<i32>>, crate::errors::GetterError> {
+    pub fn tokenize(
+        &self,
+        message: String,
+    ) -> Result<Vec<Option<i32>>, crate::errors::GetterError> {
         let (output_tx, mut output_rx) = tokio::sync::mpsc::channel(1);
         self.guard.send(ChatMsg::Tokenize { message, output_tx });
         output_rx
@@ -2078,7 +2081,10 @@ impl Worker<'_, ChatWorker> {
                 Some(self.extra.tools.clone())
             },
         );
-        let rendered_chat = self.extra.chat_template.render(&messages, &template_context)?;
+        let rendered_chat = self
+            .extra
+            .chat_template
+            .render(&messages, &template_context)?;
         let bitmaps: Vec<&MtmdBitmap> = messages
             .iter()
             .flat_map(|msg| msg.assets())

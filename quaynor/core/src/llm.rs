@@ -177,7 +177,9 @@ fn resolve_fancy_path_to_fs(
             download_model_from_hf_with_options(&owner, &repo, &filename, headers, progress)?
         }
         ParsedModelPath::FilesystemPath(path) => path,
-        ParsedModelPath::HttpUrl(url) => download_model_from_url_with_options(&url, headers, progress)?,
+        ParsedModelPath::HttpUrl(url) => {
+            download_model_from_url_with_options(&url, headers, progress)?
+        }
     };
 
     if !fs_model_path.exists() {
@@ -352,7 +354,7 @@ pub async fn get_model_async(
     });
 
     match output_rx.recv().await {
-        Some(model) => return model,
+        Some(model) => model,
         None => Err(LoadModelError::ModelChannelError),
     }
 }
@@ -367,14 +369,13 @@ pub async fn get_model_async_with_progress(
     std::thread::spawn(move || {
         let progress_ref = progress.as_deref();
         let real_model_path = resolve_model_path(&model_path, None, progress_ref);
-        let result = real_model_path.and_then(|_| {
-            get_model(&model_path, use_gpu_if_available, mmproj_path.as_deref())
-        });
+        let result = real_model_path
+            .and_then(|_| get_model(&model_path, use_gpu_if_available, mmproj_path.as_deref()));
         output_tx.blocking_send(result)
     });
 
     match output_rx.recv().await {
-        Some(model) => return model,
+        Some(model) => model,
         None => Err(LoadModelError::ModelChannelError),
     }
 }
@@ -1202,7 +1203,7 @@ mod tests {
 
         let (canonical_path, canonical_cache_dir) =
             ensure_cached_gguf_path_in_cache(&model_path, &cache_dir).unwrap();
-        register_loaded_cache_models(&[canonical_path.clone()]).unwrap();
+        register_loaded_cache_models(std::slice::from_ref(&canonical_path)).unwrap();
 
         let error =
             delete_cached_model_at_path(canonical_path.clone(), canonical_cache_dir).unwrap_err();

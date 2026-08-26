@@ -10,7 +10,7 @@
 <p><b>A lightweight, blazing fast AI inference engine written in Rust.</b></p>
 </div>
 
-Embed **local LLMs** in your app: load GGUF checkpoints, chat on-device or on the GPU, and keep data off the cloud. Bindings available for **Python**, **Flutter**, **React Native**, **Swift**, and **Kotlin/Android**.
+Embed **local LLMs** in your app: load GGUF checkpoints, chat on-device or on the GPU, and keep data off the cloud. Usable natively from **Rust**, with bindings for **Python**, **Flutter**, **React Native**, **Swift**, and **Kotlin/Android**.
 
 **Documentation:** [www.quaynor.site](https://www.quaynor.site)
 
@@ -36,6 +36,41 @@ Embed **local LLMs** in your app: load GGUF checkpoints, chat on-device or on th
 | Tool calling | Grammar-constrained tool use; decorate Python functions or declare tools in RN/Flutter per docs. |
 | Hardware | Vulkan (desktop/Android where applicable), Metal (Apple). |
 | Modalities | Vision and audio pipelines where the model supports them; see docs for model quirks. |
+
+---
+
+## Rust
+
+[`quaynor` on crates.io](https://crates.io/crates/quaynor)
+
+The engine itself is a Rust crate — no FFI layer, just the same API that powers every binding.
+
+```sh
+cargo add quaynor
+```
+
+```rust
+use quaynor::chat::ChatBuilder;
+use quaynor::llm::get_model;
+use std::sync::Arc;
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let model = Arc::new(get_model(
+        "hf://bartowski/Qwen_Qwen3-0.6B-GGUF/Qwen_Qwen3-0.6B-Q4_K_M.gguf",
+        true,
+        None,
+    )?);
+    let chat = ChatBuilder::new(model).build();
+
+    let mut stream = chat.ask("Is a zebra black or white?");
+    while let Some(token) = stream.next_token() {
+        print!("{token}");
+    }
+    Ok(())
+}
+```
+
+`ChatBuilder::build_async()` gives the Tokio-friendly `ChatHandleAsync` variant; embeddings, reranking, tokenizer helpers, and grammar-based tool calling live in the same crate. See the [Rust docs](docs/markdown/rust/index.md) and [docs.rs/quaynor](https://docs.rs/quaynor).
 
 ---
 

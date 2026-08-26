@@ -1,8 +1,18 @@
 [package]
-name = "gbnf"
+name = "quaynor-gbnf"
 version = "0.1.0"
 edition = "2024"
 license = "MIT"
+description = "GBNF grammar construction and JSON-schema conversion for the quaynor inference engine"
+repository = "https://github.com/iBz-04/quaynor"
+homepage = "https://www.quaynor.site"
+keywords = ["gbnf", "grammar", "llm", "quaynor"]
+categories = ["parser-implementations"]
+
+# The library keeps the historical crate name `gbnf` so source code
+# (and the paths emitted by the companion proc macro) stay unchanged.
+[lib]
+name = "gbnf"
 
 [dependencies]
 serde_json = "1"
@@ -10,4 +20,7 @@ jsonschema = "0.41.0"
 
 [dev-dependencies]
 insta = "1.46.1"
-gbnf-macro = { path = "../gbnf-macro" }
+# Path-only (no version) on purpose: this dev-dependency is circular with
+# quaynor-gbnf-macro, and cargo strips versionless path dev-dependencies
+# from the published manifest so the cycle doesn't block `cargo publish`.
+quaynor-gbnf-macro = { path = "../gbnf-macro" }
