@@ -1500,7 +1500,8 @@ impl Worker<'_, ChatWorker> {
                 break;
             }
 
-            let chunks = self.render_as_chunks(false)?;
+            // Measure the shortened copy: the stored history is only replaced after the loop.
+            let chunks = self.render_messages_as_chunks(&messages, false)?;
             if chunks.n_tokens() <= target_token_size {
                 break;
             }
@@ -1805,7 +1806,14 @@ impl Worker<'_, ChatWorker> {
     /// That is for avoiding the render will concat system message with the first user message.
     /// Otherwise please handle stuff.
     fn render_as_chunks(&mut self, handled: bool) -> Result<TokenizerChunks, RenderError> {
-        let messages = &self.extra.messages;
+        self.render_messages_as_chunks(&self.extra.messages, handled)
+    }
+
+    fn render_messages_as_chunks(
+        &self,
+        messages: &[Message],
+        handled: bool,
+    ) -> Result<TokenizerChunks, RenderError> {
         let template_context = ChatTemplateContext::new(
             self.extra.template_variables.clone(),
             if self.extra.tools.is_empty() {
@@ -1825,9 +1833,7 @@ impl Worker<'_, ChatWorker> {
                 .render_unhandled(messages, &template_context)?
         };
 
-        let bitmaps: Vec<&MtmdBitmap> = self
-            .extra
-            .messages
+        let bitmaps: Vec<&MtmdBitmap> = messages
             .iter()
             .flat_map(|msg| msg.assets())
             .filter_map(|asset| self.extra.context.bitmaps.get(&asset.id))
@@ -2570,7 +2576,16 @@ mod tests {
             "Should have fewer messages after shift"
         );
 
-        // 7. Check that message structure is still valid
+        // 7. Only as much is deleted as the target needs: more than the system prompt,
+        // the first exchange and the last two user turns survive.
+        let minimal_history_len = 6;
+        assert!(
+            messages_after.len() > minimal_history_len,
+            "Shift deleted every deletable message: {} left",
+            messages_after.len()
+        );
+
+        // 8. Check that message structure is still valid
         assert_valid_message_structure(&messages_after);
 
         println!("Messages before shift: {}", messages_before);
