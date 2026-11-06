@@ -14,12 +14,17 @@ mod ministral3;
 mod qwen3;
 mod qwen35_36;
 
+#[cfg(feature = "tools")]
 use bashkit::{ExecutionLimits, InMemoryFs};
 use llama_cpp_2::model::LlamaModel;
+#[cfg(feature = "tools")]
 use monty::MontyRun;
+#[cfg(feature = "tools")]
 use monty_types::{CompileOptions, PrintWriter, ResourceLimits, ResourceTracker};
 use serde::{ser::Serializer, Deserialize, Serialize};
-use std::{sync::Arc, time::Duration};
+use std::sync::Arc;
+#[cfg(feature = "tools")]
+use std::time::Duration;
 use tracing::debug;
 
 pub use functiongemma::FunctionGemmaHandler;
@@ -67,6 +72,8 @@ impl Tool {
         }
     }
 
+    /// Built-in sandboxed Python tool (via monty). Requires the `tools` feature.
+    #[cfg(feature = "tools")]
     pub fn python(
         max_duration: Option<Duration>,
         max_memory: Option<usize>,
@@ -131,6 +138,8 @@ impl Tool {
         )
     }
 
+    /// Built-in sandboxed bash tool (via bashkit). Requires the `tools` feature.
+    #[cfg(feature = "tools")]
     pub fn bash(max_commands: Option<usize>) -> Self {
         Tool::new(
             "run_bash",

@@ -1,6 +1,6 @@
 [package]
 name = "quaynor-gbnf"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 license = "MIT"
 description = "GBNF grammar construction and JSON-schema conversion for the quaynor inference engine"
@@ -16,7 +16,10 @@ name = "gbnf"
 
 [dependencies]
 serde_json = "1"
-jsonschema = "0.41.0"
+# No default features: only the bundled meta-schemas are used
+# (`jsonschema::meta::is_valid`), so the `resolve-http` (reqwest/hyper/rustls)
+# and `resolve-file` `$ref` retrievers are not needed.
+jsonschema = { version = "0.41.0", default-features = false }
 
 [dev-dependencies]
 insta = "1.46.1"

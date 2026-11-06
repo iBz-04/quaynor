@@ -16,9 +16,26 @@ cargo add quaynor
 
 GPU backends are enabled per platform: **Metal** on macOS/iOS, **Vulkan** on desktop x86/x86_64/aarch64 Linux and Windows. Building compiles `llama.cpp` from source via [`llama-cpp-2`](https://crates.io/crates/llama-cpp-2), so you need CMake and a C/C++ toolchain.
 
+## Cargo features
+
+Both features are on by default, so `cargo add quaynor` behaves as before.
+
+| Feature | Enables | Pulls in |
+|---------|---------|----------|
+| `tools` | Built-in sandboxed tools `Tool::python(..)` and `Tool::bash(..)` | `monty`, `bashkit` |
+| `download` | Remote model paths (`hf://owner/repo/file.gguf`, `https://...`): download and cache | `ureq` (rustls) |
+
+For a lean, inference-only dependency with no interpreters and no network client:
+
+```toml
+quaynor = { version = "2.3", default-features = false }
+```
+
+You still get local GGUF loading, chat, streaming, GBNF grammars, sampling, embeddings, reranking, and tool calling with your own `Tool::new` closures. Without `download`, remote paths fail with `LoadModelError::DownloadFeatureDisabled` instead of being treated as file names.
+
 ## Chat
 
-Models load from local paths, plain URLs, or Hugging Face paths (`hf://owner/repo/file.gguf`, downloaded and cached automatically):
+Models load from local paths, plain URLs, or Hugging Face paths (`hf://owner/repo/file.gguf`, downloaded and cached automatically with the default `download` feature):
 
 ```rust,no_run
 use quaynor::chat::ChatBuilder;
@@ -79,7 +96,7 @@ let circle_area = Tool::new(
 let chat = ChatBuilder::new(model).with_tool(circle_area).build();
 ```
 
-Built-in sandboxed tools are available too: `Tool::python(..)` (via [monty](https://crates.io/crates/monty)) and `Tool::bash(..)` (via [bashkit](https://crates.io/crates/bashkit)) — both fully isolated from the host.
+Built-in sandboxed tools are available too: `Tool::python(..)` (via [monty](https://crates.io/crates/monty)) and `Tool::bash(..)` (via [bashkit](https://crates.io/crates/bashkit)) — both fully isolated from the host (requires the default `tools` feature).
 
 ## Beyond chat
 

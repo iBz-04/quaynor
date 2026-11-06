@@ -28,6 +28,10 @@ pub enum LoadModelError {
     FailedParsingModelPath(#[from] nom::Err<nom::error::Error<String>>),
     #[error("Failed to download model: {0}")]
     DownloadError(String),
+    /// A remote model path (`hf://...`, `https://...`) was given, but quaynor was
+    /// built without the `download` cargo feature.
+    #[error("Remote model path '{0}' requires the `download` cargo feature of quaynor; enable it or pass a local file path")]
+    DownloadFeatureDisabled(String),
     #[error("Refusing to delete model outside the Quaynor cache: {0}")]
     ModelOutsideCache(String),
     #[error("Cached model is not a GGUF file: {0}")]

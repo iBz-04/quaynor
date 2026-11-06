@@ -70,7 +70,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-`ChatBuilder::build_async()` gives the Tokio-friendly `ChatHandleAsync` variant; embeddings, reranking, tokenizer helpers, and grammar-based tool calling live in the same crate. See the [Rust docs](docs/markdown/rust/index.md) and [docs.rs/quaynor](https://docs.rs/quaynor).
+`ChatBuilder::build_async()` gives the Tokio-friendly `ChatHandleAsync` variant; embeddings, reranking, tokenizer helpers, and grammar-based tool calling live in the same crate. Use `default-features = false` for a lean inference-only build without the sandboxed `tools` or remote-model `download` features. See the [Rust docs](docs/markdown/rust/index.md) and [docs.rs/quaynor](https://docs.rs/quaynor).
 
 ---
 
