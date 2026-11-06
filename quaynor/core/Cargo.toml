@@ -1,6 +1,6 @@
 [package]
 name = "quaynor"
-version = "2.2.0"
+version = "2.3.0"
 edition = "2021"
 rust-version = "1.95"
 license = "MIT"
@@ -12,19 +12,30 @@ readme = "README.md"
 keywords = ["llm", "llama", "gguf", "inference", "ai"]
 categories = ["science", "api-bindings", "text-processing"]
 
+[features]
+default = ["tools", "download"]
+# Built-in sandboxed tools `Tool::python` (monty) and `Tool::bash` (bashkit).
+# Tool calling with your own `Tool::new` closures works without this feature.
+tools = ["dep:monty", "dep:monty-types", "dep:get-size2", "dep:bashkit"]
+# Remote model paths (`hf://owner/repo/file.gguf`, `https://...`): download and
+# cache via ureq. Without it, only local file paths load; remote paths return
+# `LoadModelError::DownloadFeatureDisabled`.
+download = ["dep:ureq"]
+
 [dependencies]
 encoding_rs = "0.8.34"
 thiserror = "2.0.3"
 minijinja = { version = "2.11.0", features = ["builtins", "json", "loader"] }
 minijinja-contrib = { version = "2.11.0", features = ["pycompat"] }
-monty = "0.0.21"
-monty-types = "0.0.21"
+# Optional: only needed by the built-in sandboxed tools (`tools` feature).
+monty = { version = "0.0.21", optional = true }
+monty-types = { version = "0.0.21", optional = true }
 # Constraint only (already in the tree via monty -> ruff_python_ast): ruff's
 # GetSize derive needs a get-size2 built against compact_str ^0.9, which
 # get-size2 dropped in 0.10.2. Without this bound, fresh resolutions pick
 # 0.10.3+ and the build fails. Drop this once monty/ruff update upstream.
-get-size2 = ">=0.10, <0.10.2"
-bashkit = "0.1.10"
+get-size2 = { version = ">=0.10, <0.10.2", optional = true }
+bashkit = { version = "0.1.10", optional = true }
 serde = { version = "1.0.215", features = ["derive"] }
 chrono = "0.4.39"
 # Pinned exactly: llama-cpp-2 routinely ships breaking changes in patch
@@ -37,6 +48,10 @@ llama-cpp-2 = { version = "=0.1.154", default-features = false, features = [
     # llama.cpp's common library; gates LlamaSampler::grammar_lazy.
     "common",
 ] }
+# Constraint only: llama-cpp-2 =0.1.154 requires llama-cpp-sys-2 with a caret
+# (^0.1.154), so a fresh resolve picks a newer sys crate whose bindings changed
+# and llama-cpp-2 no longer compiles. Keep this in lockstep with llama-cpp-2.
+llama-cpp-sys-2 = { version = "=0.1.154", default-features = false }
 lazy_static = "1.5.0"
 tokio = { version = "1.43.0", features = [
     "sync",
@@ -50,14 +65,15 @@ tracing-subscriber = "0.3.19"
 regex = "1.11.1"
 serde_json = "1.0.140"
 # These expose the crate names `gbnf` / `gbnf_macro` via their [lib] names.
-quaynor-gbnf = { path = "../grammar/gbnf", version = "0.1.0" }
-quaynor-gbnf-macro = { path = "../grammar/gbnf-macro", version = "0.1.0" }
+quaynor-gbnf = { path = "../grammar/gbnf", version = "0.2.0" }
+quaynor-gbnf-macro = { path = "../grammar/gbnf-macro", version = "0.2.0" }
 nom = "8.0.0"
 rand = "0.9.3"
 futures = "0.3.31"
 ahash = "0.8.12"
 indexmap = "2.13.0"
-ureq = { version = "3", features = ["rustls"] }
+# Optional: only needed to download remote model paths (`download` feature).
+ureq = { version = "3", features = ["rustls"], optional = true }
 
 [target.'cfg(target_os = "android")'.dependencies]
 libc = "0.2"

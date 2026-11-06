@@ -14,7 +14,23 @@ cargo add quaynor
 
 Building compiles `llama.cpp` from source, so you need **CMake** and a C/C++ toolchain installed. GPU acceleration is selected per platform automatically: **Metal** on macOS, **Vulkan** on x86/x86_64/aarch64 Linux and Windows.
 
-## Chat
+## Cargo features
+
+Both features are on by default, so `cargo add quaynor` behaves as before.
+
+| Feature | Enables | Pulls in |
+|---------|---------|----------|
+| `tools` | Built-in sandboxed tools `Tool::python(..)` and `Tool::bash(..)` | `monty`, `bashkit` |
+| `download` | Remote model paths (`hf://owner/repo/file.gguf`, `https://...`): download and cache | `ureq` (rustls) |
+
+For a lean, inference-only dependency with no interpreters and no network client:
+
+```toml
+quaynor = { version = "2.3", default-features = false }
+```
+
+You still get local GGUF loading, chat, streaming, GBNF grammars, sampling, embeddings, reranking, and tool calling with your own `Tool::new` closures. Without `download`, remote paths fail with `LoadModelError::DownloadFeatureDisabled` instead of being treated as file names.
+
 
 Models load from a local path, a URL, or a Hugging Face path (`hf://owner/repo/file.gguf`), downloaded and cached automatically:
 

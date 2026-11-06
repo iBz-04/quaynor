@@ -12,6 +12,7 @@ use llama_cpp_2::model::AddBos;
 use llama_cpp_2::model::LlamaModel;
 use llama_cpp_2::mtmd::MtmdInputChunks;
 use llama_cpp_2::token::LlamaToken;
+#[cfg(feature = "download")]
 use std::io::{Read, Write};
 use std::pin::pin;
 use std::rc::Rc;
@@ -173,13 +174,27 @@ fn resolve_fancy_path_to_fs(
     progress: Option<&(dyn Fn(u64, u64) + Send + Sync)>,
 ) -> Result<std::path::PathBuf, LoadModelError> {
     let fs_model_path = match parsed_path {
+        #[cfg(feature = "download")]
         ParsedModelPath::HuggingFaceUrl(owner, repo, filename) => {
             download_model_from_hf_with_options(&owner, &repo, &filename, headers, progress)?
         }
-        ParsedModelPath::FilesystemPath(path) => path,
+        #[cfg(feature = "download")]
         ParsedModelPath::HttpUrl(url) => {
             download_model_from_url_with_options(&url, headers, progress)?
         }
+        #[cfg(not(feature = "download"))]
+        ParsedModelPath::HuggingFaceUrl(owner, repo, filename) => {
+            let _ = (headers, progress);
+            return Err(LoadModelError::DownloadFeatureDisabled(format!(
+                "hf://{owner}/{repo}/{filename}"
+            )));
+        }
+        #[cfg(not(feature = "download"))]
+        ParsedModelPath::HttpUrl(url) => {
+            let _ = (headers, progress);
+            return Err(LoadModelError::DownloadFeatureDisabled(url));
+        }
+        ParsedModelPath::FilesystemPath(path) => path,
     };
 
     if !fs_model_path.exists() {
@@ -435,6 +450,7 @@ fn get_platform_cache_dir() -> Result<std::path::PathBuf, crate::errors::LoadMod
     })
 }
 
+#[cfg(feature = "download")]
 /// Download a file from a URL to a local path, streaming to disk with progress logging.
 ///
 /// Returns early if the file already exists at the target path.
@@ -580,6 +596,7 @@ fn download_file(
     Ok(())
 }
 
+#[cfg(feature = "download")]
 /// Download a GGUF model from HuggingFace Hub and return the local path to it.
 ///
 /// If the model is already cached locally, the cached path is returned without downloading.
@@ -597,6 +614,7 @@ fn download_model_from_hf_with_options(
     Ok(target_path)
 }
 
+#[cfg(feature = "download")]
 /// Download a model from a generic HTTP(S) URL and return the local path to it.
 ///
 /// The file is cached by its URL path components under the cache directory.
@@ -715,6 +733,9 @@ fn cleanup_empty_cache_dirs(
     Ok(())
 }
 
+/// Resolve `model_path` to a local file, downloading and caching remote paths
+/// (`hf://...`, `https://...`) first. Without the `download` feature, remote
+/// paths return [`LoadModelError::DownloadFeatureDisabled`]; local paths still resolve.
 pub fn download_model(
     model_path: &str,
     headers: Option<&std::collections::HashMap<String, String>>,

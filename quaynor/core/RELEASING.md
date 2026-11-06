@@ -58,7 +58,12 @@ mistake needs a new version (or `cargo yank` to hide one).
 
 - `llama-cpp-2` is pinned exactly (`=0.1.x`) because upstream ships breaking
   changes in patch releases. Bumping it is a deliberate, tested change.
-- `monty` requires rustc ≥ 1.95.
+- `llama-cpp-sys-2` is pinned to the same exact version: `llama-cpp-2` only
+  requires it with a caret, and newer sys releases change the bindings, so a
+  fresh resolve of the published crate would not compile. Bump both together.
+- Check the lean build before publishing:
+  `cargo build -p quaynor --no-default-features` (no `tools`, no `download`).
+- `monty` (`tools` feature) requires rustc ≥ 1.95.
 - `get-size2` is held at 0.10.1 in `Cargo.lock` (transitive, via monty →
   ruff_python_ast, which needs `compact_str ^0.9`; get-size2 ≥ 0.10.2 moved to
   `^0.10` and breaks the build). If a fresh `cargo update` breaks on
