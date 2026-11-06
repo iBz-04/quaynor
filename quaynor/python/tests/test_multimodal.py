@@ -138,6 +138,9 @@ def test_audio_transcription_and_image_ingestion(multimodal_chat):
         quaynor.Image(image_path),
     ])
     response = multimodal_chat.ask(prompt).completed()
-    assert "billy" in response.lower() and ("dog" in response.lower() or "retriever" in response.lower())
+    # The clip says "Hey Ryan. Hey Billy." With an image beside it the 2B test model
+    # reliably hears "Ryan" but hears the second name as Billy, Lily or Millie, so the
+    # second name is checked only by the audio-only test.
+    assert "ryan" in response.lower() and ("dog" in response.lower() or "retriever" in response.lower())
 
 
